@@ -27,3 +27,6 @@ sera traité avec la sévérité la plus brute.
 # Dépendances optionnelles
 Pour avoir accès au `npm run dev` qui permet de recompiler et exécuter le code typescript, il faut avoir la dépendance suivante :
 * tsc-watch
+
+# Gestion de projet
+[Trello Board](https://trello.com/invite/b/nqGVmB41/ATTIbc89312d138276cef06e301cb6769b3b2216B4C0/projet-towerdefense)
