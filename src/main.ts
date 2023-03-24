@@ -22,7 +22,7 @@ function computeNewWorld(w: World, phases: Array<("move")>): World {
 }
 
 function initActors() {
-
+	throw Error()
 }
 
 function main() {

@@ -5,7 +5,7 @@ type Vector2D = { x: number, y: number; };
 type Matrix<T> = Array<Array<T>>;
 
 function createMatrix<T>(width: number, height: number): Matrix<T> {
-	return Array(height).map((_) => Array(width));
+	return Array<T>(height).map((_) => Array<T>(width));
 }
 
 function setElementInMatrix<T>(matrix: Matrix<T>, element: T, position: Vector2D): Matrix<T> {
