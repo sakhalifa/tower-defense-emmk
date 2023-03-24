@@ -6,9 +6,12 @@ type World = {
 	height: number;
 };
 
-function createWorld() {
-	throw Error()
 
+function createWorld(width: number, height: number, actors: Array<Actor>) {
+
+	const rawMatrix = createMatrix(width, height, undefined);
+
+	return { actors: rawMatrix, width: width, height: height };
 }
 
 function worldToString(w: World) {
@@ -19,6 +22,4 @@ function worldToString(w: World) {
 		${matrixToString(w.actors, actorToString)}
 	}`
 }
-
-export { createWorld, worldToString };
 export type { World };

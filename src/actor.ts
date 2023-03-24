@@ -11,11 +11,15 @@ type Actor = {
 };
 
 function actorToString(a: Actor) {
-	return `{pos: ${vector2DToString(a.pos)}}`
+	return `{pos: ${vector2DToString(a.pos)}}`;
 }
 
 function createActor(pos: Vector2D, actions: ActorActions) {
-	return
+	return;
 }
+function moveActor(a: Actor, dx: number, dy: number) {
+
+}
+
 export { actorToString };
 export type { Actor };
