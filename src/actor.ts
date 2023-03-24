@@ -9,7 +9,8 @@ type Actor = {
 
 };
 
-function printActor(a: Actor){
-	
+function printActor(a: Actor) {
+
 }
+
 export type { Actor };

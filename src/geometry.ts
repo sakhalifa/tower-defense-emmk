@@ -6,11 +6,11 @@ function translatePoint(p: Vector2D, dx: number, dy: number) {
 	return { x: p.x + dx, y: p.y + dy };
 }
 
-function printVector2D(v: Vector2D){
+function printVector2D(v: Vector2D) {
 
 }
 
-function printMatrix<T>(m: Matrix<T>, printElement: (e: T) => void){
+function printMatrix<T>(m: Matrix<T>, printElement: (e: T) => void) {
 
 }
 
