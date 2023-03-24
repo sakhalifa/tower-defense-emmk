@@ -11,6 +11,7 @@
     "main": "node dist/main.js",
     "parcel": "npx parcel src/main.ts",
     "test": "npx jest",
+    "watchTest": "npx jest --watchAll",
     "watch": "npx tsc -p tsconfig.json --watch",
     "dev": "tsc-watch -p tsconfig.json --onSuccess \"node --experimental-specifier-resolution=node dist/main.js\""
   },
