@@ -13,10 +13,12 @@
         "outDir": "dist",
         "strictNullChecks": true,
         "moduleResolution": "node",
-        "types": ["node", "jest"]
+        "types": [
+            "node",
+            "jest"
+        ]
     },
     "include": [
-        "src/**/*.ts",
-        "tst/**/*.ts"
+        "src/**/*.ts"
     ]
 }
