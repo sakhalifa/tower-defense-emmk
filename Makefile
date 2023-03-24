@@ -1,8 +1,10 @@
 all: build
 
-build:
+build: 
+	npm run build
 
 run:
+	npm run main
 
 test:
 

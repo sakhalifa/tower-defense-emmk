@@ -23,3 +23,7 @@ https://thor.enseirb-matmeca.fr/ruby/projects/projetss6-tower/overview
 
 Toute mise dans le dépôt de fichiers dans le répertoire `node_modules`
 sera traité avec la sévérité la plus brute.
+
+# Dépendances optionnelles
+Pour avoir accès au `npm run dev` qui permet de recompiler et exécuter le code typescript, il faut avoir la dépendance suivante :
+* tsc-watch
