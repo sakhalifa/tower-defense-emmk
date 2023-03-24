@@ -19,7 +19,7 @@ function initActors() {
 
 function main() {
 	let world = initWorld();
-	let phases = initPhases();
+	let phases = "move";
 	let actors = initActors();
 	let finished = false;
 	while (!finished) {
