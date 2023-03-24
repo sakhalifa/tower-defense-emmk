@@ -15,7 +15,7 @@ function computeNewWorld(w: World, phases: Array<("move")>){
 
 function main() {
 	let world = initWorld()
-	let phases = initPhases()
+	let phases = "move"
 	let finished = false
 	let i = 0;
 	while (!finished){
