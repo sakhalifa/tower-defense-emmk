@@ -2,7 +2,7 @@ import { Matrix, matrixToString } from "./geometry";
 import { World } from "./world";
 import { Phase } from "./phase";
 import { Actor } from "./actor";
-import * as Actor_i from "./actor";
+import { createPhase } from "./phase";
 
 function initWorld(): World {
 	throw Error();
@@ -14,7 +14,7 @@ function initPhases(): Array<("move")> {
 }
 
 function initPhases(): Array<Phase> {
-	return [Actor_i.createPhase("move", (a : Actor, w : World) => a)];
+	return [createPhase("move", (a: Actor, w: World) => a)];
 }
 
 function computeNewWorld(w: World, phases: Array<("move")>): World {
