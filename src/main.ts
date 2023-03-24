@@ -1,19 +1,20 @@
 import { World } from "./world";
+import { Phase } from "./phase";
 
-function initWorld(): World{
-
-}
-
-function initPhases(): Array<(string)>{
+function initWorld(): World {
 
 }
 
-function computeNewWorld(w: World, phases: Array<(string)>){
+function initPhases(): Array<Phase> {
+
+}
+
+function computeNewWorld(w: World, phases: Array<(string)>) {
 
 }
 
 function initActors() {
-	
+
 }
 
 function main() {
@@ -21,15 +22,15 @@ function main() {
 	let phases = initPhases();
 	let actors = initActors();
 	let finished = false;
-	while (!finished){
+	while (!finished) {
 		[world, actors] = phases.reduce(([aWorld, actors], aPhase) => {
-			funcName  = aPhase.funcName
+			funcName: string = aPhase.funcName;
 			proposals = actors.map((anActor) =>
-							anActor.funcName(anActor, aWorld));
+				anActor.funcName(anActor, aWorld));
 			[aNewWorld, newActors] = resolveProposals(aWorld, actors, proposals);
 			return [aNewWorld, newActors];
 		},
-		[world, actors])
+			[world, actors])
 	}
 }
 

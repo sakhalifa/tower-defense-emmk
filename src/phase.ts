@@ -3,5 +3,9 @@ import type { World } from "./world";
 
 type Phase = {
 	funcName: string;
-	func: (Actor, World) => Actor;
+	func: (actor : Actor, world : World) => Actor;
 };
+
+export type {
+    Phase
+}
