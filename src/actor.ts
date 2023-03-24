@@ -1,20 +1,25 @@
-import type { Vector2D } from "./geometry";
+import { Vector2D, vector2DToString } from "./geometry";
 import type { World } from "./world";
+type ActorActions = {
+	move: (world: World, actor: Actor) => Vector2D;
+};
 
 type Actor = {
 	pos: Vector2D;
-	actions: {
-		move: (world: World, actor: Actor) => Vector2D;
-	};
+	actions: ActorActions;
 
 };
 
+function actorToString(a: Actor) {
+	return `{pos: ${vector2DToString(a.pos)}}`;
+}
+
+function createActor(pos: Vector2D, actions: ActorActions) {
+	return;
+}
 function moveActor(a: Actor, dx: number, dy: number) {
-	 
-}
-
-function printActor(a: Actor) {
 
 }
 
+export { actorToString };
 export type { Actor };
