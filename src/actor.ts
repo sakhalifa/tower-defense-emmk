@@ -9,7 +9,12 @@ type Actor = {
 
 };
 
-function printActor(a: Actor){
-	
+function moveActor(a: Actor, dx: number, dy: number) {
+	 
 }
+
+function printActor(a: Actor) {
+
+}
+
 export type { Actor };

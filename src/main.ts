@@ -12,15 +12,19 @@ function computeNewWorld(w: World, phases: Array<("move")>){
 
 }
 
+function initActors() {
+	
+}
 
 function main() {
-	let world = initWorld()
-	let phases = "move"
-	let finished = false
+	let world = initWorld();
+	let phases = "move";
+	let actors = initActors();
+	let finished = false;
 	let i = 0;
 	while (!finished){
-		world = computeNewWorld(world, phases)
-		finished = ++i > 50
+		world = computeNewWorld(world, phases);
+		finished = ++i > 50;
 	}
 	/*
 	world  = initializeWorld()
