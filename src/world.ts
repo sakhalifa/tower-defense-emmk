@@ -7,11 +7,17 @@ type World = {
 	height: number;
 };
 
-function createWorld(){
-	
+
+function createWorld(width: number, height: number, actors: Array<Actor>) {
+
+	const rawMatrix = createMatrix(width, height, undefined);
+
+	return { actors: rawMatrix, width: width, height: height };
 }
 
-function printWorld(w: World){
-	
+function printWorld(w: World) {
+
 }
-export type { World };
+export type {
+	World, createWorld
+};
