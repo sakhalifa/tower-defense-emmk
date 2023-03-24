@@ -6,6 +6,10 @@ type World = {
 	height: number;
 };
 
+function createWorld(){
+	
+}
+
 function printWorld(w: World){
 	
 }
