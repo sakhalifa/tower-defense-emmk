@@ -13,7 +13,8 @@
     "test": "npx jest",
     "watchTest": "npx jest --watchAll",
     "watch": "npx tsc -p tsconfig.json --watch",
-    "dev": "tsc-watch -p tsconfig.json --onSuccess \"node --experimental-specifier-resolution=node dist/main.js\""
+    "serve:reload": "npm run eslint && node --experimental-specifier-resolution=node dist/main.js",
+    "dev": "tsc-watch -p tsconfig.json --onSuccess \"npm run serve:reload\""
   },
   "keywords": [],
   "author": "Khalifa Samuel, Martinez Jean-Baptiste, Chancrin Youri, Descomps Théo",

@@ -16,6 +16,7 @@
         "types": ["node", "jest"]
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "tst/**/*.ts"
     ]
 }
