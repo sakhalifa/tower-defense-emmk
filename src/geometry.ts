@@ -1,4 +1,4 @@
-import { isDeepStrictEqual } from 'util';
+import { isDeepStrictEqual } from "util";
 
 type Vector2D = { x: number, y: number; };
 
@@ -16,14 +16,16 @@ function translatePoint(p: Vector2D, dx: number, dy: number) {
 	return { x: p.x + dx, y: p.y + dy };
 }
 
-function printVector2D(v: Vector2D) {
-
+function vector2DToString(v: Vector2D){
+	return `(${v.x}, ${v.y})`
 }
 
-function printMatrix<T>(m: Matrix<T>, printElement: (e: T) => void) {
-
+function matrixToString<T>(m: Matrix<T>, elementToString: (e: T) => string){
+	return m.map((row) => {
+		return `[ ${row.map((cell) => cell ? elementToString(cell) : " ").join(", ")} ]`
+	}).join("\n")
 }
 
-export { translatePoint, createMatrix, setElementInMatrix };
+export { translatePoint, matrixToString, vector2DToString, createMatrix, setElementInMatrix };
 
 export type { Vector2D, Matrix };
