@@ -25,11 +25,11 @@ function validNewActor(world: World, actor: Actor): boolean {
 }
 
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): [World, Array<Actor>] {
-	let resolvedActors: Array<Actor> = proposals.reduce((acc, currentProposal, i) => {
+	let resolvedActors: Array<Actor> = proposals.reduce((acc: Array<Actor>, currentProposal: Actor, i: number) => {
 		if (validNewActor(world, currentProposal)) {
-			acc.concat(currentProposal);
+			return acc.concat(currentProposal);
 		} else {
-			acc.concat(actors[i]);
+			return acc.concat(actors[i]);
 		}
 	}, []);
 	return [world, resolvedActors];
@@ -43,8 +43,7 @@ function main() {
 	while (!finished) {
 		[world, actors] = phases.reduce(([aWorld, someActors], aPhase) => {
 			const funcName: string = aPhase.funcName;
-			let proposals = someActors.map((anActor) =>
-				anActor.actions[funcName](anActor, aWorld));
+			let proposals: Array<Actor>  = someActors.map((anActor) => anActor.actions[funcName](aWorld, anActor));
 			let [aNewWorld, newActors] = resolveProposals(aWorld, someActors, proposals);
 			return [aNewWorld, newActors];
 		}, [world, actors])

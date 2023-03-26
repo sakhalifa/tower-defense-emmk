@@ -2,7 +2,7 @@ import { Vector2D, vector2DToString } from "./geometry";
 import type { World } from "./world";
 
 type ActorActions = {
-	move: (world: World, actor: Actor) => Actor;
+	[move: string]: (world: World, actor: Actor) => Actor;
 };
 
 type Actor = {
