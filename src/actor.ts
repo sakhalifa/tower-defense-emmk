@@ -1,13 +1,13 @@
 import { Vector2D, vector2DToString } from "./geometry";
 import type { World } from "./world";
+
 type ActorActions = {
-	move: (world: World, actor: Actor) => Vector2D;
+	move: (world: World, actor: Actor) => Actor;
 };
 
 type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
-
 };
 
 function actorToString(a: Actor) {

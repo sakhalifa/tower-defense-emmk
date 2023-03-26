@@ -1,5 +1,5 @@
 import type { Actor } from "./actor";
-import type { Matrix } from "./geometry";
+import type { Matrix, Vector2D } from "./geometry";
 
 import { setElementInMatrix, createMatrix, matrixToString } from "./geometry";
 import { actorToString } from "./actor";
@@ -23,6 +23,10 @@ function createWorld(width: number, height: number, actors: Array<Actor>) {
 	};
 }
 
+function isPositionInWorld(world: World, position: Vector2D): boolean {
+	return position.x >= 0 && position.x < world.width && position.y >= 0 && position.y < world.height;
+}
+
 function worldToString(w: World) {
 	return `{
 		width: ${w.width}
@@ -33,7 +37,7 @@ function worldToString(w: World) {
 }
 
 export {
-	createWorld, worldToString
+	createWorld, worldToString, isPositionInWorld
 };
 
 export type {
