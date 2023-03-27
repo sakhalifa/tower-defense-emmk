@@ -1,3 +1,4 @@
+import { IntersectionType } from "typescript";
 import type { Actor } from "./actor";
 import { Vector2D } from "./geometry";
 import type { World } from "./world";
@@ -7,10 +8,11 @@ type ActionReturnTypes = {
     "attack": Actor[];
 };
 
-type Phase = { [K in keyof ActionReturnTypes]: {
-    funcName: K;
-    executePhase: (_: ActionReturnTypes[K]) => Array<Actor>;
-}
+type Phase = {
+    [K in keyof ActionReturnTypes]: {
+        funcName: K;
+        executePhase: (_: Array<ActionReturnTypes[K]>) => Array<Actor>;
+    }
 }[keyof ActionReturnTypes];
 
 function createPhase(funcName: string, func: (actor: Actor, world: World) => Actor) {
