@@ -1,5 +1,5 @@
 import { World, isPositionInWorld } from "./world";
-import { Phase } from "./phase";
+import { ActionReturnTypes, Phase } from "./phase";
 import { Actor } from "./actor";
 import { createPhase } from "./phase";
 
@@ -38,12 +38,13 @@ function main() {
 	let world: World = initWorld();
 	const phases: Array<Phase> = initPhases();
 	let actors: Array<Actor> = initActors();
-	const finished: boolean = false;
+	let finished: boolean = false;
 	while (!finished) {
 		[world, actors] = phases.reduce(([aWorld, someActors], aPhase) => {
 			const funcName: string = aPhase.funcName;
-			const proposals  = someActors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor));
+			const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
 			// @ts-expect-error ts bug
+				= aPhase.executePhase(someActors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor)));
 			const [aNewWorld, newActors] = resolveProposals(aWorld, someActors, proposals);
 			return [aNewWorld, newActors];
 		}, [world, actors])
