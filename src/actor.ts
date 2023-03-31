@@ -1,8 +1,9 @@
 import { Vector2D, vector2DToString } from "./geometry";
+import { ActionReturnTypes, Phase } from "./phase";
 import type { World } from "./world";
 
 type ActorActions = {
-	[move: string]: (world: World, actor: Actor) => Actor;
+	[Property in keyof ActionReturnTypes]: (world: World, actor: Actor) => ActionReturnTypes[Property];
 };
 
 type Actor = {

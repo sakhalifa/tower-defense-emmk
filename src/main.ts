@@ -9,7 +9,7 @@ function initWorld(): World {
 }
 
 function initPhases(): Array<Phase> {
-	return [createPhase("move", (a: Actor, w: World) => a)];
+	throw Error();
 }
 
 function computeNewWorld(w: World, phases: Array<Phase>): World {
