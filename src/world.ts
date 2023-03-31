@@ -1,5 +1,5 @@
 import type { Actor } from "./actor";
-import type { Matrix, Vector2D } from "./geometry";
+import type { Vector2D } from "./geometry";
 
 import { actorToString } from "./actor";
 
