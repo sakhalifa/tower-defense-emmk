@@ -1,5 +1,5 @@
 import type { Actor } from "./actor";
-import type { Matrix, Vector2D } from "./geometry";
+import type { Vector2D } from "./geometry";
 
 import { actorToString } from "./actor";
 
@@ -23,13 +23,12 @@ function isPositionInWorld(world: World, position: Vector2D): boolean {
 }
 
 function worldToString(w: World) {
-	// TODO
 	return `{
 		width: ${w.width}
 		height: ${w.height}
-		actors:
+		actors: ${w.actors.map((actor) => actorToString(actor)).join(", ")}
 		}
-	}`; //${matrixToString(w.actors, actorToString)
+	}`;
 }
 
 export {
