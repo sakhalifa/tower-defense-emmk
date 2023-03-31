@@ -10,7 +10,7 @@ type ActionReturnTypes = {
 type Phase = {
     [key in keyof ActionReturnTypes]: {
         funcName: key;
-        executePhase: (_: Array<ActionReturnTypes[key]>) => Array<Actor>;
+        executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[key]>) => Array<Actor>;
     }
 }[keyof ActionReturnTypes];
 
