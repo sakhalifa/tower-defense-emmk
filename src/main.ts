@@ -21,7 +21,7 @@ function computeNewWorld(w: World, phases: Array<Phase>): World {
 }
 
 function initActors(): Array<Actor> {
-	return [createActor((0, 0), )];
+	return [createActor({0, 0}, {move})];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
