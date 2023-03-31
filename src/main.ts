@@ -1,4 +1,3 @@
-import { Matrix, matrixToString } from "./geometry";
 import { World, isPositionInWorld } from "./world";
 import { Phase } from "./phase";
 import { Actor } from "./actor";
@@ -25,7 +24,7 @@ function validNewActor(world: World, actor: Actor): boolean {
 }
 
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): [World, Array<Actor>] {
-	let resolvedActors: Array<Actor> = proposals.reduce((acc: Array<Actor>, currentProposal: Actor, i: number) => {
+	const resolvedActors: Array<Actor> = proposals.reduce((acc: Array<Actor>, currentProposal: Actor, i: number) => {
 		if (validNewActor(world, currentProposal)) {
 			return acc.concat(currentProposal);
 		} else {
@@ -37,14 +36,15 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
 
 function main() {
 	let world: World = initWorld();
-	let phases: Array<Phase> = initPhases();
+	const phases: Array<Phase> = initPhases();
 	let actors: Array<Actor> = initActors();
-	let finished: boolean = false;
+	const finished: boolean = false;
 	while (!finished) {
 		[world, actors] = phases.reduce(([aWorld, someActors], aPhase) => {
 			const funcName: string = aPhase.funcName;
-			let proposals: Array<Actor>  = someActors.map((anActor) => anActor.actions[funcName](aWorld, anActor));
-			let [aNewWorld, newActors] = resolveProposals(aWorld, someActors, proposals);
+			const proposals  = someActors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor));
+			// @ts-expect-error ts bug
+			const [aNewWorld, newActors] = resolveProposals(aWorld, someActors, proposals);
 			return [aNewWorld, newActors];
 		}, [world, actors])
 	}
