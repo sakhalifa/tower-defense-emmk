@@ -1,6 +1,6 @@
-import { Vector2D, translatePoint, createVector } from "./../src/geometry";
+import type { Vector2D } from "./../src/geometry";
 
-import { vector2DToString } from "./../src/geometry";
+import { vector2DToString, translatePoint, createVector } from "./../src/geometry";
 
 
 test("Vector create test", () => {
