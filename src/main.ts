@@ -1,12 +1,11 @@
-import { World, isPositionInWorld, worldToString } from "./world";
+import { World, isPositionInWorld, worldToString, createWorld } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
-import { Actor } from "./actor";
+import { Actor, createActor } from "./actor";
 import { createPhase } from "./phase";
-import { translatePoint } from "./geometry";
+import { createVector, translatePoint } from "./geometry";
 
 function initWorld(): World {
-	let actors: Array<Actor> = initActors();
-	throw Error();
+	return createWorld(7, 7, initActors());
 }
 
 function initPhases(): Array<Phase> {
@@ -22,7 +21,7 @@ function computeNewWorld(w: World, phases: Array<Phase>): World {
 }
 
 function initActors(): Array<Actor> {
-	throw Error();
+	return [createActor(createVector(0, 0), {move: (w, a) => createVector(1, 0)})];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
