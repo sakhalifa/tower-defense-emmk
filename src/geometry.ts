@@ -14,6 +14,6 @@ function vector2DToString(v: Vector2D) {
 	return `(${v.x}, ${v.y})`
 }
 
-export { translatePoint, vector2DToString };
+export { translatePoint, vector2DToString, createVector };
 
 export type { Vector2D };
