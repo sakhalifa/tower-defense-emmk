@@ -2,6 +2,7 @@ import { World, isPositionInWorld, worldToString } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
 import { Actor } from "./actor";
 import { createPhase } from "./phase";
+import { translatePoint } from "./geometry";
 
 function initWorld(): World {
 	let actors: Array<Actor> = initActors();
@@ -9,7 +10,11 @@ function initWorld(): World {
 }
 
 function initPhases(): Array<Phase> {
-	throw Error();
+	return [{funcName: "move", executePhase: (oldActors, phaseResults ) => 
+		{
+			return phaseResults.map((v, i) => {return {...oldActors[i], pos: translatePoint(oldActors[i].pos, v.x, v.y)}});
+		}
+	}];
 }
 
 function computeNewWorld(w: World, phases: Array<Phase>): World {
