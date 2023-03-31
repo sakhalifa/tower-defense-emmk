@@ -16,12 +16,12 @@ function actorToString(a: Actor) {
 }
 
 function createActor(pos: Vector2D, actions: ActorActions) {
-	return;
+	return { pos: pos, actions: actions };
 }
 function moveActor(a: Actor, dx: number, dy: number) {
 
-	  
+
 }
 
-export { actorToString };
+export { actorToString, createActor };
 export type { Actor };
