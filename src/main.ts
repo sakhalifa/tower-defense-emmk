@@ -16,10 +16,6 @@ function initPhases(): Array<Phase> {
 	}];
 }
 
-function computeNewWorld(w: World, phases: Array<Phase>): World {
-	throw Error();
-}
-
 function initActors(): Array<Actor> {
 	return [createActor(createVector(0, 0), {move: (w, a) => createVector(1, 0)})];
 }
@@ -36,7 +32,7 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 			return acc.concat(world.actors[i]);
 		}
 	}, []);
-	return world;
+	return {...world, actors: resolvedActors};
 }
 
 function main() {
@@ -57,8 +53,7 @@ function main() {
 			return aNewWorld;
 		}, world);
 		console.log(worldToString(world));
-
-		finished = i++ > 5;
+		finished = i++ === 5;
 	}
 }
 
