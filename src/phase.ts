@@ -7,13 +7,13 @@ type ActionReturnTypes = {
 };
 
 type Phase = {
-    [key in keyof ActionReturnTypes]: {
-        funcName: key;
-        executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[key]>) => Array<Actor>;
+    [Key in keyof ActionReturnTypes]: {
+        funcName: Key;
+        executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[Key]>) => Array<Actor>;
     }
 }[keyof ActionReturnTypes];
 
-function createPhase(funcName: keyof ActionReturnTypes, executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[keyof ActionReturnTypes]>) => Array<Actor>) : Phase{
+function createPhase<Key extends keyof ActionReturnTypes>(funcName: Key, executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[Key]>) => Array<Actor>): Phase {
     return { funcName: funcName, executePhase: executePhase };
 }
 
