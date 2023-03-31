@@ -4,6 +4,7 @@ import { Actor } from "./actor";
 import { createPhase } from "./phase";
 
 function initWorld(): World {
+	let actors: Array<Actor> = initActors();
 	throw Error();
 }
 
@@ -37,17 +38,18 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
 function main() {
 	let world: World = initWorld();
 	const phases: Array<Phase> = initPhases();
-	let actors: Array<Actor> = initActors();
 	let finished: boolean = false;
 	while (!finished) {
 		[world, actors] = phases.reduce(([aWorld, someActors], aPhase) => {
 			const funcName: string = aPhase.funcName;
 			const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
-			// @ts-expect-error ts bug
-				= aPhase.executePhase(someActors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor)));
+			= aPhase.executePhase(
+					// @ts-expect-error ts bug
+					someActors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor))
+					);
 			const [aNewWorld, newActors] = resolveProposals(aWorld, someActors, proposals);
 			return [aNewWorld, newActors];
-		}, [world, actors])
+		}, [world, actors]);
 	}
 }
 
