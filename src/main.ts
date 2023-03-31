@@ -1,4 +1,4 @@
-import { World, isPositionInWorld } from "./world";
+import { World, isPositionInWorld, worldToString } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
 import { Actor } from "./actor";
 import { createPhase } from "./phase";
@@ -39,6 +39,7 @@ function main() {
 	const phases: Array<Phase> = initPhases();
 	let actors: Array<Actor> = initActors();
 	let finished: boolean = false;
+	let i = 0;
 	while (!finished) {
 		[world, actors] = phases.reduce(([aWorld, someActors], aPhase) => {
 			const funcName: string = aPhase.funcName;
@@ -48,6 +49,9 @@ function main() {
 			const [aNewWorld, newActors] = resolveProposals(aWorld, someActors, proposals);
 			return [aNewWorld, newActors];
 		}, [world, actors])
+		console.log(worldToString(world))
+
+		finished = i++ > 5
 	}
 }
 
