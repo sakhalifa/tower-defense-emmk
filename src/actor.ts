@@ -23,5 +23,5 @@ function moveActor(a: Actor, dx: number, dy: number) {
 	  
 }
 
-export { actorToString };
+export { actorToString, createActor };
 export type { Actor };
