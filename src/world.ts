@@ -26,8 +26,9 @@ function worldToString(w: World) {
 	return `{
 		width: ${w.width}
 		height: ${w.height}
-		actors: ${w.actors.map((actor) => actorToString(actor)).join(", ")}
-		}
+		actors: [
+			${w.actors.map((actor) => actorToString(actor)).join(", ")}
+		]
 	}`;
 }
 

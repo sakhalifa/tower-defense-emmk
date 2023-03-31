@@ -30,7 +30,7 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 			return acc.concat(world.actors[i]);
 		}
 	}, []);
-	return world;
+	return {...world, actors: resolvedActors};
 }
 
 function main() {
@@ -51,8 +51,7 @@ function main() {
 			return aNewWorld;
 		}, world);
 		console.log(worldToString(world));
-
-		finished = i++ > 5;
+		finished = i++ === 5;
 	}
 }
 
