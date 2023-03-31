@@ -1,12 +1,6 @@
 import type { Vector2D } from "./../src/geometry";
+
 import { vector2DToString, translatePoint, createVector } from "./../src/geometry";
-
-
-test("Vector create test", () => {
-    expect(createVector(0, 0)).toEqual({ x: 0, y: 0 });
-    expect(createVector(0, 0.1000)).toEqual({ x: 0, y: 0.1 });
-    expect(createVector(.4, -4102)).toEqual({ x: .4, y: -4102 });
-});
 
 
 test("Vector create test", () => {
