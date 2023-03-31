@@ -10,7 +10,7 @@
     "check": "npx tsc -p tsconfig.json --noEmit",
     "main": "node dist/main.js",
     "parcel": "npx parcel src/main.ts",
-    "test": "npx jest",
+    "test": "npx jest --coverage",
     "watchTest": "npx jest --watchAll",
     "watch": "npx tsc -p tsconfig.json --watch",
     "serve:reload": "npx eslint src && node --experimental-specifier-resolution=node dist/main.js",
