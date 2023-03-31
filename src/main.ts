@@ -25,7 +25,7 @@ function main() {
 		[world, actors] = phases.reduce(([aWorld, actors], aPhase) => {
 			funcName  = aPhase.funcName
 			proposals = actors.map((anActor) =>
-							anActor.funcName(anActor, aWorld));
+							anActor.moveActor(anActor, aWorld));
 			[aNewWorld, newActors] = resolveProposals(aWorld, actors, proposals);
 			return [aNewWorld, newActors];
 		},
