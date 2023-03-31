@@ -4,8 +4,9 @@ import { Vector2D } from "./geometry";
 import type { World } from "./world";
 
 type ActionReturnTypes = {
-    "move": Vector2D;
-    "attack": Actor[];
+    move: Vector2D;
+    attack: Actor[];
+    
 };
 
 type Phase = {

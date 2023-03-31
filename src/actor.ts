@@ -9,7 +9,6 @@ type ActorActions = {
 type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
-
 };
 
 function actorToString(a: Actor) {
