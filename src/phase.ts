@@ -6,6 +6,7 @@ import type { World } from "./world";
 type ActionReturnTypes = {
     move: Vector2D;
     attack: Actor[];
+    show: Actor;
 };
 
 type Phase = {
