@@ -5,13 +5,12 @@ import type { World } from "./world";
 
 type ActionReturnTypes = {
     move: Vector2D;
-    show: Actor;
 };
 
 type Phase = {
     [key in keyof ActionReturnTypes]: {
         funcName: key;
-        executePhase: (phaseResults: Array<ActionReturnTypes[key]>) => Array<Actor>;
+        executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[key]>) => Array<Actor>;
     }
 }[keyof ActionReturnTypes];
 

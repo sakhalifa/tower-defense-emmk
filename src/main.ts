@@ -2,6 +2,7 @@ import { World, isPositionInWorld, worldToString } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
 import { Actor } from "./actor";
 import { createPhase } from "./phase";
+import { translatePoint } from "./geometry";
 
 function initWorld(): World {
 	let actors: Array<Actor> = initActors();
@@ -9,7 +10,11 @@ function initWorld(): World {
 }
 
 function initPhases(): Array<Phase> {
-	throw Error();
+	return [{
+		funcName: "move", executePhase: (oldActors, phaseResults) => {
+			return phaseResults.map((v, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, v) }; });
+		}
+	}];
 }
 
 function computeNewWorld(w: World, phases: Array<Phase>): World {
@@ -17,7 +22,7 @@ function computeNewWorld(w: World, phases: Array<Phase>): World {
 }
 
 function initActors(): Array<Actor> {
-	throw Error()
+	throw Error();
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
@@ -44,16 +49,16 @@ function main() {
 		world = phases.reduce((aWorld, aPhase) => {
 			const funcName: string = aPhase.funcName;
 			const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
-			= aPhase.executePhase(
+				= aPhase.executePhase(aWorld.actors,
 					// @ts-expect-error ts bug
 					aWorld.actors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor))
-					);
+				);
 			const aNewWorld = resolveProposals(aWorld, proposals);
 			return aNewWorld;
 		}, world);
-		console.log(worldToString(world))
+		console.log(worldToString(world));
 
-		finished = i++ > 5
+		finished = i++ > 5;
 	}
 }
 
