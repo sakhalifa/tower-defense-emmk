@@ -50,7 +50,8 @@ function main() {
 			const funcName: string = aPhase.funcName;
 			const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
 				= aPhase.executePhase(aWorld.actors,
-					// @ts-expect-error ts bug
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					aWorld.actors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor))
 				);
 			const aNewWorld = resolveProposals(aWorld, proposals);
