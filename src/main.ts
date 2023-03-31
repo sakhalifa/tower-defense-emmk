@@ -9,15 +9,9 @@ function initWorld(): World {
 }
 
 function initPhases(): Array<Phase> {
-	return [{
-		funcName: "move", executePhase: (oldActors, phaseResults) => {
-			return phaseResults.map((v, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, v) }; });
-		}
-	}];
-}
-
-function computeNewWorld(w: World, phases: Array<Phase>): World {
-	throw Error();
+	return [createPhase("move", (oldActors, phaseResults) => {
+		return phaseResults.map((v, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, v) }; });
+	})];
 }
 
 function initActors(): Array<Actor> {
