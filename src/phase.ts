@@ -6,13 +6,12 @@ import type { World } from "./world";
 type ActionReturnTypes = {
     move: Vector2D;
     attack: Actor[];
-    
 };
 
 type Phase = {
-    [K in keyof ActionReturnTypes]: {
-        funcName: K;
-        executePhase: (_: Array<ActionReturnTypes[K]>) => Array<Actor>;
+    [key in keyof ActionReturnTypes]: {
+        funcName: key;
+        executePhase: (_: Array<ActionReturnTypes[key]>) => Array<Actor>;
     }
 }[keyof ActionReturnTypes];
 

@@ -3,7 +3,7 @@ import { ActionReturnTypes, Phase } from "./phase";
 import type { World } from "./world";
 
 type ActorActions = {
-	[Property in keyof ActionReturnTypes]: (world: World, actor: Actor) => ActionReturnTypes[Property];
+	[key in keyof ActionReturnTypes]: (world: World, actor: Actor) => ActionReturnTypes[key];
 };
 
 type Actor = {
