@@ -20,6 +20,7 @@ function createActor(pos: Vector2D, actions: ActorActions) {
 }
 function moveActor(a: Actor, dx: number, dy: number) {
 
+	  
 }
 
 export { actorToString };

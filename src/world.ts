@@ -23,13 +23,12 @@ function isPositionInWorld(world: World, position: Vector2D): boolean {
 }
 
 function worldToString(w: World) {
-	// TODO
 	return `{
 		width: ${w.width}
 		height: ${w.height}
-		actors:
+		actors: ${w.actors.map((actor) => actorToString(actor)).join(", ")}
 		}
-	}`; //${matrixToString(w.actors, actorToString)
+	}`;
 }
 
 export {

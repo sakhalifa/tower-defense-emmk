@@ -1,4 +1,4 @@
-import { World, isPositionInWorld } from "./world";
+import { World, isPositionInWorld, worldToString } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
 import { Actor } from "./actor";
 import { createPhase } from "./phase";
@@ -24,32 +24,36 @@ function validNewActor(world: World, actor: Actor): boolean {
 	return isPositionInWorld(world, actor.pos);
 }
 
-function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): [World, Array<Actor>] {
+function resolveProposals(world: World, proposals: Array<Actor>): World {
 	const resolvedActors: Array<Actor> = proposals.reduce((acc: Array<Actor>, currentProposal: Actor, i: number) => {
 		if (validNewActor(world, currentProposal)) {
 			return acc.concat(currentProposal);
 		} else {
-			return acc.concat(actors[i]);
+			return acc.concat(world.actors[i]);
 		}
 	}, []);
-	return [world, resolvedActors];
+	return world;
 }
 
 function main() {
 	let world: World = initWorld();
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
+	let i = 0;
 	while (!finished) {
-		[world, actors] = phases.reduce(([aWorld, someActors], aPhase) => {
+		world = phases.reduce((aWorld, aPhase) => {
 			const funcName: string = aPhase.funcName;
 			const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
 			= aPhase.executePhase(
 					// @ts-expect-error ts bug
-					someActors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor))
+					aWorld.actors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor))
 					);
-			const [aNewWorld, newActors] = resolveProposals(aWorld, someActors, proposals);
-			return [aNewWorld, newActors];
-		}, [world, actors]);
+			const aNewWorld = resolveProposals(aWorld, proposals);
+			return aNewWorld;
+		}, world);
+		console.log(worldToString(world))
+
+		finished = i++ > 5
 	}
 }
 
