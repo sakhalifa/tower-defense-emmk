@@ -30,7 +30,7 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 			return acc.concat(world.actors[i]);
 		}
 	}, []);
-	return { height: 10, width: 10, actors: resolvedActors };
+	return { height: world.height, width: world.width, actors: resolvedActors };
 }
 
 function main() {
