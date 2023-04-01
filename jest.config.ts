@@ -1,18 +1,10 @@
-import type { JestConfigWithTsJest } from 'ts-jest'
 
-const jestConfig: JestConfigWithTsJest = {
-    preset: 'ts-jest/presets/default-esm', // or other ESM presets
+const jestConfig = {
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
     },
     transform: {
-        '^.+\\.tsx?$': [
-            'ts-jest',
-            {
-                useESM: true,
-                diagnostics: { ignoreCodes: [ 'TS151001' ] }
-            },
-        ],
+        '^.+\\.tsx?$': "@swc/jest",
     },
     roots: [ "src", "tst" ]
 }
