@@ -13,6 +13,7 @@
         "outDir": "dist",
         "strictNullChecks": true,
         "moduleResolution": "node",
+        "noEmit": true,
         "types": [
             "node",
             "jest"
