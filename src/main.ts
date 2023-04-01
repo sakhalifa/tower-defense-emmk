@@ -15,7 +15,7 @@ function initPhases(): Array<Phase> {
 }
 
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), {move: (w, a) => createVector(1, 0)})];
+	return [createActor(createVector(0, 0), { move: (w, a) => createVector(1, 0) })];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
@@ -30,7 +30,7 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 			return acc.concat(world.actors[i]);
 		}
 	}, []);
-	return {...world, actors: resolvedActors};
+	return { height: 10, width: 10, actors: resolvedActors };
 }
 
 function main() {
