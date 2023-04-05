@@ -26,5 +26,5 @@ test("Vector to string test", () => {
         .toEqual("(-456, 1220100)");
     expect(vector2DToString({ x: 0.45673, y: 1274849.230 }))
         .toEqual("(0.45673, 1274849.23)");
-})
+});
 

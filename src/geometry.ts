@@ -10,7 +10,7 @@ function translatePoint(origin: Vector2D, translation: Vector2D): Vector2D {
 }
 
 function vector2DToString(v: Vector2D) {
-	return `(${v.x}, ${v.y})`
+	return `(${v.x}, ${v.y})`;
 }
 
 export { translatePoint, vector2DToString, createVector };
