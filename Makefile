@@ -4,6 +4,7 @@ build:
 	npm run build
 
 run:
+	cat ./jest.config.ts
 	npm run main
 
 test:
