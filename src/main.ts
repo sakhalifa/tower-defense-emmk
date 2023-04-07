@@ -9,13 +9,20 @@ function initWorld(): World {
 }
 
 function initPhases(): Array<Phase> {
-	return [createPhase("move", (oldActors, phaseResults) => {
-		return phaseResults.map((v, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, v) }; });
-	})];
+	return [
+		createPhase("move", (oldActors, phaseResults) => {
+			return phaseResults.map((v, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, v) }; });
+		}),
+		createPhase("heal", (oldActors, phaseResults) => {
+			return oldActors.map((a, i) => {
+				return phaseResults.reduce((prev, v) => (i === v.actorId) ? { ...a, hp: ((a.hp ?? 0) + v.amount) } : a, a);
+			});
+		})];
 }
 
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: (w, a) => createVector(1, 0) })];
+	return [createActor(createVector(0, 0), { move: (w, a) => createVector(1, 0), heal: (w, a) => { return { actorId: 0, amount: 0 }; } }),
+	createActor(createVector(0, 1), { move: (w, a) => createVector(1, 0), heal: (w, a) => { return { actorId: 0, amount: 1 }; } })];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
