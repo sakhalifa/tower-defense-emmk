@@ -20,8 +20,8 @@ function initPhases(): Array<Phase> {
 				//	faith_point: (current_actor.faith_point === undefined ? heals_vector.amount : current_actor.faith_point + heals_vector.amount[i]) } : current_actor, current_actor);
 				return {...current_actor, faith_point: current_actor.faith_point === undefined ? undefined : 
 					phaseResults.reduce((faith_point_acc, heals_vector) => 
-					(heals_vector.actorId.includes(i)) ? 
-					faith_point_acc + heals_vector.amount[heals_vector.actorId.indexOf(i)] : faith_point_acc, current_actor.faith_point)}; // includes + indexOf is bad for optimisation
+					(heals_vector.actorIds.includes(i)) ? 
+					faith_point_acc + heals_vector.amount[heals_vector.actorIds.indexOf(i)] : faith_point_acc, current_actor.faith_point)}; // includes + indexOf is bad for optimisation
 			});
 		})];
 }
@@ -32,9 +32,9 @@ function move_right(w: World, a: Actor) {
 
 function heal(w: World, a: Actor) {
 	if (a.tags?.includes("healer")) {
-		return { actorId: [0], amount: [1] };
+		return { actorIds: [0], amount: [1] };
 	}
-	return { actorId: [0], amount: [0] };
+	return { actorIds: [0], amount: [0] };
 }
 
 function initActors(): Array<Actor> {

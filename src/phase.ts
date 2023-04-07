@@ -3,7 +3,7 @@ import { Vector2D } from "./geometry";
 
 type ActionReturnTypes = {
     temperatureRise: number;
-    heal: {actorId: number[], amount: number[]};
+    heal: {actorIds: number[], amount: number[]};
     convertEnemies: {actorIds: Array<number>, amount: Array<number>};
     enemyFlee: boolean;
     move: Vector2D;
