@@ -1,6 +1,9 @@
 body {
     margin: 0;
     background-color: darkgray;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 header {
@@ -20,4 +23,41 @@ header h1 {
     background-color: #e3bb80; 
     text-shadow: 2px 2px 2px white;
     margin-top: 50px;
+}
+
+.main-content {
+    width: 100vw;
+    height: 80vh;
+    margin-top: 5vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.termometer {
+    width: 20vw;
+    height: 70vh;
+    border: 1px solid black;
+}
+
+.wood {
+    background-color: rgb(153, 97, 23);
+    width: 10vw;
+    height: 50vh;
+}
+
+.grid {
+    width: 50vw;
+    height: 70vh;
+    border: 1px solid black;
+}
+
+.menu {
+    width: 20vw;
+    height: 70vh;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
