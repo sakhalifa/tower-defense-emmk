@@ -20,7 +20,7 @@ type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
 	tags?: string[];
-	kind?: Kind;
+	kind: Kind;
 	faith_point?: number;
 	externalProps: any;
 };
