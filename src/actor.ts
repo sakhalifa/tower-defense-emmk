@@ -1,14 +1,18 @@
 import { Vector2D, vector2DToString } from "./geometry";
-import { ActionReturnTypes, Phase } from "./phase";
+import { ActionReturnTypes } from "./phase";
 import type { World } from "./world";
 
 type ActorActions = {
 	[Key in keyof ActionReturnTypes]: (world: World, actor: Actor) => ActionReturnTypes[Key];
 };
 
+//type Kind = "ignorant" | "good_guy" | "ground";	wip
+
 type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
+	//tags : string[];	wip
+	//kind : Kind; 		wip
 };
 
 function actorToString(a: Actor) {

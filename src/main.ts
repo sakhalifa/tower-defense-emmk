@@ -1,5 +1,5 @@
 import { World, isPositionInWorld, worldToString, createWorld } from "./world";
-import { ActionReturnTypes, Phase } from "./phase";
+import { Phase } from "./phase";
 import { Actor, createActor } from "./actor";
 import { createPhase } from "./phase";
 import { createVector, translatePoint } from "./geometry";
@@ -27,7 +27,7 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 		if (validNewActor(world, currentProposal)) {
 			return acc.concat(currentProposal);
 		} else {
-			return acc.concat(world.actors[i]);
+			return acc.concat(world.actors[i]); // doesn't check old position new state
 		}
 	}, []);
 	return { height: world.height, width: world.width, actors: resolvedActors };
@@ -45,7 +45,7 @@ function main() {
 				= aPhase.executePhase(aWorld.actors,
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					aWorld.actors.map((anActor) => anActor.actions[aPhase.funcName](aWorld, anActor))
+					aWorld.actors.map((anActor) => anActor.actions[funcName](aWorld, anActor))
 				);
 			const aNewWorld = resolveProposals(aWorld, proposals);
 			return aNewWorld;
