@@ -16,8 +16,6 @@ function initPhases(): Array<Phase> {
 		}),
 		createPhase("heal", (oldActors, phaseResults) => {
 			return oldActors.map((current_actor, i) => {
-				//return phaseResults.reduce((current_actor_acc, heals_vector) => (heals_vector.actorId.includes(i)) ? { ...current_actor_acc, 
-				//	faith_point: (current_actor.faith_point === undefined ? heals_vector.amount : current_actor.faith_point + heals_vector.amount[i]) } : current_actor, current_actor);
 				return {...current_actor, faith_point: current_actor.faith_point === undefined ? undefined : 
 					phaseResults.reduce((faith_point_acc, heals_vector) => 
 					(heals_vector.actorIds.includes(i)) ? 
@@ -31,15 +29,15 @@ function move_right(w: World, a: Actor) {
 }
 
 function heal(w: World, a: Actor) {
-	if (a.tags?.includes("healer")) {
+	if (a.kind.includes("healer")) {
 		return { actorIds: [0], amount: [1] };
 	}
-	return { actorIds: [0], amount: [0] };
+	return { actorIds: [], amount: [] };
 }
 
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, 0, "ignorant"),
-			createActor(createVector(0, 1), { move: move_right, heal: heal }, 0, "ignorant", ["healer"])];
+	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, 0, "ignorant", undefined, 0),
+			createActor(createVector(0, 1), { move: move_right, heal: heal }, 0, "healer", undefined, 0)];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {

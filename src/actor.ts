@@ -30,7 +30,7 @@ function actorToString(a: Actor): string {
 }
 
 function createActor(pos: Vector2D, actions: ActorActions, externalProps: any, kind: Kind, tags?: string[], faith_point?: number): Actor {
-	return { pos: pos, actions: actions, tags: tags, kind: kind, faith_point: faith_point , externalProps: externalProps};
+	return { pos: pos, actions: actions, tags: tags, kind: kind, faith_point: faith_point, externalProps: externalProps };
 }
 
 export { actorToString, createActor, defaultActions };
