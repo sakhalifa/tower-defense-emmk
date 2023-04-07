@@ -9,14 +9,15 @@ type ActorActions = {
 type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
+	hp?: number;
 };
 
 function actorToString(a: Actor) {
-	return `{pos: ${vector2DToString(a.pos)}}`;
+	return `{pos: ${vector2DToString(a.pos)}${a.hp ? ', hp:' + a.hp : ''}}`;
 }
 
 function createActor(pos: Vector2D, actions: ActorActions) {
-	return {pos: pos, actions: actions};
+	return { pos: pos, actions: actions };
 }
 
 export { actorToString, createActor };
