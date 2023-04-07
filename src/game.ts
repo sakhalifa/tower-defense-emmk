@@ -33,8 +33,8 @@ function heal(w: World, a: Actor) {
 }
 
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, undefined, undefined, undefined),
-			createActor(createVector(0, 1), { move: move_right, heal: heal }, ["healer"], undefined, undefined)];
+	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, undefined, undefined, 0),
+			createActor(createVector(0, 1), { move: move_right, heal: heal }, ["healer"], undefined, 0)];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {

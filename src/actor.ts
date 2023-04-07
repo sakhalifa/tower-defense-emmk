@@ -17,7 +17,7 @@ type Actor = {
 };
 
 function actorToString(a: Actor) {
-	return `{pos: ${vector2DToString(a.pos)}${a.faith_point ? ', fp:' + a.faith_point : ''}}`;
+	return `{pos: ${vector2DToString(a.pos)}${a.faith_point !== undefined ? ', fp:' + a.faith_point : ''}}`;
 }
 
 function createActor(pos: Vector2D, actions: ActorActions, tags? : string[], kind?: Kind, faith_point?: number) {
