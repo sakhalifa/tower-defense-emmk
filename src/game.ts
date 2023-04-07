@@ -52,27 +52,31 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 	return { height: world.height, width: world.width, actors: resolvedActors };
 }
 
+function nextTurn(phases: Array<Phase>, world: World){
+	return phases.reduce((aWorld, aPhase) => {
+		const funcName: string = aPhase.funcName;
+		const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
+			= aPhase.executePhase(aWorld.actors,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				aWorld.actors.map((anActor) => anActor.actions[funcName](aWorld, anActor))
+			);
+		const aNewWorld = resolveProposals(aWorld, proposals);
+		return aNewWorld;
+	}, world);
+}
+
 function playGame(display: (world: World) => void) {
 	let world: World = initWorld();
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
 	let i = 0;
 	while (!finished) {
-		world = phases.reduce((aWorld, aPhase) => {
-			const funcName: string = aPhase.funcName;
-			const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
-				= aPhase.executePhase(aWorld.actors,
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					aWorld.actors.map((anActor) => anActor.actions[funcName](aWorld, anActor))
-				);
-			const aNewWorld = resolveProposals(aWorld, proposals);
-			return aNewWorld;
-		}, world);
+		world = nextTurn(phases, world);
 		display(world);
 		finished = i++ === 5;
 	}
 }
 
 
-export { playGame };
+export { playGame, initWorld, initPhases, nextTurn };
