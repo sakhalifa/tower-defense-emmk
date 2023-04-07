@@ -22,6 +22,7 @@ type Actor = {
 	tags?: string[];
 	kind?: Kind;
 	faith_point?: number;
+	externalProps: any;
 };
 
 function actorToString(a: Actor) {
