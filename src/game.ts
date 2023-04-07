@@ -12,12 +12,16 @@ function initWorld(): World {
 function initPhases(): Array<Phase> {
 	return [
 		createPhase("move", (oldActors, phaseResults) => {
-			return phaseResults.map((v, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, v) }; });
+			return phaseResults.map((move_vector, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, move_vector) }; });
 		}),
 		createPhase("heal", (oldActors, phaseResults) => {
-			return oldActors.map((a, i) => {
-				return phaseResults.reduce((prev, v) => (v.actorId.includes(i)) ? { ...a, 
-					faith_point: (a.faith_point === undefined ? v.amount : a.faith_point + v.amount[i]) } : a, a);
+			return oldActors.map((current_actor, i) => {
+				//return phaseResults.reduce((current_actor_acc, heals_vector) => (heals_vector.actorId.includes(i)) ? { ...current_actor_acc, 
+				//	faith_point: (current_actor.faith_point === undefined ? heals_vector.amount : current_actor.faith_point + heals_vector.amount[i]) } : current_actor, current_actor);
+				return {...current_actor, faith_point: current_actor.faith_point === undefined ? undefined : 
+					phaseResults.reduce((faith_point_acc, heals_vector) => 
+					(heals_vector.actorId.includes(i)) ? 
+					faith_point_acc + heals_vector.amount[heals_vector.actorId.indexOf(i)] : faith_point_acc, current_actor.faith_point)}; // includes + indexOf is bad for optimisation
 			});
 		})];
 }
@@ -34,8 +38,8 @@ function heal(w: World, a: Actor) {
 }
 
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, 0, undefined, undefined, undefined),
-			createActor(createVector(0, 1), { move: move_right, heal: heal }, 0, ["healer"], undefined, undefined)];
+	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, 0, "ignorant"),
+			createActor(createVector(0, 1), { move: move_right, heal: heal }, 0, "ignorant", ["healer"])];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
