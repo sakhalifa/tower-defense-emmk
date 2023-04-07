@@ -33,4 +33,4 @@ function createActor(pos: Vector2D, actions: ActorActions, tags?: string[], kind
 }
 
 export { actorToString, createActor, defaultActions };
-export type { Actor };
+export type { Actor, Kind };
