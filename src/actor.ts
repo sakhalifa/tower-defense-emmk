@@ -20,16 +20,17 @@ type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
 	tags?: string[];
-	kind?: Kind;
+	kind: Kind;
 	faith_point?: number;
+	externalProps: any;
 };
 
 function actorToString(a: Actor) {
-	return `{pos: ${vector2DToString(a.pos)}${a.faith_point ? ', fp:' + a.faith_point : ''}}`;
+	return `{pos: ${vector2DToString(a.pos)}${a.faith_point !== undefined ? ', fp:' + a.faith_point : ''}}`;
 }
 
-function createActor(pos: Vector2D, actions: ActorActions, tags?: string[], kind?: Kind, faith_point?: number) {
-	return { pos: pos, actions: actions, tags: tags, kind: kind, faith_point: faith_point };
+function createActor(pos: Vector2D, actions: ActorActions, externalProps: any, tags?: string[], kind?: Kind, faith_point?: number) {
+	return { pos: pos, actions: actions, tags: tags, kind: kind, faith_point: faith_point , externalProps: externalProps};
 }
 
 export { actorToString, createActor, defaultActions };

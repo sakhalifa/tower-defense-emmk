@@ -16,7 +16,8 @@ function initPhases(): Array<Phase> {
 		}),
 		createPhase("heal", (oldActors, phaseResults) => {
 			return oldActors.map((a, i) => {
-				return phaseResults.reduce((prev, v) => (i === v.actorId) ? { ...a, faith_point: ((a.faith_point ?? 0) + v.amount) } : a, a);
+				return phaseResults.reduce((prev, v) => (v.actorId.includes(i)) ? { ...a, 
+					faith_point: (a.faith_point === undefined ? v.amount : a.faith_point + v.amount[i]) } : a, a);
 			});
 		})];
 }
@@ -27,14 +28,14 @@ function move_right(w: World, a: Actor) {
 
 function heal(w: World, a: Actor) {
 	if (a.tags?.includes("healer")) {
-		return { actorId: 0, amount: 1 };
+		return { actorId: [0], amount: [1] };
 	}
-	return { actorId: 0, amount: 0 };
+	return { actorId: [0], amount: [0] };
 }
 
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, undefined, undefined, undefined),
-			createActor(createVector(0, 1), { move: move_right, heal: heal }, ["healer"], undefined, undefined)];
+	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, 0, undefined, undefined, undefined),
+			createActor(createVector(0, 1), { move: move_right, heal: heal }, 0, ["healer"], undefined, undefined)];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
