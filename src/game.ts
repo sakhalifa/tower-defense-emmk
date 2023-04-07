@@ -16,7 +16,7 @@ function initPhases(): Array<Phase> {
 		}),
 		createPhase("heal", (oldActors, phaseResults) => {
 			return oldActors.map((a, i) => {
-				return phaseResults.reduce((prev, v) => (i === v.actorId) ? { ...a, hp: ((a.hp ?? 0) + v.amount) } : a, a);
+				return phaseResults.reduce((prev, v) => (i === v.actorId) ? { ...a, faith_point: ((a.faith_point ?? 0) + v.amount) } : a, a);
 			});
 		})];
 }
