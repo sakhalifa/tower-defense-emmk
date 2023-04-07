@@ -2,8 +2,11 @@ import type { Actor } from "./actor";
 import { Vector2D } from "./geometry";
 
 type ActionReturnTypes = {
+    temperatureRise: number;
+    heal: {actorId: number[], amount: number[]};
+    convertEnemies: {actorIds: Array<number>, amount: Array<number>};
+    enemyFlee: boolean;
     move: Vector2D;
-    heal: {actorId: number, amount: number};
 };
 
 type Phase = {
