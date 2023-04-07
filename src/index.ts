@@ -33,11 +33,12 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
 
 async function displayWorldToCanvas(world: World){
     // Update canvas
-    const ctx = canvas.getContext("2d");
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const ctx = canvas.getContext("2d")!;
+    ctx.imageSmoothingEnabled = true;
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
-    console.log(world.actors);
     world.actors.forEach((a) => 
         ctx?.drawImage(getActorSprite("ignorant"), 
             a.pos.x * canvasScale.x, a.pos.y * canvasScale.y, canvasScale.x, canvasScale.y));
