@@ -6,9 +6,10 @@ type ActorActions = {
 	[Key in keyof ActionReturnTypes]?: (world: World, actor: Actor) => ActionReturnTypes[Key];
 };
 
-type Kind = "ignorant" | "good_guy" | "ground" | "healer";
+type Kind = "ignorant" | "good_guy" | "waypoint" | "healer" | "boss";
 
 const defaultActions: Required<ActorActions> = {
+	spawn: (w, a) => undefined,
 	temperatureRise: (w, a) => 0,
 	heal: (w, a) => { return { actorIds: [], amount: [] }; },
 	convertEnemies: (w, a) => { return { actorIds: [], amount: [] }; },
