@@ -11,8 +11,8 @@ type Kind = "ignorant" | "good_guy" | "ground";
 type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
-	tags : string[];
-	kind : Kind;
+	tags? : string[];
+	kind? : Kind;
 	faith_point?: number;
 };
 
