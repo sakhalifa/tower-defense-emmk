@@ -11,18 +11,8 @@ function initWorld(): World {
 
 function initPhases(): Array<Phase> {
 	return [
-		createPhase("move", (oldActors, phaseResults) => {
-			return phaseResults.map((v, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, v) }; });
-		}),
-		createPhase("heal", (oldActors, phaseResults) => {
-			return oldActors.map((a, i) => {
-				return phaseResults.reduce((prev, v) => (i === v.actorId) ? { ...a, faith_point: ((a.faith_point ?? 0) + v.amount) } : a, a);
-			});
-		})];
-}
 
-function move_right(w: World, a: Actor) {
-	return createVector(1, 0);
+	];
 }
 
 function heal(w: World, a: Actor) {
@@ -34,7 +24,7 @@ function heal(w: World, a: Actor) {
 
 function initActors(): Array<Actor> {
 	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, undefined, undefined, undefined),
-			createActor(createVector(0, 1), { move: move_right, heal: heal }, ["healer"], undefined, undefined)];
+	createActor(createVector(0, 1), { move: move_right, heal: heal }, ["healer"], undefined, undefined)];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
@@ -52,7 +42,7 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 	return { height: world.height, width: world.width, actors: resolvedActors };
 }
 
-function nextTurn(phases: Array<Phase>, world: World){
+function nextTurn(phases: Array<Phase>, world: World) {
 	return phases.reduce((aWorld, aPhase) => {
 		const funcName: string = aPhase.funcName;
 		const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>

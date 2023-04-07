@@ -34,5 +34,13 @@ function createActor(pos: Vector2D, actions: ActorActions, tags?: string[], kind
 	return { pos: pos, actions: actions, tags: tags, kind: kind, faith_point: faith_point };
 }
 
-export { actorToString, createActor, defaultActions };
+function createIgnorant(): Actor{
+	throw Error();
+}
+
+function createHealer(): Actor{
+	throw Error();
+}
+
+export { actorToString, createActor, createHealer, createIgnorant, defaultActions };
 export type { Actor };

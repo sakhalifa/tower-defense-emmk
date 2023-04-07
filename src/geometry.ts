@@ -13,6 +13,10 @@ function vector2DToString(v: Vector2D) {
 	return `(${v.x}, ${v.y})`;
 }
 
-export { translatePoint, vector2DToString, createVector };
+function distance(a: Vector2D, b: Vector2D) {
+	return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
+export { translatePoint, vector2DToString, createVector, distance };
 
 export type { Vector2D };
