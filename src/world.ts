@@ -8,13 +8,15 @@ type World = {
 	actors: Array<Actor>;
 	width: number;
 	height: number;
+	turnsElapsed: number;
 };
 
 function createWorld(width: number, height: number, actors: Array<Actor>) {
 	return {
 		actors: actors,
 		width: width,
-		height: height
+		height: height,
+		turnsElapsed: 0
 	};
 }
 
