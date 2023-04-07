@@ -6,7 +6,7 @@ type ActorActions = {
 	[Key in keyof ActionReturnTypes]: (world: World, actor: Actor) => ActionReturnTypes[Key];
 };
 
-type Kind = "ignorant" | "good_guy" | "ground";
+type Kind = "ignorant" | "good_guy" | "ground" | "healer";
 
 type Actor = {
 	pos: Vector2D;
@@ -17,11 +17,11 @@ type Actor = {
 };
 
 function actorToString(a: Actor) {
-	return `{pos: ${vector2DToString(a.pos)}${a.faith_point ? ', hp:' + a.faith_point : ''}}`;
+	return `{pos: ${vector2DToString(a.pos)}${a.faith_point ? ', fp:' + a.faith_point : ''}}`;
 }
 
-function createActor(pos: Vector2D, actions: ActorActions) {
-	return { pos: pos, actions: actions };
+function createActor(pos: Vector2D, actions: ActorActions, tags? : string[], kind?: Kind, faith_point?: number) {
+	return { pos: pos, actions: actions, tags: tags, kind: kind, faith_point: faith_point };
 }
 
 export { actorToString, createActor };

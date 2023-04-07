@@ -21,9 +21,20 @@ function initPhases(): Array<Phase> {
 		})];
 }
 
+function move_right(w: World, a: Actor) {
+	return createVector(1, 0);
+}
+
+function heal(w: World, a: Actor) {
+	if (a.tags?.includes("healer")) {
+		return { actorId: 0, amount: 1 };
+	}
+	return { actorId: 0, amount: 0 };
+}
+
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: (w, a) => createVector(1, 0), heal: (w, a) => { return { actorId: 0, amount: 0 }; } }),
-	createActor(createVector(0, 1), { move: (w, a) => createVector(1, 0), heal: (w, a) => { return { actorId: 0, amount: 1 }; } })];
+	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, undefined, undefined, undefined),
+			createActor(createVector(0, 1), { move: move_right, heal: heal }, ["healer"], undefined, undefined)];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
