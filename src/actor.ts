@@ -19,17 +19,17 @@ const defaultActions: Required<ActorActions> = {
 type Actor = {
 	pos: Vector2D;
 	actions: ActorActions;
-	tags?: string[];
 	kind: Kind;
+	externalProps?: any;
+	tags?: string[];
 	faithPoints?: number;
-	externalProps: any;
 };
 
 function actorToString(a: Actor): string {
 	return `{pos: ${vector2DToString(a.pos)}${a.faithPoints !== undefined ? ', fp:' + a.faithPoints : ''}}`;
 }
 
-function createActor(pos: Vector2D, actions: ActorActions, externalProps: any, kind: Kind, tags?: string[], faithPoints?: number): Actor {
+function createActor(pos: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], faithPoints?: number): Actor {
 	return { pos: pos, actions: actions, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
 }
 
