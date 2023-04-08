@@ -61,8 +61,7 @@ function nextTurn(phases: Array<Phase>, world: World) {
 				// @ts-ignore
 				aWorld.actors.map((anActor) => anActor.actions[funcName](aWorld, anActor))
 			);
-		const aNewWorld = resolveProposals(aWorld, proposals);
-		return aNewWorld;
+		return resolveProposals(aWorld, proposals);
 	}, world);
 }
 
