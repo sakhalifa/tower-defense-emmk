@@ -33,18 +33,22 @@ function createActor(pos: Vector2D, actions: ActorActions, kind: Kind, externalP
 	return { pos: pos, actions: actions, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
 }
 
-function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"]) {
-	return { ...actor, pos: translatePoint(actor.pos, movementVector) };
+function translateActor(actor: Actor, movementVector?: ActionReturnTypes["move"]) {
+	return { ...actor, pos: movementVector === undefined ? actor.pos : translatePoint(actor.pos, movementVector) };
 }
 
-function updateFaithPoints(actor: Actor, actorIndex: number, healVectors: Array<ActionReturnTypes["heal"]>) {
+function updateFaithPoints(actor: Actor, actorIndex: number, healVectors?: Array<ActionReturnTypes["heal"]>) {
 	return {
 		...actor,
 		faithPoints: actor.faithPoints === undefined ? undefined :
 			(
-				healVectors.reduce((faithPointsAcc, healsVector) =>
-					faithPointsAcc + (healsVector.amount?.[healsVector.actorIndices.indexOf(actorIndex)] ?? 0),
-					actor.faithPoints)
+				healVectors === undefined ? actor.faithPoints :
+					(
+						healVectors.reduce((faithPointsAcc, healsVector) =>
+							faithPointsAcc + (healsVector.amount?.[healsVector.actorIndices.indexOf(actorIndex)] ?? 0),
+							actor.faithPoints)
+					)
+
 			)
 	};
 }

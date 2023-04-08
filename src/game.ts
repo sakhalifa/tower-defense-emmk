@@ -34,10 +34,10 @@ function heal(w: World, a: Actor) {
 // not pure
 function initWayPoints(world: World): Array<Actor> {
 	return [
-		createActor(createVector(0, 0), { }, "entry", {wayPointNumber : 0}),
-		createActor(createVector(world.width / 3, world.height / 3), { }, "ground", {wayPointNumber : 1}),
-		createActor(createVector(2 * world.width / 3, 2 * world.height / 3), { }, "ground", {wayPointNumber : 2}),
-		createActor(createVector(world.width, world.height), { }, "exit", {wayPointNumber : 3})
+		createActor(createVector(0, 0), {}, "entry", { wayPointNumber: 0 }),
+		createActor(createVector(world.width / 3, world.height / 3), {}, "ground", { wayPointNumber: 1 }),
+		createActor(createVector(2 * world.width / 3, 2 * world.height / 3), {}, "ground", { wayPointNumber: 2 }),
+		createActor(createVector(world.width, world.height), {}, "exit", { wayPointNumber: 3 })
 	];
 }
 //not pure
@@ -49,7 +49,7 @@ function initOtherActors(world: World, entries: Array<Actor>): Array<Actor> {
 }
 
 function findEntries(actors: Array<Actor>): Array<Actor> {
-	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === "entry" ?  entries.concat(currentActor) : entries, []);
+	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === "entry" ? entries.concat(currentActor) : entries, []);
 }
 //not pure
 function initActors(world: World): Array<Actor> {
@@ -75,10 +75,10 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 	return phases.reduce((someActors, aPhase) => {
 		const funcName: string = aPhase.funcName;
 		const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
-			= aPhase.executePhase(actors,
+			= aPhase.executePhase(someActors,
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				actors.map((anActor) => anActor.actions[funcName](someActors, anActor))
+				someActors.map((anActor) => anActor.actions?.[funcName](someActors, anActor))
 			);
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
