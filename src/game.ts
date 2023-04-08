@@ -1,9 +1,9 @@
 import type { World } from "./world";
 import { isPositionInWorld, createWorld } from "./world";
 import { Phase } from "./phase";
-import { Actor, createActor } from "./actor";
+import { Actor, createActor, translateActor, updateFaithPoints } from "./actor";
 import { createPhase } from "./phase";
-import { createVector, translatePoint } from "./geometry";
+import { createVector } from "./geometry";
 
 function initWorld(): World {
 	return createWorld(7, 7, initActors());
@@ -11,33 +11,30 @@ function initWorld(): World {
 
 function initPhases(): Array<Phase> {
 	return [
-		createPhase("move", (oldActors, phaseResults) => {
-			return phaseResults.map((move_vector, i) => { return { ...oldActors[i], pos: translatePoint(oldActors[i].pos, move_vector) }; });
+		createPhase("move", (oldActors, movementVectors) => {
+			return movementVectors.map((movementVector, actorIndex) =>
+				translateActor(oldActors[actorIndex], movementVector));
 		}),
-		createPhase("heal", (oldActors, phaseResults) => {
-			return oldActors.map((current_actor, i) => {
-				return {...current_actor, faith_point: current_actor.faith_point === undefined ? undefined : 
-					phaseResults.reduce((faith_point_acc, heals_vector) => 
-					(heals_vector.actorIds.includes(i)) ? 
-					faith_point_acc + heals_vector.amount[heals_vector.actorIds.indexOf(i)] : faith_point_acc, current_actor.faith_point)}; // includes + indexOf is bad for optimisation
-			});
+		createPhase("heal", (oldActors, healVectors) => {
+			return oldActors.map((currentActor, actorIndex) =>
+				updateFaithPoints(currentActor, actorIndex, healVectors));
 		})];
 }
 
-function move_right(w: World, a: Actor) {
+function moveRight(w: World, a: Actor) {
 	return createVector(1, 0);
 }
 
 function heal(w: World, a: Actor) {
-	if (a.kind.includes("healer")) {
-		return { actorIds: [0], amount: [1] };
+	if (a.kind === "healer") {
+		return { actorIndices: [0], amount: [1] };
 	}
-	return { actorIds: [], amount: [] };
+	return { actorIndices: [], amount: [] };
 }
 
 function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, 0, "ignorant", undefined, 0),
-			createActor(createVector(0, 1), { move: move_right, heal: heal }, 0, "healer", undefined, 0)];
+	return [createActor(createVector(0, 0), { move: moveRight, heal: heal }, 0, "ignorant", undefined, 0),
+	createActor(createVector(0, 1), { move: moveRight, heal: heal }, 0, "healer", undefined, 0)];
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
@@ -49,13 +46,13 @@ function resolveProposals(world: World, proposals: Array<Actor>): World {
 		if (validNewActor(world, currentProposal)) {
 			return acc.concat(currentProposal);
 		} else {
-			return acc.concat(world.actors[i]); // doesn't check old position new state
+			return acc.concat(world.actors[i]); // doesn't check old position new state -> possible collisions etc
 		}
 	}, []);
 	return { height: world.height, width: world.width, actors: resolvedActors };
 }
 
-function nextTurn(phases: Array<Phase>, world: World){
+function nextTurn(phases: Array<Phase>, world: World) {
 	return phases.reduce((aWorld, aPhase) => {
 		const funcName: string = aPhase.funcName;
 		const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>

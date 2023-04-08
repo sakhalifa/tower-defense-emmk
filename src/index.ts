@@ -9,7 +9,7 @@ const canvas: HTMLCanvasElement = document.getElementById("myCanvas") as HTMLCan
 
 const sprites = [
     document.getElementById("ignorantSprite"),
-    document.getElementById("good_guySprite"),
+    document.getElementById("goodGuySprite"),
     document.getElementById("groundSprite"),
 ].map((element) => element as HTMLImageElement);
 
@@ -21,7 +21,7 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
     switch(actorKind){
         case "ignorant":
             return sprites[0];
-        case "good_guy":
+        case "goodGuy":
             return sprites[1];
         case "ground":
             return sprites[2];
