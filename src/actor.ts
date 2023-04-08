@@ -45,7 +45,7 @@ function updateFaithPoints(actor: Actor, actorIndex: number, healVectors?: Array
 				healVectors === undefined ? actor.faithPoints :
 					(
 						healVectors.reduce((faithPointsAcc, healsVector) =>
-							faithPointsAcc + (healsVector.amount?.[healsVector.actorIndices.indexOf(actorIndex)] ?? 0),
+							faithPointsAcc + (healsVector?.amount?.[healsVector.actorIndices.indexOf(actorIndex)] ?? 0),
 							actor.faithPoints)
 					)
 

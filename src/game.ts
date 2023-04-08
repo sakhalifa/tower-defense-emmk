@@ -78,7 +78,7 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 			= aPhase.executePhase(someActors,
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				someActors.map((anActor) => anActor.actions?.[funcName](someActors, anActor))
+				someActors.map((anActor) => anActor.actions?.[funcName]?.(someActors, anActor))
 			);
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
