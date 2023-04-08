@@ -80,8 +80,7 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 				// @ts-ignore
 				actors.map((anActor) => anActor.actions[funcName](someActors, anActor))
 			);
-		const newActors = resolveProposals(world, someActors, proposals);
-		return newActors;
+		return resolveProposals(world, someActors, proposals);
 	}, actors);
 }
 
