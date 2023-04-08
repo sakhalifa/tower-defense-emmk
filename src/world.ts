@@ -1,7 +1,4 @@
-import type { Actor } from "./actor";
 import { Vector2D } from "./geometry";
-
-import { actorToString } from "./actor";
 
 
 type World = {
@@ -32,8 +29,12 @@ function worldToString(world: World) {
 	return `${' '.repeat(world.width)}\n`.repeat(world.height);
 }
 
+function worldStringVectorToIndex(world: World, vector: Vector2D) {
+	return vector.y * (world.width + 1) + vector.x;
+}
+
 export {
-	createWorld, worldToString, isPositionInWorld
+	createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex
 };
 
 export type {

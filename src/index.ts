@@ -41,7 +41,7 @@ async function displayWorldToCanvas(world: World){
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
     world.actors.forEach((a) => 
         ctx?.drawImage(getActorSprite("ignorant"), 
-            a.pos.x * canvasScale.x, a.pos.y * canvasScale.y, canvasScale.x, canvasScale.y));
+            a.position.x * canvasScale.x, a.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
     // wait
     await delay(1000);
 }

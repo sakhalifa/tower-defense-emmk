@@ -1,7 +1,7 @@
 import type { World } from "./world";
-import { isPositionInWorld, createWorld } from "./world";
-import { Phase } from "./phase";
-import { Actor, createActor, translateActor, updateFaithPoints } from "./actor";
+import { isPositionInWorld, createWorld, worldToString } from "./world";
+import { ActionReturnTypes, Phase } from "./phase";
+import { Actor, createActor, translateActor, updateFaithPoints, actorToStringInWorld, actorToString } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 
@@ -21,11 +21,11 @@ function initPhases(): Array<Phase> {
 		})];
 }
 
-function moveRight(w: World, a: Actor) {
+function moveRight(actors: Array<Actor>, a: Actor): ActionReturnTypes["move"] {
 	return createVector(1, 0);
 }
 
-function heal(w: World, a: Actor) {
+function heal(actors: Array<Actor>, a: Actor): ActionReturnTypes["heal"] {
 	if (a.kind === "healer") {
 		return { actorIndices: [0], amount: [1] };
 	}
@@ -58,7 +58,7 @@ function initActors(world: World): Array<Actor> {
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
-	return isPositionInWorld(world, actor.pos);
+	return isPositionInWorld(world, actor.position);
 }
 
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
@@ -73,18 +73,22 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
 
 function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Array<Actor> {
 	return phases.reduce((someActors, aPhase) => {
-		const funcName: string = aPhase.funcName;
-		const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
+		const proposals: Actor[]
 			= aPhase.executePhase(someActors,
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				someActors.map((anActor) => anActor.actions?.[funcName]?.(someActors, anActor))
+				someActors.map((anActor) => anActor.actions?.[aPhase.funcName]?.(someActors, anActor))
 			);
+			//someActors.forEach((anActor) => console.log(anActor.actions?.[aPhase.funcName]?.(someActors, anActor)));
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
 }
 
-function playGame(display: (world: World, actors: Array<Actor>) => void) {
+function displayGame(world: World, actors : Array<Actor>): void {
+	console.log(actors.reduce((acc, actor) => actorToStringInWorld(world, acc, actor), worldToString(world)));
+}
+
+function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(7, 7);
 	let actors: Array<Actor> = initActors(world);
 	const phases: Array<Phase> = initPhases();
@@ -92,10 +96,13 @@ function playGame(display: (world: World, actors: Array<Actor>) => void) {
 	let i = 0;
 	while (!finished) {
 		actors = nextTurn(phases, world, actors);
+		console.log(`turn : ${i}`);
+		console.log('-'.repeat(world.width));
 		display(world, actors);
+		console.log(`${'-'.repeat(world.width)}\n`);
 		finished = i++ === 5;
 	}
 }
 
 
-export { playGame, initWorld, initPhases, nextTurn };
+export { playGame, initWorld, initPhases, nextTurn, displayGame };
