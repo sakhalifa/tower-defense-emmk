@@ -6,7 +6,7 @@ type ActorActions = {
 	[Key in keyof ActionReturnTypes]?: (world: World, actor: Actor) => ActionReturnTypes[Key];
 };
 
-type Kind = "ignorant" | "goodGuy" | "ground" | "healer";
+type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "entry" | "exit";
 
 const defaultActions: Required<ActorActions> = {
 	temperatureRise: (w, a) => 0,

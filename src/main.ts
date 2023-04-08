@@ -1,8 +1,9 @@
 import type { World } from "./world";
+import type { Actor } from "./actor";
 
 import { worldToString } from "./world";
 
 
 import { playGame } from "./game";
 
-playGame((world: World) => console.log(worldToString(world)));
+playGame((world: World, actors : Array<Actor>) => console.log(worldToString(world)));
