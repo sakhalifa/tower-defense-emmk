@@ -54,7 +54,7 @@ async function main(){
 	while (!finished) {
 		actors = nextTurn(phases, world, actors);
 		await displayWorldToCanvas(world, actors);
-		finished = i++ === 10;
+		finished = i++ === 5;
 	}
 }
 

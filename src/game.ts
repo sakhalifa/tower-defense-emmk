@@ -1,7 +1,7 @@
 import type { World } from "./world";
-import { isPositionInWorld, createWorld, worldToString } from "./world";
+import { isPositionInWorld, createWorld } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
-import { Actor, createActor, translateActor, updateFaithPoints, actorToStringInWorld, actorToString } from "./actor";
+import { Actor, createActor, translateActor, updateFaithPoints } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 
@@ -84,10 +84,6 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 	}, actors);
 }
 
-function displayGame(world: World, actors : Array<Actor>): void {
-	console.log(actors.reduce((acc, actor) => actorToStringInWorld(world, acc, actor), worldToString(world)));
-}
-
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(7, 7);
 	let actors: Array<Actor> = initActors(world);
@@ -97,12 +93,10 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	while (!finished) {
 		actors = nextTurn(phases, world, actors);
 		console.log(`turn : ${i}`);
-		console.log('-'.repeat(world.width));
 		display(world, actors);
-		console.log(`${'-'.repeat(world.width)}\n`);
 		finished = i++ === 5;
 	}
 }
 
 
-export { playGame, initWorld, initPhases, initActors, nextTurn, displayGame };
+export { playGame, initWorld, initPhases, initActors, nextTurn };
