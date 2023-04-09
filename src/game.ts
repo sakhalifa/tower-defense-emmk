@@ -79,7 +79,6 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 				// @ts-ignore
 				someActors.map((anActor) => anActor.actions?.[aPhase.funcName]?.(someActors, anActor))
 			);
-			//someActors.forEach((anActor) => console.log(anActor.actions?.[aPhase.funcName]?.(someActors, anActor)));
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
 }
