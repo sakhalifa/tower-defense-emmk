@@ -1,18 +1,13 @@
-import type { Actor } from "./actor";
-import { translatePoint, Vector2D } from "./geometry";
-
-import { actorToString } from "./actor";
+import { Vector2D } from "./geometry";
 
 
 type World = {
-	actors: Array<Actor>;
 	width: number;
 	height: number;
 };
 
-function createWorld(width: number, height: number, actors: Array<Actor>) {
+function createWorld(width: number, height: number) {
 	return {
-		actors: actors,
 		width: width,
 		height: height
 	};
@@ -22,7 +17,7 @@ function isPositionInWorld(world: World, position: Vector2D): boolean {
 	return position.x >= 0 && position.x < world.width && position.y >= 0 && position.y < world.height;
 }
 
-function worldToString(w: World) {
+function worldToString(world: World) {
 	//return `{
 	//	width: ${w.width}
 	//	height: ${w.height}
@@ -30,11 +25,16 @@ function worldToString(w: World) {
 	//		${w.actors.map((actor) => actorToString(actor)).join(", ")}
 	//	]
 	//}`;
-	return `actors: [ ${w.actors.map((actor) => actorToString(actor)).join(", ")} ]`;
+	//return `actors: [ ${w.actors.map((actor) => actorToString(actor)).join(", ")} ]`;
+	return `${' '.repeat(world.width)}\n`.repeat(world.height);
+}
+
+function worldStringVectorToIndex(world: World, vector: Vector2D) {
+	return vector.y * (world.width + 1) + vector.x;
 }
 
 export {
-	createWorld, worldToString, isPositionInWorld
+	createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex
 };
 
 export type {
