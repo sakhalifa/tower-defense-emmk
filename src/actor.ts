@@ -31,7 +31,7 @@ function actorToString(actor: Actor): string {
 	return `{position: ${vector2DToString(actor.position)}${actor.faithPoints !== undefined ? ', fp:' + actor.faithPoints : ''}}`;
 }
 
-function stringReplaceAt (baseString: string, index: number, replacement: string) {
+function stringReplaceAt (baseString: string, index: number, replacement: string): string {
     return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
 }
 
@@ -43,11 +43,11 @@ function createActor(position: Vector2D, actions: ActorActions, kind: Kind, exte
 	return { position: position, actions: actions, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
 }
 
-function translateActor(actor: Actor, movementVector?: ActionReturnTypes["move"]) {
+function translateActor(actor: Actor, movementVector?: ActionReturnTypes["move"]): Actor {
 	return { ...actor, position: movementVector === undefined ? actor.position : translatePoint(actor.position, movementVector) };
 }
 
-function updateFaithPoints(actor: Actor, actorIndex: number, healVectors?: Array<ActionReturnTypes["heal"]>) {
+function updateFaithPoints(actor: Actor, actorIndex: number, healVectors?: Array<ActionReturnTypes["heal"]>): Actor {
 	return {
 		...actor,
 		faithPoints: actor.faithPoints === undefined ? undefined :

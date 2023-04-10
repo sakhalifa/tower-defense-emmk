@@ -1,7 +1,7 @@
 
 type Vector2D = { x: number, y: number; };
 
-function createVector(x: number, y: number) {
+function createVector(x: number, y: number): Vector2D {
 	return { x: x, y: y };
 }
 

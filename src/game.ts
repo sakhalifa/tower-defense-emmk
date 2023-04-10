@@ -31,30 +31,41 @@ function heal(actors: Array<Actor>, a: Actor): ActionReturnTypes["heal"] {
 	}
 	return { actorIndices: [], amount: [] };
 }
+
 // not pure
 function initWayPoints(world: World): Array<Actor> {
 	return [
 		createActor(createVector(0, 0), {}, "entry", { wayPointNumber: 0 }),
-		createActor(createVector(world.width / 3, world.height / 3), {}, "ground", { wayPointNumber: 1 }),
-		createActor(createVector(2 * world.width / 3, 2 * world.height / 3), {}, "ground", { wayPointNumber: 2 }),
-		createActor(createVector(world.width, world.height), {}, "exit", { wayPointNumber: 3 })
-	];
-}
-//not pure
-function initOtherActors(world: World, entries: Array<Actor>): Array<Actor> {
-	return [
-		createActor(createVector(0, 0), { move: moveRight, heal: heal }, "ignorant", undefined, undefined, 0),
-		createActor(createVector(0, 1), { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
+		createActor(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 1 }),
+		createActor(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 2 }),
+		createActor(createVector(world.width - 1, world.height - 1), {}, "exit", { wayPointNumber: 3 })
 	];
 }
 
 function findEntries(actors: Array<Actor>): Array<Actor> {
 	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === "entry" ? entries.concat(currentActor) : entries, []);
 }
+
+//not pure
+function getRandomArrayElement<T>(fromArray: Array<T>) : T {
+	if (fromArray.length === 0) {
+		throw new Error('Cannot get a random element from an empty array');
+	}
+	return fromArray[Math.floor(Math.random() * fromArray.length)];
+}
+
+//not pure
+function initOtherActors(entries: Array<Actor>): Array<Actor> {
+	return [
+		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "ignorant", undefined, undefined, 0),
+		createActor(createVector(0, 1), { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
+	];
+}
+
 //not pure
 function initActors(world: World): Array<Actor> {
 	const path = initWayPoints(world);
-	return path.concat(initOtherActors(world, findEntries(path)));
+	return path.concat(initOtherActors(findEntries(path)));
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
@@ -83,18 +94,22 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 	}, actors);
 }
 
+//not pure
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(7, 7);
 	let actors: Array<Actor> = initActors(world);
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
 	let i = 0;
+	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
 	while (!finished) {
-		actors = nextTurn(phases, world, actors);
-		console.log(`turn : ${i}`);
+		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 		display(world, actors);
+		actors = nextTurn(phases, world, actors);
 		finished = i++ === 5;
 	}
+	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
+	display(world, actors);
 }
 
 
