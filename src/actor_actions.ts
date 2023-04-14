@@ -1,7 +1,7 @@
 import { isDeepStrictEqual } from "util";
 import { Actor, createHealer, createIgnorant } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
-import { distance, createVector } from "./geometry";
+import { distance, createVector, Vector2D } from "./geometry";
 
 /**
  * The "spawner" action.
@@ -55,7 +55,26 @@ function moveRight(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes[
 }
 
 function moveToNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
-	return actors.find((currentActor) => currentActor?.externalProps?.wayPointNumber === movingActor.externalProps.nextWayPointNumber)?.position ?? createVector(0, 0);
+	const nextWayPoint = actors.find((currentActor) => currentActor?.externalProps?.wayPointNumber === movingActor.externalProps.nextWayPointNumber);
+	if (nextWayPoint === undefined) {
+		return createVector(0, 0);
+	} else {
+		return movingVector(movingActor.position, nextWayPoint.position);
+	}
+}
+
+function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
+	if (fromPosition.x < toPosition.x) {
+		return createVector(1, 0);
+	} else if (fromPosition.x > toPosition.x) {
+		return createVector(-1, 0);
+	} else if (fromPosition.y < toPosition.y) {
+		return createVector(0, 1);
+	} else if (fromPosition.y > toPosition.y) {
+		return createVector(0, -1);
+	} else {
+		return createVector(0, 0);
+	}
 }
 
 /**
