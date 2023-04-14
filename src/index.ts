@@ -58,6 +58,10 @@ function drawLine(begin: Vector2D, end: Vector2D, color: string){
 
 
 function drawActorIgnorance(actor: Actor, scale: Vector2D){
+    if (actor.ignorance === undefined){
+        return;
+    }
+
     const barSize = scale.x;
     const barOffset = createVector(0, -scale.y / 10);
     const healthBarBegin = createVector(actor.position.x * scale.x + barOffset.x, actor.position.y * scale.y + barOffset.y);
@@ -67,7 +71,7 @@ function drawActorIgnorance(actor: Actor, scale: Vector2D){
         '#ff0000');
     
     drawLine(healthBarBegin,
-        createVector((actor.position.x * scale.x + barOffset.x + barSize), actor.position.y * scale.y + barOffset.y),
+        createVector((actor.position.x * scale.x + barOffset.x + barSize) * actor.ignorance / 10, actor.position.y * scale.y + barOffset.y),
         '#00ff00');
 }
 
@@ -86,8 +90,8 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
         ctx?.drawImage(getActorSprite(actor.kind), 
             actor.position.x * canvasScale.x, actor.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
     // Draw Actor ignorance
-    
-    actors.forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
+    // Only draw ignorance of ignorant
+    actors.filter((actor) => actor.kind === "ignorant").forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
         
 
     // wait
