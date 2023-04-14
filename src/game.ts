@@ -36,6 +36,7 @@ function heal(actors: Array<Actor>, a: Actor): ActionReturnTypes["heal"] {
 function initWayPoints(world: World): Array<Actor> {
 	return [
 		createActor(createVector(0, 0), {}, "entry", { wayPointNumber: 0 }),
+		createActor(createVector(0, 1), {}, "entry", { wayPointNumber: 0 }),
 		createActor(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 1 }),
 		createActor(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 2 }),
 		createActor(createVector(world.width - 1, world.height - 1), {}, "exit", { wayPointNumber: 3 })
@@ -58,7 +59,7 @@ function getRandomArrayElement<T>(fromArray: Array<T>) : T {
 function initOtherActors(entries: Array<Actor>): Array<Actor> {
 	return [
 		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "ignorant", undefined, undefined, 0),
-		createActor(createVector(0, 1), { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
+		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
 	];
 }
 
