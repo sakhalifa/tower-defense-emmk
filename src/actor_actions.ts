@@ -81,6 +81,10 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemy
 	return (actor?.faithPoints ?? 0) <= 0;
 }
 
+function paralyzeMove(actors: Array<Actor>, actor: Actor): Vector2D {
+	return actor.externalProps?.childActor.actions["move"](actors, actor);
+}
+
 function catapultParalyze(actors: Array<Actor>, actor: Actor): ActionReturnTypes["paralyze"] {
 	const range = actor.externalProps?.range ?? 3;
 	const closestPos = actors
@@ -93,8 +97,26 @@ function catapultParalyze(actors: Array<Actor>, actor: Actor): ActionReturnTypes
 			return [maxPos, maxDist];
 		}, [createVector(-1, -1), -Infinity]);
 	const actorIndices = actors.filter((a) => isDeepStrictEqual(a.position, closestPos)).map((a, i) => i);
-	const composedActors = actorIndices.map((i) => actors[i]);
+	const composedActors = actorIndices.map((i) => {
+		const childActor = actors[i];
+		const actions = Object.entries(childActor.actions).reduce((oldObject, [key, value]) => {
+			if (key !== "move")
+				return {...oldObject, key: value};
+			else {
+				return {...oldObject, key: paralyzeMove};
+			}
+		}, {});
+
+		return {
+			...childActor,
+			actions,
+			externalProps: {
+				...childActor.externalProps,
+				childActor
+			}
+		};
+	});
 	return { actorIndices, composedActors };
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight };
+export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, catapultParalyze };
