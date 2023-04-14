@@ -47,6 +47,12 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
     }
 }
 
+/**
+ * Draw a line on the canvas
+ * @param begin the beginning of the line
+ * @param end the ending of the line
+ * @param color the color of the line
+ */
 function drawLine(begin: Vector2D, end: Vector2D, color: string){
     ctx?.beginPath();
     ctx.lineWidth = 1;
@@ -56,7 +62,13 @@ function drawLine(begin: Vector2D, end: Vector2D, color: string){
     ctx?.stroke();
 }
 
-
+/**
+ * Display a bar representing the ignorance remaining in an actor, assuming max ignorance is 10.
+ * If the actor has undefined ignorance, do nothing
+ * 
+ * @param actor the actor of which ignorance is to be displayed
+ * @param scale the scale of the canvas
+ */
 function drawActorIgnorance(actor: Actor, scale: Vector2D){
     if (actor.ignorance === undefined){
         return;
@@ -92,7 +104,6 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     // Draw Actor ignorance
     // Only draw ignorance of ignorant
     actors.filter((actor) => actor.kind === "ignorant").forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
-        
 
     // wait
     await delay(1000);
