@@ -52,7 +52,7 @@ test("String replace test", () => {
 });
 
 test("actorToStringInWorld test", () => {
-    const world = createWorld(3, 3);
+    const world = createWorld(3, 3, 0);
     expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
         .toEqual("      \ni     \n      ");
 });
