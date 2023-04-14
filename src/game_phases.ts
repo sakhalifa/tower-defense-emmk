@@ -85,4 +85,8 @@ function paralyzePhase(oldActors: Array<Actor>, paralyzeResults: Array<ActionRet
 			paralyzeResult.composedActor[paralyzeResult.actorIndices.indexOf(i)] ?? prevActor, a));
 }
 
-export { spawnPhase, temperatureRisePhase, healPhase, convertEnemiesPhase, enemyFleePhase, movePhase, paralyzePhase };
+function removeEffectsPhase(oldActors: Array<Actor>, removeEffectsResults: Array<ActionReturnTypes["removeEffects"]>): Array<Actor> {
+	return oldActors.filter((a, i) => removeEffectsResults[i]);
+}
+
+export { spawnPhase, temperatureRisePhase, healPhase, convertEnemiesPhase, enemyFleePhase, movePhase, paralyzePhase, removeEffectsPhase };
