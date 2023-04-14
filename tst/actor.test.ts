@@ -1,9 +1,10 @@
-import type { Actor } from "../src/actor";
+import { Actor, actorToStringInWorld } from "../src/actor";
+import type { World } from "../src/world";
 
-
-import { createActor, actorToString } from "../src/actor";
+import { createActor, actorToString, translateActor, stringReplaceAt } from "../src/actor";
 import { createVector } from "../src/geometry";
-import { World } from "../src/world";
+
+import { createWorld, worldToString } from "../src/world";
 
 function move(_: Array<Actor>, __: Actor) {
     return createVector(0, 0);
@@ -13,10 +14,17 @@ function heal(_: Array<Actor>, __: Actor) {
     return {actorIndices: [0], amount: [0]};
 }
 
+function buildDummyActor(): Actor{
+    return { position: createVector(0, 1), actions: { move: move, heal: heal }, kind: "ignorant" };
+}
+
 test("Actor create test", () => {
     expect(createActor(createVector(0, 1), { move, heal }, "ignorant"))
-        .toEqual({ position: createVector(0, 1), actions: { move: move, heal: heal }, kind: "ignorant" });
-
+        .toEqual(buildDummyActor());
+    expect(createActor(createVector(100, 100), { move, heal }, "ignorant"))
+        .not.toEqual(buildDummyActor());
+    expect(createActor(createVector(0, 1), { move }, "ignorant"))
+        .not.toEqual(buildDummyActor());
 });
 
 test("Actor to string test", () => {
@@ -26,3 +34,26 @@ test("Actor to string test", () => {
         kind: "ignorant"
     })).toEqual("{position: (0, 1)}");
 });
+
+test("Actor translate test", () => {
+    expect(translateActor(buildDummyActor(), createVector(0, 0))).toEqual(buildDummyActor());
+    expect(translateActor(buildDummyActor(), createVector(1, 3))).not.toEqual(buildDummyActor());
+    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual({ position: createVector(1, 4), actions: { move: move, heal: heal }, kind: "ignorant" });
+});
+
+test("String replace test", () => {
+    expect(stringReplaceAt("Bonjour", 0, "B")).toBe("Bonjour");
+    expect(stringReplaceAt("Bonjour", -1, "B")).toBe("BBonjour");
+    expect(stringReplaceAt("Bonjour", -2, "B")).toBe("BBonjour");
+    expect(stringReplaceAt("Bonjour", 7, "B")).toBe("BonjourB");
+    expect(stringReplaceAt("Bonjour", 2, "Au revoir")).toBe("BoAu revoir");
+    expect(stringReplaceAt("Bonjour", -5, "abcde")).toBe("abcdeBonjour");
+    expect(stringReplaceAt("Bonjour", -3, "abcde")).toBe("abcdenjour");
+});
+
+test("actorToStringInWorld test", () => {
+    const world = createWorld(3, 3);
+    expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
+        .toEqual("      \ni     \n      ");
+});
+

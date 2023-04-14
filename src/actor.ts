@@ -56,5 +56,5 @@ function createHealer(): Actor{
 	throw Error();
 }
 
-export { actorToString, actorToStringInWorld, createActor, createHealer, createIgnorant, translateActor, updateFaithPoints, defaultActions };
+export { actorToString, actorToStringInWorld, createActor, createHealer, createIgnorant, translateActor, stringReplaceAt, defaultActions };
 export type { Actor, Kind };
