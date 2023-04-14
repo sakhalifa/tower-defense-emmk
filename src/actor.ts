@@ -24,8 +24,9 @@ const defaultActions: Required<ActorActions> = {
 	heal: (w, a) => { return { actorIndices: [], amount: [] }; },
 	convertEnemies: (w, a) => { return { actorIndices: [], amount: [] }; },
 	enemyFlee: (w, a) => false,
-	paralyze: (w, a) => { return { actorIndices: [], functions: [] }; },
-	move: (w, a) => { return createVector(0, 0); }
+	paralyze: (w, a) => { return { actorIndices: [], composedActor: [] }; },
+	move: (w, a) => { return createVector(0, 0); },
+	removeEffects: (w, a) => false
 };
 
 /**

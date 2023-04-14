@@ -1,4 +1,4 @@
-import { Actor , translateActor} from "./actor";
+import { Actor, translateActor } from "./actor";
 import { ActionReturnTypes } from "./phase";
 import { sum } from "./util";
 
@@ -33,8 +33,8 @@ function updateFaithPoints(actor: Actor, actorIndex: number, healResults: Array<
 	return {
 		...actor,
 		faithPoints: healResults.reduce((faithPointsAcc, healResult) =>
-					(faithPointsAcc ?? 0) + ((healResult.amount[healResult.actorIndices.indexOf(actorIndex)] ?? 0)),
-					actor.faithPoints)
+			(faithPointsAcc ?? 0) + ((healResult.amount[healResult.actorIndices.indexOf(actorIndex)] ?? 0)),
+			actor.faithPoints)
 	};
 }
 
@@ -79,4 +79,10 @@ function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturn
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
 
-export { spawnPhase, temperatureRisePhase, healPhase, convertEnemiesPhase, enemyFleePhase, movePhase };
+function paralyzePhase(oldActors: Array<Actor>, paralyzeResults: Array<ActionReturnTypes["paralyze"]>): Array<Actor> {
+	return oldActors.map((a, i) =>
+		paralyzeResults.reduce((prevActor, paralyzeResult) =>
+			paralyzeResult.composedActor[paralyzeResult.actorIndices.indexOf(i)] ?? prevActor, a));
+}
+
+export { spawnPhase, temperatureRisePhase, healPhase, convertEnemiesPhase, enemyFleePhase, movePhase, paralyzePhase };
