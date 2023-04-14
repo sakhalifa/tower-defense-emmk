@@ -4,7 +4,7 @@ import { ActionReturnTypes, Phase } from "./phase";
 import { Actor, createActor, translateActor } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
-import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase } from "./game_phases";
+import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
 import { moveRight, heal } from "./actor_actions";
 
 function initWorld(width: number, height: number): World {
@@ -16,6 +16,7 @@ function initPhases(): Array<Phase> {
 		createPhase("spawn", spawnPhase),
 		createPhase("temperatureRise", temperatureRisePhase),
 		createPhase("convertEnemies", convertEnemiesPhase),
+		createPhase("move", movePhase),
 		createPhase("heal", healPhase),
 		createPhase("enemyFlee", enemyFleePhase),
 	];

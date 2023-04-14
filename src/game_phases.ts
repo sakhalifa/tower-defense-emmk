@@ -1,4 +1,4 @@
-import { Actor } from "./actor";
+import { Actor , translateActor} from "./actor";
 import { ActionReturnTypes } from "./phase";
 import { sum } from "./util";
 
@@ -9,6 +9,10 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnType
 function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["temperatureRise"]>): Array<Actor> {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	return oldActors.map((a) => a.kind !== "boss" ? a : { ...a, faith_point: a.faithPoints! - sum(phaseResult) });
+}
+
+function movePhase(oldActors: Array<Actor>, movementVectors: Array<ActionReturnTypes["move"]>): Actor {
+	return movementVectors.map((movementVector, actorIndex) => translateActor(oldActors[actorIndex], movementVector));
 }
 
 function updateFaithPoints(actor: Actor, actorIndex: number, healResults: Array<ActionReturnTypes["heal"]>): Actor {
@@ -40,4 +44,4 @@ function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturn
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
 
-export { spawnPhase, temperatureRisePhase, healPhase, convertEnemiesPhase, enemyFleePhase };
+export { spawnPhase, temperatureRisePhase, healPhase, convertEnemiesPhase, enemyFleePhase, movePhase };
