@@ -1,11 +1,11 @@
 import type { World } from "./world";
 import { isPositionInWorld, createWorld } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
-import { Actor, createActor, translateActor, updateFaithPoints } from "./actor";
+import { Actor, createActor, translateActor } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase } from "./game_phases";
-import { moveRight, heal } from "./actor_actions"
+import { moveRight, heal } from "./actor_actions";
 
 function initWorld(width: number, height: number): World {
 	return createWorld(width, height);
