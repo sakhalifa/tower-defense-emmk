@@ -11,7 +11,7 @@ const sprites = [
     document.getElementById("undefinedSprite"),
     document.getElementById("ignorantSprite"),
     document.getElementById("goodGuySprite"),
-    document.getElementById("groundSprite"),
+    document.getElementById("waypointSprite"),
 ].map((element) => element as HTMLImageElement);
 
 /**
@@ -52,7 +52,7 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     // Update canvas
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const ctx = canvas.getContext("2d")!;
-    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingEnabled = false;
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
