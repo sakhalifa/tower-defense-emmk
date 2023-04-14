@@ -15,7 +15,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ActionReturnTypes["spawn"] {
 }
 
 function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes["temperatureRise"] {
-	return actors.find((a) => a.kind === "boss" && isDeepStrictEqual(a.position, actor.position)) === undefined
+	return actors.find((a) => a.kind === "spaghettimonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
 		? 0 : (actor.externalProps.attackPower ?? 1);
 }
 

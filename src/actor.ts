@@ -8,7 +8,7 @@ type ActorActions = {
 	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
 };
 
-type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "entry" | "exit" | "boss";
+type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "entry" | "exit" | "spaghettimonster";
 
 const defaultActions: Required<ActorActions> = {
 	spawn: (w, a) => undefined,
