@@ -35,7 +35,7 @@ function heal(actors: Array<Actor>, a: Actor): ActionReturnTypes["heal"] {
 // not pure
 function initWayPoints(world: World): Array<Actor> {
 	return [
-		createActor(createVector(0, 0), {}, "entry", { wayPointNumber: 0 }),
+		createActor(createVector(0, 0), {}, "entry", { wayPointNumber: 0}),
 		createActor(createVector(0, 1), {}, "entry", { wayPointNumber: 0 }),
 		createActor(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 1 }),
 		createActor(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 2 }),

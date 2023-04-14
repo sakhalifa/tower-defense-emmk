@@ -4,8 +4,8 @@ import { Vector2D } from "./geometry";
 type ActionReturnTypes = {
     spawn: Actor | undefined;
     temperatureRise: number;
-    heal: {actorIndices: number[], amount: number[]};
     convertEnemies: {actorIndices: Array<number>, amount: Array<number>};
+    heal: {actorIndices: number[], amount: number[]};
     enemyFlee: boolean;
     move: Vector2D;
 };

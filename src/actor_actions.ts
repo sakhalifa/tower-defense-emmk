@@ -1,10 +1,9 @@
 import { isDeepStrictEqual } from "util";
 import { Actor, createHealer, createIgnorant } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
-import { World } from "./world";
 import { distance } from "./geometry";
 
-function spawn(world: World, actor: Actor): ActionReturnTypes["spawn"] {
+function spawn(actors: Array<Actor>, actor: Actor): ActionReturnTypes["spawn"] {
 	if (Math.random() < 0.5)
 		return undefined;
 	else {
@@ -15,27 +14,29 @@ function spawn(world: World, actor: Actor): ActionReturnTypes["spawn"] {
 	}
 }
 
-function temperatureRise(world: World, actor: Actor): ActionReturnTypes["temperatureRise"] {
-	return world.actors.find((a) => a.kind === "boss" && isDeepStrictEqual(a.pos, actor.pos)) === undefined
+function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes["temperatureRise"] {
+	return actors.find((a) => a.kind === "boss" && isDeepStrictEqual(a.position, actor.position)) === undefined
 		? 0 : (actor.externalProps.attackPower ?? 1);
 }
 
-function heal(world: World, actor: Actor): ActionReturnTypes["heal"] {
+function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
 	const range = actor.externalProps.range ?? 3;
-	const actorIds = world.actors.filter((a) => a !== actor && a.kind === "ignorant" && distance(a.pos, actor.pos) <= range).map((a, i) => i);
-	const amount = actorIds.map((_) => actor.externalProps.healPower ?? 1);
-	return { actorIds, amount };
+	const actorIndices = actors.filter((a) => a !== actor && a.kind === "ignorant" && distance(a.position, actor.position) <= range).map((a, i) => i);
+	const amount = actorIndices.map((_) => actor.externalProps.healPower ?? 1);
+	return { actorIndices, amount };
 }
 
-function convertEnemies(world: World, actor: Actor): ActionReturnTypes["convertEnemies"] {
+function convertEnemies(actors: Array<Actor>, actor: Actor): ActionReturnTypes["convertEnemies"] {
 	const range = actor.externalProps.range ?? 3;
-	const actorIds = world.actors.filter((a) => a !== actor && a.kind !== "ignorant" && distance(a.pos, actor.pos) <= range).map((a, i) => i);
-	const amount = actorIds.map((_) => actor.externalProps.attackPower ?? 1);
-	return { actorIds, amount };
+	const actorIndices = actors.filter((a) => a !== actor && a.kind !== "ignorant" && distance(a.position, actor.position) <= range).map((a, i) => i);
+	const amount = actorIndices.map((_) => actor.externalProps.attackPower ?? 1);
+	return { actorIndices, amount };
 }
 
-function enemyFlee(world: World, actor: Actor): ActionReturnTypes["enemyFlee"] {
-	return (actor.faith_point ?? 0) <= 0;
+function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemyFlee"] {
+	if (actor.kind === "ground" || actor.kind === "goodGuy")
+		return false;
+	return (actor.faithPoints ?? 0) <= 0;
 }
 
 export { temperatureRise, heal, convertEnemies, enemyFlee, spawn };
