@@ -1,37 +1,67 @@
-import { Vector2D, createVector, vector2DToString } from "./geometry";
+import { Vector2D, createVector, vector2DToString, translatePoint } from "./geometry";
 import { ActionReturnTypes } from "./phase";
+import { worldStringVectorToIndex } from "./world";
 import type { World } from "./world";
 
+
 type ActorActions = {
-	[Key in keyof ActionReturnTypes]?: (world: World, actor: Actor) => ActionReturnTypes[Key];
+	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
 };
 
-type Kind = "ignorant" | "good_guy" | "waypoint" | "healer" | "boss";
+type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "entry" | "exit" | "boss";
 
 const defaultActions: Required<ActorActions> = {
 	spawn: (w, a) => undefined,
 	temperatureRise: (w, a) => 0,
-	heal: (w, a) => { return { actorIds: [], amount: [] }; },
-	convertEnemies: (w, a) => { return { actorIds: [], amount: [] }; },
+	heal: (w, a) => { return { actorIndices: [], amount: [] }; },
+	convertEnemies: (w, a) => { return { actorIndices: [], amount: [] }; },
 	enemyFlee: (w, a) => false,
 	move: (w, a) => { return createVector(0, 0); }
 };
 
 type Actor = {
-	pos: Vector2D;
+	position: Vector2D;
 	actions: ActorActions;
+	kind: Kind;
+	externalProps?: any;
 	tags?: string[];
-	kind?: Kind;
-	faith_point?: number;
-	externalProps: any;
+	faithPoints?: number;
 };
 
-function actorToString(a: Actor) {
-	return `{pos: ${vector2DToString(a.pos)}${a.faith_point ? ', fp:' + a.faith_point : ''}}`;
+function actorToString(actor: Actor): string {
+	return `{position: ${vector2DToString(actor.position)}${actor.faithPoints !== undefined ? ', fp:' + actor.faithPoints : ''}}`;
 }
 
-function createActor(pos: Vector2D, actions: ActorActions, tags?: string[], kind?: Kind, faith_point?: number) {
-	return { pos: pos, actions: actions, tags: tags, kind: kind, faith_point: faith_point };
+function stringReplaceAt (baseString: string, index: number, replacement: string): string {
+    return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
+}
+
+function actorToStringInWorld(world: World, worldString: string, actor: Actor): string {
+	return stringReplaceAt(worldString, worldStringVectorToIndex(world, actor.position), actor.kind.charAt(0));
+}
+
+function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], faithPoints?: number): Actor {
+	return { position: position, actions: actions, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
+}
+
+function translateActor(actor: Actor, movementVector?: ActionReturnTypes["move"]): Actor {
+	return { ...actor, position: movementVector === undefined ? actor.position : translatePoint(actor.position, movementVector) };
+}
+
+function updateFaithPoints(actor: Actor, actorIndex: number, healVectors?: Array<ActionReturnTypes["heal"]>): Actor {
+	return {
+		...actor,
+		faithPoints: actor.faithPoints === undefined ? undefined :
+			(
+				healVectors === undefined ? actor.faithPoints :
+					(
+						healVectors.reduce((faithPointsAcc, healsVector) =>
+							faithPointsAcc + (healsVector?.amount?.[healsVector.actorIndices.indexOf(actorIndex)] ?? 0),
+							actor.faithPoints)
+					)
+
+			)
+	};
 }
 
 function createIgnorant(): Actor{
@@ -42,5 +72,5 @@ function createHealer(): Actor{
 	throw Error();
 }
 
-export { actorToString, createActor, createHealer, createIgnorant, defaultActions };
-export type { Actor };
+export { actorToString, actorToStringInWorld, createActor, createHealer, createIgnorant, translateActor, updateFaithPoints, defaultActions };
+export type { Actor, Kind };
