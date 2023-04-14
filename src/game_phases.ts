@@ -25,6 +25,13 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Action
 	return oldActors.map((a) => a.kind !== "spaghettimonster" ? a : { ...a, faith_point: a.faithPoints! - sum(phaseResult) });
 }
 
+/**
+ * The executePhase function for the "heal" phase.
+ * It ensures all enemies healed are actually healed.
+ * @param oldActors The actors before the phase
+ * @param phaseResult The results of the phase
+ * @returns A proposal for the actors after executing the "heal" phase
+ */
 function healPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["heal"]>): Array<Actor> {
 	return oldActors.map((a, i) => phaseResult.reduce((actor, curResult) => {
 		const idx = curResult.actorIndices.findIndex((id) => id === i);
@@ -36,6 +43,13 @@ function healPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes
 	}, a));
 }
 
+/**
+ * The executePhase function for the "convertEnemies" phase.
+ * It ensures all ignorants get slowly converted to our holy faith; pastafarism.
+ * @param oldActors The actors before the phase
+ * @param phaseResult The results of the pase
+ * @returns A proposal for the actors after executing the "convertEnemies" phase
+ */
 function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["convertEnemies"]>): Array<Actor> {
 	return oldActors.map((a, i) => phaseResult.reduce((actor, curResult) => {
 		const idx = curResult.actorIndices.findIndex((id) => id === i);
@@ -47,6 +61,13 @@ function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ActionR
 	}, a));
 }
 
+/**
+ * The executePhase function for the "enemyFlee" phase.
+ * It removes the actors that have decided to not exist anymore.
+ * @param oldActors The actors before the phase
+ * @param phaseResult The results of the phase
+ * @returns A proposal for the actors after executing the "enemyFlee" phase
+ */
 function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["enemyFlee"]>): Array<Actor> {
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
