@@ -7,6 +7,10 @@ import { Vector2D, createVector } from "./geometry";
 
 const canvas: HTMLCanvasElement = document.getElementById("myCanvas") as HTMLCanvasElement;
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const ctx = canvas.getContext("2d")!;
+ctx.imageSmoothingEnabled = false;
+
 const sprites = [
     document.getElementById("undefinedSprite"),
     document.getElementById("ignorantSprite"),
@@ -43,6 +47,30 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
     }
 }
 
+function drawLine(begin: Vector2D, end: Vector2D, color: string){
+    ctx?.beginPath();
+    ctx.lineWidth = 1;
+    ctx?.moveTo(begin.x, begin.y);
+    ctx?.lineTo(end.x, end.y);
+    ctx.strokeStyle = color;
+    ctx?.stroke();
+}
+
+
+function drawActorIgnorance(actor: Actor, scale: Vector2D){
+    const barSize = scale.x;
+    const barOffset = createVector(0, -scale.y / 10);
+    const healthBarBegin = createVector(actor.position.x * scale.x + barOffset.x, actor.position.y * scale.y + barOffset.y);
+
+    drawLine(healthBarBegin,
+        createVector(actor.position.x * scale.x + barOffset.x + barSize, actor.position.y * scale.y + barOffset.y),
+        '#ff0000');
+    
+    drawLine(healthBarBegin,
+        createVector((actor.position.x * scale.x + barOffset.x + barSize), actor.position.y * scale.y + barOffset.y),
+        '#00ff00');
+}
+
 /**
  * Draws the content of the world to the canvas
  * @param world The world
@@ -50,15 +78,18 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
  */
 async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     // Update canvas
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const ctx = canvas.getContext("2d")!;
-    ctx.imageSmoothingEnabled = false;
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
+    // Draw actor sprite
     actors.forEach((actor) => 
         ctx?.drawImage(getActorSprite(actor.kind), 
             actor.position.x * canvasScale.x, actor.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
+    // Draw Actor ignorance
+    
+    actors.forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
+        
+
     // wait
     await delay(1000);
 }
