@@ -2,8 +2,8 @@ import { Vector2D } from "./geometry";
 
 
 type World = {
-	width: number;
-	height: number;
+	readonly width: number;
+	readonly height: number;
 };
 
 function createWorld(width: number, height: number): World {
