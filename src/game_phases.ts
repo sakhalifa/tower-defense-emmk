@@ -11,7 +11,7 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Action
 	return oldActors.map((a) => a.kind !== "boss" ? a : { ...a, faith_point: a.faithPoints! - sum(phaseResult) });
 }
 
-function movePhase(oldActors: Array<Actor>, movementVectors: Array<ActionReturnTypes["move"]>): Actor {
+function movePhase(oldActors: Array<Actor>, movementVectors: Array<ActionReturnTypes["move"]>): Array<Actor> {
 	return movementVectors.map((movementVector, actorIndex) => translateActor(oldActors[actorIndex], movementVector));
 }
 
