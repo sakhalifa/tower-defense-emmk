@@ -1,11 +1,11 @@
 import type { World } from "./world";
 import { isPositionInWorld, createWorld } from "./world";
-import { ActionReturnTypes, Phase } from "./phase";
-import { Actor, createGround, createSpaghettimonster, createSpawner, translateActor, createHealer, createIgnorant } from "./actor";
+import { Phase } from "./phase";
+import { Actor, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, findKind } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { moveRight, heal } from "./actor_actions";
+import { moveRight, heal, moveToNextWaypoint } from "./actor_actions";
 import { getRandomArrayElement } from "./util";
 
 /**
@@ -45,22 +45,18 @@ function initWayPoints(world: World): Array<Actor> {
 	];
 }
 
-function findEntries(actors: Array<Actor>): Array<Actor> {
-	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === "spawner" ? entries.concat(currentActor) : entries, []);
-}
-
 //not pure
 function initOtherActors(entries: Array<Actor>): Array<Actor> {
 	return [
-		createIgnorant(getRandomArrayElement(entries).position, { move: moveRight }, undefined, undefined, 0),
-		createHealer(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, undefined, undefined, 0)
+		createIgnorant(getRandomArrayElement(entries).position, { move: moveToNextWaypoint }, undefined, 4),
+		createHealer(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, undefined, 4)
 	];
 }
 
 //not pure
 function initActors(world: World): Array<Actor> {
 	const path = initWayPoints(world);
-	return path.concat(initOtherActors(findEntries(path)));
+	return path.concat(initOtherActors(findKind(path, "spawner")));
 }
 
 /**
