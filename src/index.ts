@@ -8,6 +8,7 @@ import { Vector2D, createVector } from "./geometry";
 const canvas: HTMLCanvasElement = document.getElementById("myCanvas") as HTMLCanvasElement;
 
 const sprites = [
+    document.getElementById("undefinedSprite"),
     document.getElementById("ignorantSprite"),
     document.getElementById("goodGuySprite"),
     document.getElementById("groundSprite"),
@@ -20,15 +21,16 @@ function delay(ms: number) {
 function getActorSprite(actorKind: Kind): HTMLImageElement {
     switch(actorKind){
         case "ignorant":
-            return sprites[0];
+            return sprites[1];
         case "goodGuy":
-            return sprites[1];
-        case "ground":
             return sprites[2];
+        case "ground":
+            return sprites[3];
         case "healer":
-            return sprites[1];
+            return sprites[2];
+        default:
+            return sprites[0];
     }
-    throw Error("Eslint friendly error, cannot see that all enum values are mapped :)");
 }
 
 async function displayWorldToCanvas(world: World, actors: Array<Actor>){
@@ -40,7 +42,7 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
 
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
     actors.forEach((actor) => 
-        ctx?.drawImage(getActorSprite("ignorant"), 
+        ctx?.drawImage(getActorSprite(actor.kind), 
             actor.position.x * canvasScale.x, actor.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
     // wait
     await delay(1000);
