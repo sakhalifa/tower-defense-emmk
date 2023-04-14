@@ -100,6 +100,12 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
+function translateTowardWaypoint(actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+	const position = translatePoint(actor.position, movementVector);
+
+	return { ...actor, position: translatePoint(actor.position, movementVector) };
+}
+
 function createIgnorant(position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor{
 	return createActor(position, actions, "ignorant", { nextWayPointNumber: 1 }, tags, ignorance);
 }
@@ -108,7 +114,7 @@ function createIgnorant(position: Vector2D, actions: ActorActions, tags?: string
  * Constructor for a default "healer" actor
  */
 function createHealer(position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor{
-	return createActor(position, actions, "healer", { nextWayPointNumber: 1 }, tags, ignorance);
+	return createActor(position, actions, "healer", { nextWayPointNumber: 0, nexWayPointPosition: position }, tags, ignorance);
 }
 
 /**
