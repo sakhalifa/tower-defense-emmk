@@ -63,5 +63,5 @@ function updateFaithPoints(actor: Actor, actorIndex: number, healVectors?: Array
 	};
 }
 
-export { actorToString, actorToStringInWorld, createActor, translateActor, updateFaithPoints, defaultActions };
+export { actorToString, actorToStringInWorld, createActor, translateActor, updateFaithPoints, defaultActions, stringReplaceAt };
 export type { Actor, Kind };
