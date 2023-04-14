@@ -1,11 +1,12 @@
 import type { World } from "./world";
 import { isPositionInWorld, createWorld } from "./world";
 import { ActionReturnTypes, Phase } from "./phase";
-import { Actor, createActor, translateActor } from "./actor";
+import { Actor, createGround, createSpaghettimonster, createSpawner, translateActor, createHealer, createIgnorant } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
 import { moveRight, heal } from "./actor_actions";
+import { getRandomArrayElement } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -36,11 +37,11 @@ function initPhases(): Array<Phase> {
 // not pure
 function initWayPoints(world: World): Array<Actor> {
 	return [
-		createActor(createVector(0, 0), {}, "spawner", { wayPointNumber: 0 }),
-		createActor(createVector(0, 1), {}, "spawner", { wayPointNumber: 0 }),
-		createActor(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 1 }),
-		createActor(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 2 }),
-		createActor(createVector(world.width - 1, world.height - 1), {}, "spaghettimonster", { wayPointNumber: 3 })
+		createSpawner(createVector(0, 0)),
+		createSpawner(createVector(0, 1)),
+		createGround(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), 1),
+		createGround(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), 2),
+		createSpaghettimonster(createVector(world.width - 1, world.height - 1), 3)
 	];
 }
 
@@ -49,18 +50,10 @@ function findEntries(actors: Array<Actor>): Array<Actor> {
 }
 
 //not pure
-function getRandomArrayElement<T>(fromArray: Array<T>): T {
-	if (fromArray.length === 0) {
-		throw new Error('Cannot get a random element from an empty array');
-	}
-	return fromArray[Math.floor(Math.random() * fromArray.length)];
-}
-
-//not pure
 function initOtherActors(entries: Array<Actor>): Array<Actor> {
 	return [
-		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "ignorant", undefined, undefined, 0),
-		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
+		createIgnorant(getRandomArrayElement(entries).position, { move: moveRight }, undefined, undefined, 0),
+		createHealer(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, undefined, undefined, 0)
 	];
 }
 

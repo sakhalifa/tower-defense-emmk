@@ -2,6 +2,7 @@ import { Vector2D, createVector, vector2DToString, translatePoint } from "./geom
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import type { World } from "./world";
+import { getRandomArrayElement } from "./util";
 
 /**
  * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
@@ -95,17 +96,38 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
-function createIgnorant(): Actor{
-	throw Error();
+function createIgnorant(position: Vector2D, actions: ActorActions, externalProps?: any, tags?: string[], faithPoints?: number): Actor{
+	return createActor(position, actions, "ignorant", externalProps, tags, faithPoints);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
-function createHealer(): Actor{
-	throw Error();
+function createHealer(position: Vector2D, actions: ActorActions, externalProps?: any, tags?: string[], faithPoints?: number): Actor{
+	return createActor(position, actions, "healer", externalProps, tags, faithPoints);
 }
 
-export { actorToString, actorToStringInWorld, createActor, createHealer, createIgnorant, translateActor, stringReplaceAt, defaultActions };
+/**
+ * Constructor for a default "spawner" actor
+ */
+function createSpawner(position: Vector2D): Actor{
+	return createActor(position, {}, "spawner", { wayPointNumber: 0 });
+}
+
+/**
+ * Constructor for a default "ground" actor
+ */
+function createGround(position: Vector2D, wayPointNumber : number): Actor{
+	return createActor(position, {}, "ground", { wayPointNumber: wayPointNumber });
+}
+
+/**
+ * Constructor for a default "spaghettimonster" actor
+ */
+function createSpaghettimonster(position: Vector2D, wayPointNumber : number): Actor{
+	return createActor(position, {}, "spaghettimonster", { wayPointNumber: wayPointNumber });
+}
+
+export { actorToString, actorToStringInWorld, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, translateActor, stringReplaceAt, defaultActions };
 export type { Actor, Kind };
  
