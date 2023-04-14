@@ -14,10 +14,20 @@ const sprites = [
     document.getElementById("groundSprite"),
 ].map((element) => element as HTMLImageElement);
 
+/**
+ * Returns a promise that will resolve after `ms` seconds.
+ * @param ms delay in ms
+ * @returns a promise that waits `ms` seconds
+ */
 function delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
 
+/**
+ * Gets the sprite corresponding to an actor's kind
+ * @param actorKind The actor kind
+ * @returns The sprite corresponding to the actor's kind.
+ */
 function getActorSprite(actorKind: Kind): HTMLImageElement {
     switch(actorKind){
         case "ignorant":
@@ -33,6 +43,11 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
     }
 }
 
+/**
+ * Draws the content of the world to the canvas
+ * @param world The world
+ * @param actors The actors
+ */
 async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     // Update canvas
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -47,6 +62,7 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     // wait
     await delay(1000);
 }
+
 async function main(){
     const world: World = initWorld(7, 7);
 	let actors: Array<Actor> = initActors(world);
