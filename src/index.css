@@ -1,6 +1,10 @@
+html {
+	width: 100vw;
+	height: 100vh;
+}
+
 body {
     margin: 0;
-    background-color: #FDF0D5;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,7 +25,7 @@ header h1 {
     border-radius: 10px;
     border: 1px solid black;
     margin-top: 50px;
-    color: #F0544F;
+    background-color: #FDF0D5;
 }
 
 .main-content {
@@ -30,40 +34,167 @@ header h1 {
     margin-top: 5vh;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
 }
 
-.termometer {
-    width: 20vw;
+.hide {
+    display: none;
+}
+
+.thermometer {
     height: 70vh;
-    border: 1px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 200px;
+	position: relative;
 }
 
-.wood {
-    background-color: rgb(153, 97, 23);
-    width: 10vw;
-    height: 60vh;
-    border-radius: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.thermometer-base,
+.thermometer-body {
+	background-color: #ededfa;
+	border: 15px solid #d8d9e8;
 }
 
-.flask {
-    border: 1px solid black;
-    width: 30px;
-    height: 50vh;
-    border-radius: 15px;
+.thermometer-base,
+.thermometer-base-fill {
+	margin: 0 auto;
+	border-radius: 50%;
+	z-index: 0;
+}
+
+.thermometer-base {
+	height: 120px;
+	width: 120px;
+}
+
+.thermometer-base::before {
+	content: "";
+	background-color: #db1d1d;
+	height: 15px;
+	width: 40px;
+	position: absolute;
+	left: 80px;
+	z-index: 1;
+}
+
+.thermometer-base-fill {
+	background-color: #db1d1d;
+	height: 98px;
+	width: 98px;
+	position: relative;
+	top: 11px;
+	transition: top 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.thermometer-body,
+.thermometer-body-fill {
+	margin: 0 auto;
+	border-radius: 50px 50px 0 0;
+	z-index: 1;
+}
+
+.thermometer-body {
+	height: 325px;
+	width: 60px;
+	border-bottom: 0;
+	position: relative;
+	bottom: -23px;
+	overflow: hidden;
+}
+
+.thermometer-body-fill {
+	background-color: #db1d1d;
+	height: 320px;
+	width: 40px;
+	position: relative;
+	top: 160px; /* lowest value is 11px - highest value is 300px */
+	transition: top 0.5s linear;
+}
+
+.controls {
+	text-align: center;
+	overflow: visible;
+}
+
+.btn {
+	color: #2d2930;
+	background-color: #dbdbdb;
+	padding: 5px;
+	height: 45px;
+	width: 45px;
+	margin-bottom: 30px;
+	border-radius: 50%;
+	border: none;
+	filter: drop-shadow(3px 3px 4px #333333);
+	box-shadow: inset 3px 3px 5px #fff;
+	position: relative;
+	display: block;
+	cursor: pointer;
+	transition: transform 0.2s linear;
+}
+
+.btn:hover {
+	transform: scale(1.15);
+}
+
+i {
+	pointer-events: none;
+}
+
+.very-hot-bg {
+	background: rgb(232, 154, 30);
+	background: linear-gradient(
+		0deg,
+		rgba(232, 154, 30, 1) 0%,
+		rgba(232, 141, 30, 1) 35%,
+		rgba(232, 50, 30, 1) 100%
+	);
+}
+
+.hot-bg {
+	background: rgb(229, 232, 30);
+	background: linear-gradient(
+		0deg,
+		rgba(229, 232, 30, 1) 0%,
+		rgba(232, 211, 30, 1) 35%,
+		rgba(232, 154, 30, 1) 100%
+	);
+}
+
+.warm-bg {
+	background: rgb(30, 232, 52);
+	background: linear-gradient(
+		0deg,
+		rgba(30, 232, 52, 1) 0%,
+		rgba(151, 232, 30, 1) 35%,
+		rgba(229, 232, 30, 1) 100%
+	);
+}
+
+.cold-bg {
+	background: rgb(30, 212, 232);
+	background: linear-gradient(
+		0deg,
+		rgba(30, 212, 232, 1) 0%,
+		rgba(30, 232, 130, 1) 35%,
+		rgba(30, 232, 52, 1) 100%
+	);
+}
+
+.very-cold-bg {
+	background: rgb(120, 30, 232);
+	background: linear-gradient(
+		0deg,
+		rgba(120, 30, 232, 1) 0%,
+		rgba(30, 127, 232, 1) 35%,
+		rgba(30, 212, 232, 1) 100%
+	);
 }
 
 .grid {
-    width: 50vw;
+    width: 55vw;
     height: 70vh;
     border: 1px solid black;
+    background-color: #FDF0D5;
 }
 
 .menu {
@@ -73,8 +204,6 @@ header h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.hide {
-    display: none;
+    justify-content: space-between;
+    background-color: #FDF0D5;
 }
