@@ -21,14 +21,14 @@ function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes[
 
 function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
 	const range = actor.externalProps.range ?? 3;
-	const actorIndices = actors.filter((a) => a !== actor && a.kind === "ignorant" && distance(a.position, actor.position) <= range).map((a, i) => i);
+	const actorIndices = actors.filter((currentActor) => currentActor.kind === "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i); //TODO
 	const amount = actorIndices.map((_) => actor.externalProps.healPower ?? 1);
 	return { actorIndices, amount };
 }
 
 function convertEnemies(actors: Array<Actor>, actor: Actor): ActionReturnTypes["convertEnemies"] {
 	const range = actor.externalProps.range ?? 3;
-	const actorIndices = actors.filter((a) => a !== actor && a.kind !== "ignorant" && distance(a.position, actor.position) <= range).map((a, i) => i);
+	const actorIndices = actors.filter((currentActor) => currentActor !== actor && currentActor.kind !== "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
 	const amount = actorIndices.map((_) => actor.externalProps.attackPower ?? 1);
 	return { actorIndices, amount };
 }

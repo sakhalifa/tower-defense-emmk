@@ -8,7 +8,7 @@ type ActorActions = {
 	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
 };
 
-type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "entry" | "exit" | "boss";
+type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "spawner" | "boss";
 
 const defaultActions: Required<ActorActions> = {
 	spawn: (w, a) => undefined,
@@ -41,7 +41,7 @@ function actorToStringInWorld(world: World, worldString: string, actor: Actor): 
 }
 
 function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], faithPoints?: number): Actor {
-	return { position: position, actions: actions, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
+	return { position: position, actions: {...defaultActions, ...actions}, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
 }
 
 function translateActor(actor: Actor, movementVector?: ActionReturnTypes["move"]): Actor {
