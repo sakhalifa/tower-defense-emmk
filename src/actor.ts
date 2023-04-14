@@ -48,22 +48,6 @@ function translateActor(actor: Actor, movementVector?: ActionReturnTypes["move"]
 	return { ...actor, position: movementVector === undefined ? actor.position : translatePoint(actor.position, movementVector) };
 }
 
-function updateFaithPoints(actor: Actor, actorIndex: number, healVectors?: Array<ActionReturnTypes["heal"]>): Actor {
-	return {
-		...actor,
-		faithPoints: actor.faithPoints === undefined ? undefined :
-			(
-				healVectors === undefined ? actor.faithPoints :
-					(
-						healVectors.reduce((faithPointsAcc, healsVector) =>
-							faithPointsAcc + (healsVector?.amount?.[healsVector.actorIndices.indexOf(actorIndex)] ?? 0),
-							actor.faithPoints)
-					)
-
-			)
-	};
-}
-
 function createIgnorant(): Actor{
 	throw Error();
 }

@@ -5,6 +5,7 @@ import { Actor, createActor, translateActor, updateFaithPoints } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase } from "./game_phases";
+import { moveRight, heal } from "./actor_actions"
 
 function initWorld(width: number, height: number): World {
 	return createWorld(width, height);
@@ -18,17 +19,6 @@ function initPhases(): Array<Phase> {
 		createPhase("heal", healPhase),
 		createPhase("enemyFlee", enemyFleePhase),
 	];
-}
-
-function moveRight(actors: Array<Actor>, a: Actor): ActionReturnTypes["move"] {
-	return createVector(1, 0);
-}
-
-function heal(actors: Array<Actor>, a: Actor): ActionReturnTypes["heal"] {
-	if (a.kind === "healer") {
-		return { actorIndices: [0], amount: [1] };
-	}
-	return { actorIndices: [], amount: [] };
 }
 
 // not pure
