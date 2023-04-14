@@ -13,7 +13,7 @@ type ActorActions = {
 /**
  * All the different actor kinds.
  */
-type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "entry" | "exit" | "spaghettimonster";
+type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "spawner" | "spaghettimonster";
 
 /**
  * All the default actions 
@@ -108,3 +108,4 @@ function createHealer(): Actor{
 
 export { actorToString, actorToStringInWorld, createActor, createHealer, createIgnorant, translateActor, stringReplaceAt, defaultActions };
 export type { Actor, Kind };
+ 

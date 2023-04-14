@@ -40,7 +40,7 @@ function initWayPoints(world: World): Array<Actor> {
 		createActor(createVector(0, 1), {}, "spawner", { wayPointNumber: 0 }),
 		createActor(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 1 }),
 		createActor(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 2 }),
-		createActor(createVector(world.width - 1, world.height - 1), {}, "boss", { wayPointNumber: 3 })
+		createActor(createVector(world.width - 1, world.height - 1), {}, "spaghettimonster", { wayPointNumber: 3 })
 	];
 }
 
