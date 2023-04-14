@@ -101,14 +101,14 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 }
 
 function createIgnorant(position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor{
-	return createActor(position, actions, "ignorant", { nextWayPoint: 1 }, tags, ignorance);
+	return createActor(position, actions, "ignorant", { nextWayPointNumber: 1 }, tags, ignorance);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
 function createHealer(position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor{
-	return createActor(position, actions, "healer", { nextWayPoint: 1 }, tags, ignorance);
+	return createActor(position, actions, "healer", { nextWayPointNumber: 1 }, tags, ignorance);
 }
 
 /**
