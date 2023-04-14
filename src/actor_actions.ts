@@ -50,8 +50,12 @@ function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
 	return { actorIndices, amount }; // amount is an array of the same number...
 }
 
-function moveRight(actors: Array<Actor>, a: Actor): ActionReturnTypes["move"] {
+function moveRight(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
 	return createVector(1, 0);
+}
+
+function moveToNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
+	return actors.find((currentActor) => currentActor?.externalProps?.wayPointNumber === movingActor.externalProps.nextWayPointNumber)?.position ?? createVector(0, 0);
 }
 
 /**
@@ -78,7 +82,7 @@ function convertEnemies(actors: Array<Actor>, actor: Actor): ActionReturnTypes["
 function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemyFlee"] {
 	if (actor.kind === "ground" || actor.kind === "goodGuy")
 		return false;
-	return (actor?.faithPoints ?? 0) <= 0;
+	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight };
+export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, moveToNextWaypoint };
