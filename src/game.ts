@@ -4,6 +4,8 @@ import { ActionReturnTypes, Phase } from "./phase";
 import { Actor, createActor, translateActor, updateFaithPoints } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
+import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase } from "./game_phases";
+import { moveRight, heal } from "./actor_actions"
 
 function initWorld(width: number, height: number): World {
 	return createWorld(width, height);
@@ -11,43 +13,31 @@ function initWorld(width: number, height: number): World {
 
 function initPhases(): Array<Phase> {
 	return [
-		createPhase("move", (oldActors, movementVectors) => {
-			return movementVectors.map((movementVector, actorIndex) =>
-				translateActor(oldActors[actorIndex], movementVector));
-		}),
-		createPhase("heal", (oldActors, healVectors) => {
-			return oldActors.map((currentActor, actorIndex) =>
-				updateFaithPoints(currentActor, actorIndex, healVectors));
-		})];
-}
-
-function moveRight(actors: Array<Actor>, a: Actor): ActionReturnTypes["move"] {
-	return createVector(1, 0);
-}
-
-function heal(actors: Array<Actor>, a: Actor): ActionReturnTypes["heal"] {
-	if (a.kind === "healer") {
-		return { actorIndices: [0], amount: [1] };
-	}
-	return { actorIndices: [], amount: [] };
+		createPhase("spawn", spawnPhase),
+		createPhase("temperatureRise", temperatureRisePhase),
+		createPhase("convertEnemies", convertEnemiesPhase),
+		createPhase("heal", healPhase),
+		createPhase("enemyFlee", enemyFleePhase),
+	];
 }
 
 // not pure
 function initWayPoints(world: World): Array<Actor> {
 	return [
-		createActor(createVector(0, 0), {}, "entry", { wayPointNumber: 0 }),
+		createActor(createVector(0, 0), {}, "spawner", { wayPointNumber: 0 }),
+		createActor(createVector(0, 1), {}, "spawner", { wayPointNumber: 0 }),
 		createActor(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 1 }),
 		createActor(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 2 }),
-		createActor(createVector(world.width - 1, world.height - 1), {}, "exit", { wayPointNumber: 3 })
+		createActor(createVector(world.width - 1, world.height - 1), {}, "boss", { wayPointNumber: 3 })
 	];
 }
 
 function findEntries(actors: Array<Actor>): Array<Actor> {
-	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === "entry" ? entries.concat(currentActor) : entries, []);
+	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === "spawner" ? entries.concat(currentActor) : entries, []);
 }
 
 //not pure
-function getRandomArrayElement<T>(fromArray: Array<T>) : T {
+function getRandomArrayElement<T>(fromArray: Array<T>): T {
 	if (fromArray.length === 0) {
 		throw new Error('Cannot get a random element from an empty array');
 	}
@@ -58,7 +48,7 @@ function getRandomArrayElement<T>(fromArray: Array<T>) : T {
 function initOtherActors(entries: Array<Actor>): Array<Actor> {
 	return [
 		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "ignorant", undefined, undefined, 0),
-		createActor(createVector(0, 1), { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
+		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
 	];
 }
 

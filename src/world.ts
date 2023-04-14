@@ -4,12 +4,14 @@ import { Vector2D } from "./geometry";
 type World = {
 	width: number;
 	height: number;
+	turnsElapsed: number;
 };
 
 function createWorld(width: number, height: number): World {
 	return {
 		width: width,
-		height: height
+		height: height,
+		turnsElapsed: 0
 	};
 }
 
