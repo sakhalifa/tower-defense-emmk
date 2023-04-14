@@ -10,7 +10,7 @@ type ActionReturnTypes = {
     convertEnemies: {actorIndices: Array<number>, amount: Array<number>};
     heal: {actorIndices: Array<number>, amount: Array<number>};
     enemyFlee: boolean;
-    paralyze: {actorIndices: Array<number>, composedActor: Array<Actor>};
+    paralyze: {actorIndices: Array<number>, composedActors: Array<Actor>};
     move: Vector2D;
     removeEffects: boolean;
 };

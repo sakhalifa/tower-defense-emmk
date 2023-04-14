@@ -82,7 +82,7 @@ function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturn
 function paralyzePhase(oldActors: Array<Actor>, paralyzeResults: Array<ActionReturnTypes["paralyze"]>): Array<Actor> {
 	return oldActors.map((a, i) =>
 		paralyzeResults.reduce((prevActor, paralyzeResult) =>
-			paralyzeResult.composedActor[paralyzeResult.actorIndices.indexOf(i)] ?? prevActor, a));
+			paralyzeResult.composedActors[paralyzeResult.actorIndices.indexOf(i)] ?? prevActor, a));
 }
 
 function removeEffectsPhase(oldActors: Array<Actor>, removeEffectsResults: Array<ActionReturnTypes["removeEffects"]>): Array<Actor> {

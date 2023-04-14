@@ -1,7 +1,7 @@
 import { isDeepStrictEqual } from "util";
-import { Actor, createHealer, createIgnorant } from "./actor";
+import { Actor, createHealer, createIgnorant, defaultActions } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
-import { distance, createVector } from "./geometry";
+import { distance, createVector, Vector2D } from "./geometry";
 
 /**
  * The "spawner" action.
@@ -43,9 +43,9 @@ function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes[
  */
 function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
 	const range = actor.externalProps?.range ?? 3;
-	const actorIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
-	currentActor.kind === "ignorant" && distance(currentActor.position, actor.position) <= range ? actorsToHeal.concat(actorIndex) : actorsToHeal,
-	[]);
+	const actorIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) =>
+		currentActor.kind === "ignorant" && distance(currentActor.position, actor.position) <= range ? actorsToHeal.concat(actorIndex) : actorsToHeal,
+		[]);
 	const amount = actorIndices.map((_) => actor.externalProps?.healPower ?? 1);
 	return { actorIndices, amount }; // amount is an array of the same number...
 }
@@ -63,7 +63,7 @@ function moveRight(actors: Array<Actor>, a: Actor): ActionReturnTypes["move"] {
  */
 function convertEnemies(actors: Array<Actor>, actor: Actor): ActionReturnTypes["convertEnemies"] {
 	const range = actor.externalProps?.range ?? 3;
-	const actorIndices = actors.filter((currentActor) => currentActor !== actor && currentActor.kind !== "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
+	const actorIndices = actors.filter((currentActor) => currentActor.kind === "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
 	const amount = actorIndices.map((_) => actor.externalProps?.attackPower ?? 1);
 	return { actorIndices, amount };
 }
@@ -79,6 +79,22 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemy
 	if (actor.kind === "ground" || actor.kind === "goodGuy")
 		return false;
 	return (actor?.faithPoints ?? 0) <= 0;
+}
+
+function catapultParalyze(actors: Array<Actor>, actor: Actor): ActionReturnTypes["paralyze"] {
+	const range = actor.externalProps?.range ?? 3;
+	const closestPos = actors
+		.filter((a) => a.kind === "ignorant" && distance(a.position, actor.position) <= range)
+		.reduce((prev, cur) => {
+			const [maxPos, maxDist] = prev as [Vector2D, number];
+			const curDist = distance(cur.position, actor.position);
+			if (curDist > maxDist)
+				return [cur.position, curDist];
+			return [maxPos, maxDist];
+		}, [createVector(-1, -1), -Infinity]);
+	const actorIndices = actors.filter((a) => isDeepStrictEqual(a.position, closestPos)).map((a, i) => i);
+	const composedActors = actorIndices.map((i) => actors[i]);
+	return { actorIndices, composedActors };
 }
 
 export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight };
