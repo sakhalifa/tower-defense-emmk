@@ -24,6 +24,7 @@ const defaultActions: Required<ActorActions> = {
 	heal: (w, a) => { return { actorIndices: [], amount: [] }; },
 	convertEnemies: (w, a) => { return { actorIndices: [], amount: [] }; },
 	enemyFlee: (w, a) => false,
+	paralyze: (w, a) => { return { actorIndices: [], functions: [] }; },
 	move: (w, a) => { return createVector(0, 0); }
 };
 
@@ -56,8 +57,8 @@ function actorToString(actor: Actor): string {
  * @param replacement The replacement string
  * @returns The string with the replaced character
  */
-function stringReplaceAt (baseString: string, index: number, replacement: string): string {
-    return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
+function stringReplaceAt(baseString: string, index: number, replacement: string): string {
+	return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
 }
 
 /**
@@ -82,7 +83,7 @@ function actorToStringInWorld(world: World, worldString: string, actor: Actor): 
  * @returns A new actor
  */
 function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], faithPoints?: number): Actor {
-	return { position: position, actions: {...defaultActions, ...actions}, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
+	return { position: position, actions: { ...defaultActions, ...actions }, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
 }
 
 /**
@@ -95,14 +96,14 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
-function createIgnorant(): Actor{
+function createIgnorant(): Actor {
 	throw Error();
 }
 
 /**
  * Constructor for a default "healer" actor
  */
-function createHealer(): Actor{
+function createHealer(): Actor {
 	throw Error();
 }
 

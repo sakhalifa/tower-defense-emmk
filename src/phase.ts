@@ -8,8 +8,9 @@ type ActionReturnTypes = {
     spawn: Actor | undefined;
     temperatureRise: number;
     convertEnemies: {actorIndices: Array<number>, amount: Array<number>};
-    heal: {actorIndices: number[], amount: number[]};
+    heal: {actorIndices: Array<number>, amount: Array<number>};
     enemyFlee: boolean;
+    paralyze: {actorIndices: Array<number>, functions: Array<(actors: Array<Actor>, actor: Actor) => ActionReturnTypes["move"]>};
     move: Vector2D;
 };
 
