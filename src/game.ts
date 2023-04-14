@@ -1,72 +1,117 @@
 import type { World } from "./world";
 import { isPositionInWorld, createWorld } from "./world";
-import { Phase } from "./phase";
-import { Actor, createActor } from "./actor";
+import { ActionReturnTypes, Phase } from "./phase";
+import { Actor, createActor, translateActor, updateFaithPoints } from "./actor";
 import { createPhase } from "./phase";
-import { createVector, translatePoint } from "./geometry";
+import { createVector } from "./geometry";
 
-function initWorld(): World {
-	return createWorld(7, 7, initActors());
+function initWorld(width: number, height: number): World {
+	return createWorld(width, height);
 }
 
 function initPhases(): Array<Phase> {
 	return [
+		createPhase("move", (oldActors, movementVectors) => {
+			return movementVectors.map((movementVector, actorIndex) =>
+				translateActor(oldActors[actorIndex], movementVector));
+		}),
+		createPhase("heal", (oldActors, healVectors) => {
+			return oldActors.map((currentActor, actorIndex) =>
+				updateFaithPoints(currentActor, actorIndex, healVectors));
+		})];
+}
 
+function moveRight(actors: Array<Actor>, a: Actor): ActionReturnTypes["move"] {
+	return createVector(1, 0);
+}
+
+function heal(actors: Array<Actor>, a: Actor): ActionReturnTypes["heal"] {
+	if (a.kind === "healer") {
+		return { actorIndices: [0], amount: [1] };
+	}
+	return { actorIndices: [], amount: [] };
+}
+
+// not pure
+function initWayPoints(world: World): Array<Actor> {
+	return [
+		createActor(createVector(0, 0), {}, "entry", { wayPointNumber: 0 }),
+		createActor(createVector(0, 1), {}, "entry", { wayPointNumber: 0 }),
+		createActor(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 1 }),
+		createActor(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), {}, "ground", { wayPointNumber: 2 }),
+		createActor(createVector(world.width - 1, world.height - 1), {}, "exit", { wayPointNumber: 3 })
 	];
 }
 
-function heal(w: World, a: Actor) {
-	if (a.tags?.includes("healer")) {
-		return { actorId: 0, amount: 1 };
-	}
-	return { actorId: 0, amount: 0 };
+function findEntries(actors: Array<Actor>): Array<Actor> {
+	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === "entry" ? entries.concat(currentActor) : entries, []);
 }
 
-function initActors(): Array<Actor> {
-	return [createActor(createVector(0, 0), { move: move_right, heal: heal }, undefined, undefined, undefined),
-	createActor(createVector(0, 1), { move: move_right, heal: heal }, ["healer"], undefined, undefined)];
+//not pure
+function getRandomArrayElement<T>(fromArray: Array<T>) : T {
+	if (fromArray.length === 0) {
+		throw new Error('Cannot get a random element from an empty array');
+	}
+	return fromArray[Math.floor(Math.random() * fromArray.length)];
+}
+
+//not pure
+function initOtherActors(entries: Array<Actor>): Array<Actor> {
+	return [
+		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "ignorant", undefined, undefined, 0),
+		createActor(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, "healer", undefined, undefined, 0)
+	];
+}
+
+//not pure
+function initActors(world: World): Array<Actor> {
+	const path = initWayPoints(world);
+	return path.concat(initOtherActors(findEntries(path)));
 }
 
 function validNewActor(world: World, actor: Actor): boolean {
-	return isPositionInWorld(world, actor.pos);
+	return isPositionInWorld(world, actor.position);
 }
 
-function resolveProposals(world: World, proposals: Array<Actor>): World {
-	const resolvedActors: Array<Actor> = proposals.reduce((acc: Array<Actor>, currentProposal: Actor, i: number) => {
+function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
+	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
 		if (validNewActor(world, currentProposal)) {
 			return acc.concat(currentProposal);
 		} else {
-			return acc.concat(world.actors[i]); // doesn't check old position new state
+			return acc.concat(actors[actorIndex]); // doesn't check old position new state -> possible collisions etc
 		}
 	}, []);
-	return { height: world.height, width: world.width, actors: resolvedActors };
 }
 
-function nextTurn(phases: Array<Phase>, world: World) {
-	return phases.reduce((aWorld, aPhase) => {
-		const funcName: string = aPhase.funcName;
-		const proposals: Actor[]//Array<ActionReturnTypes[keyof ActionReturnTypes]>
-			= aPhase.executePhase(aWorld.actors,
+function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Array<Actor> {
+	return phases.reduce((someActors, aPhase) => {
+		const proposals: Actor[]
+			= aPhase.executePhase(someActors,
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				aWorld.actors.map((anActor) => anActor.actions[funcName](aWorld, anActor))
+				someActors.map((anActor) => anActor.actions?.[aPhase.funcName]?.(someActors, anActor))
 			);
-		const aNewWorld = resolveProposals(aWorld, proposals);
-		return aNewWorld;
-	}, world);
+		return resolveProposals(world, someActors, proposals);
+	}, actors);
 }
 
-function playGame(display: (world: World) => void) {
-	let world: World = initWorld();
+//not pure
+function playGame(display: (world: World, actors: Array<Actor>) => void): void {
+	const world: World = initWorld(7, 7);
+	let actors: Array<Actor> = initActors(world);
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
 	let i = 0;
+	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
 	while (!finished) {
-		world = nextTurn(phases, world);
-		display(world);
+		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
+		display(world, actors);
+		actors = nextTurn(phases, world, actors);
 		finished = i++ === 5;
 	}
+	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
+	display(world, actors);
 }
 
 
-export { playGame, initWorld, initPhases, nextTurn };
+export { playGame, initWorld, initPhases, initActors, nextTurn };
