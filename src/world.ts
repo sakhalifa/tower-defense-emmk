@@ -11,16 +11,17 @@ type World = {
 };
 
 /**
- * Creates a new world
+ * A world constructor
  * @param width the width of the world
  * @param height The height of the world
- * @returns A world with the given width and height. 0 turns have passed
+ * @param turnsElapsed the turns elapsed
+ * @returns A world with the given width and height and turns elapsed.
  */
-function createWorld(width: number, height: number): World {
+function createWorld(width: number, height: number, turnsElapsed: number): World {
 	return {
 		width: width,
 		height: height,
-		turnsElapsed: 0
+		turnsElapsed
 	};
 }
 
