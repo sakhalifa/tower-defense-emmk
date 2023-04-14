@@ -12,15 +12,14 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Action
 }
 
 function healPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["heal"]>): Array<Actor> {
-	oldActors.map((a, i) => {
-		const idx = phaseResult.findIndex((v) => v.actorIds.includes(i));
+	return oldActors.map((a, i) => phaseResult.reduce((actor, curResult) => {
+		const idx = curResult.actorIds.findIndex((id) => id === i);
 		if (idx !== -1) {
-			return 
+			const fp = actor.faith_point ?? 0;
+			return { ...actor, faith_point: fp + curResult.amount[idx] };
 		}
-		return a;
-	});
-
-	return [];
+		return actor;
+	}, a));
 }
 
-export { spawnPhase, temperatureRisePhase };
+export { spawnPhase, temperatureRisePhase, healPhase };
