@@ -13,7 +13,7 @@ type ActorActions = {
 /**
  * All the different actor kinds.
  */
-type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "entry" | "exit" | "spaghettimonster";
+type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "spawner" | "spaghettimonster";
 
 /**
  * All the default actions 
@@ -39,7 +39,7 @@ type Actor = {
 	kind: Kind;
 	externalProps?: any;
 	tags?: string[];
-	faithPoints?: number;
+	ignorance?: number;
 };
 
 /**
@@ -48,7 +48,7 @@ type Actor = {
  * @returns the string representation of the actor
  */
 function actorToString(actor: Actor): string {
-	return `{position: ${vector2DToString(actor.position)}${actor.faithPoints !== undefined ? ', fp:' + actor.faithPoints : ''}}`;
+	return `{position: ${vector2DToString(actor.position)}${actor.ignorance !== undefined ? ', fp:' + actor.ignorance : ''}}`;
 }
 
 /**
@@ -73,6 +73,10 @@ function actorToStringInWorld(world: World, worldString: string, actor: Actor): 
 	return stringReplaceAt(worldString, worldStringVectorToIndex(world, actor.position), actor.kind.charAt(0));
 }
 
+function findKind(actors: Array<Actor>, kind : Kind): Array<Actor> {
+	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === kind ? entries.concat(currentActor) : entries, []);
+}
+
 /**
  * Actor constructor
  * @param position The position
@@ -80,11 +84,11 @@ function actorToStringInWorld(world: World, worldString: string, actor: Actor): 
  * @param kind The kind
  * @param externalProps The external properties
  * @param tags The tags
- * @param faithPoints The faith points
+ * @param ignorance The ignorance points
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], faithPoints?: number): Actor {
-	return { position: position, actions: { ...defaultActions, ...actions }, tags: tags, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
+function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], ignorance?: number): Actor {
+	return { position: position, actions: {...defaultActions, ...actions}, tags: tags, kind: kind, ignorance: ignorance, externalProps: externalProps };
 }
 
 /**
@@ -97,16 +101,38 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
-function createIgnorant(): Actor {
-	throw Error();
+function createIgnorant(position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor{
+	return createActor(position, actions, "ignorant", { nextWayPoint: 1 }, tags, ignorance);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
-function createHealer(): Actor {
-	throw Error();
+function createHealer(position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor{
+	return createActor(position, actions, "healer", { nextWayPoint: 1 }, tags, ignorance);
 }
 
-export { actorToString, actorToStringInWorld, createActor, createHealer, createIgnorant, translateActor, stringReplaceAt, defaultActions };
+/**
+ * Constructor for a default "spawner" actor
+ */
+function createSpawner(position: Vector2D): Actor{
+	return createActor(position, {}, "spawner", { wayPointNumber: 0 });
+}
+
+/**
+ * Constructor for a default "ground" actor
+ */
+function createGround(position: Vector2D, wayPointNumber : number): Actor{
+	return createActor(position, {}, "ground", { wayPointNumber: wayPointNumber });
+}
+
+/**
+ * Constructor for a default "spaghettimonster" actor
+ */
+function createSpaghettimonster(position: Vector2D, wayPointNumber : number): Actor{
+	return createActor(position, {}, "spaghettimonster", { wayPointNumber: wayPointNumber });
+}
+
+export { actorToString, actorToStringInWorld, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, translateActor, stringReplaceAt, findKind, defaultActions, createActor };
 export type { Actor, Kind };
+ 

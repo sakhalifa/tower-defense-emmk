@@ -22,19 +22,19 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnType
  */
 function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["temperatureRise"]>): Array<Actor> {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	return oldActors.map((a) => a.kind !== "spaghettimonster" ? a : { ...a, faith_point: a.faithPoints! - sum(phaseResult) });
+	return oldActors.map((a) => a.kind !== "spaghettimonster" ? a : { ...a, faith_point: a.ignorance! - sum(phaseResult) });
 }
 
 function movePhase(oldActors: Array<Actor>, movementVectors: Array<ActionReturnTypes["move"]>): Array<Actor> {
 	return movementVectors.map((movementVector, actorIndex) => translateActor(oldActors[actorIndex], movementVector));
 }
 
-function updateFaithPoints(actor: Actor, actorIndex: number, healResults: Array<ActionReturnTypes["heal"]>): Actor {
+function updateIgnorance(actor: Actor, actorIndex: number, healResults: Array<ActionReturnTypes["heal"]>): Actor {
 	return {
 		...actor,
-		faithPoints: healResults.reduce((faithPointsAcc, healResult) =>
-			(faithPointsAcc ?? 0) + ((healResult.amount[healResult.actorIndices.indexOf(actorIndex)] ?? 0)),
-			actor.faithPoints)
+		ignorance: healResults.reduce((ignoranceAcc, healResult) =>
+					(ignoranceAcc ?? 0) + ((healResult.amount[healResult.actorIndices.indexOf(actorIndex)] ?? 0)),
+					actor.ignorance)
 	};
 }
 
@@ -47,7 +47,7 @@ function updateFaithPoints(actor: Actor, actorIndex: number, healResults: Array<
  */
 function healPhase(oldActors: Array<Actor>, healVectors: Array<ActionReturnTypes["heal"]>): Array<Actor> {
 
-	return oldActors.map((currentActor, actorIndex) => updateFaithPoints(currentActor, actorIndex, healVectors));
+	return oldActors.map((currentActor, actorIndex) => updateIgnorance(currentActor, actorIndex, healVectors));
 }
 
 /**
@@ -59,9 +59,9 @@ function healPhase(oldActors: Array<Actor>, healVectors: Array<ActionReturnTypes
  */
 function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["convertEnemies"]>): Array<Actor> {
 	return oldActors.map((a, i) => phaseResult.reduce((actor, curResult) => {
-		const idx = curResult.actorIndices.findIndex((id) => id === i);
+		const idx = curResult.actorIndices.indexOf(i);
 		if (idx !== -1) {
-			const fp = actor.faithPoints ?? 0;
+			const fp = actor.ignorance ?? 0;
 			return { ...actor, faith_point: fp - curResult.amount[idx] };
 		}
 		return actor;
