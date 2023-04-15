@@ -1,11 +1,12 @@
 import type { World } from "./world";
+import type { Phase } from "./phase";
+import type { Actor } from "./actor";
 import { isPositionInWorld, createWorld } from "./world";
-import { Phase } from "./phase";
-import { Actor, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, findKind } from "./actor";
+import { createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, createWalker, findKind, findNextWaypoint } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { moveRight, heal, moveToNextWaypoint } from "./actor_actions";
+import { moveRight, heal, moveTowardNextWaypoint } from "./actor_actions";
 import { getRandomArrayElement } from "./util";
 
 /**
@@ -35,7 +36,7 @@ function initPhases(): Array<Phase> {
 }
 
 // not pure
-function initWayPoints(world: World): Array<Actor> {
+function initWaypoints(world: World): Array<Actor> {
 	return [
 		createSpawner(createVector(0, 0)),
 		createSpawner(createVector(0, 1)),
@@ -46,17 +47,18 @@ function initWayPoints(world: World): Array<Actor> {
 }
 
 //not pure
-function initOtherActors(entries: Array<Actor>): Array<Actor> {
+function initOtherActors(path: Array<Actor>): Array<Actor> {
+	const entries = findKind(path, "spawner");
 	return [
-		createIgnorant(getRandomArrayElement(entries).position, { move: moveToNextWaypoint }, undefined, 4),
-		createHealer(getRandomArrayElement(entries).position, { move: moveRight, heal: heal }, undefined, 4)
+		createWalker("ignorant", path, getRandomArrayElement(entries).position, { move: moveRight }, undefined, 4),
+		createWalker("healer", path, getRandomArrayElement(entries).position, { move: moveTowardNextWaypoint, heal: heal }, undefined, 4)
 	];
 }
 
 //not pure
 function initActors(world: World): Array<Actor> {
-	const path = initWayPoints(world);
-	return path.concat(initOtherActors(findKind(path, "spawner")));
+	const path: Array<Actor> = initWaypoints(world);
+	return path.concat(initOtherActors(path));
 }
 
 /**
@@ -120,7 +122,7 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors);
-		finished = i++ === 100;
+		finished = i++ === 10;
 	}
 	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);

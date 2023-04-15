@@ -54,12 +54,14 @@ function moveRight(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes[
 	return createVector(1, 0);
 }
 
-function moveToNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
-	const nextWayPoint = actors.find((currentActor) => currentActor?.externalProps?.wayPointNumber === movingActor.externalProps.nextWayPointNumber);
-	if (nextWayPoint === undefined) {
+function moveTowardNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
+	if (movingActor?.externalProps?.nextWaypointPosition === undefined) {
+		if (movingActor.kind === "healer") {
+			console.log("undef nextway");
+		}
 		return createVector(0, 0);
 	} else {
-		return movingVector(movingActor.position, nextWayPoint.position);
+		return movingVector(movingActor.position, movingActor.externalProps.nextWaypointPosition);
 	}
 }
 
@@ -104,4 +106,4 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemy
 	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, moveToNextWaypoint };
+export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, moveTowardNextWaypoint };
