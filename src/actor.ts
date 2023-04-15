@@ -117,7 +117,7 @@ function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: num
 
 function translateTowardWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
 	const newPosition = translatePoint(actor.position, movementVector);
-	if (isDeepStrictEqual(actor?.externalProps?.nextWaypointPosition, newPosition)) {
+	if (isDeepStrictEqual(newPosition, actor?.externalProps?.nextWaypointPosition)) {
 		return { ...actor, position: newPosition,
 			externalProps: updateNextWaypoint(actors, actor.externalProps.nextWaypointNumber, actor.externalProps.nextWaypointPosition) };
 	}
