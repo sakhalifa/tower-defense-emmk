@@ -7,11 +7,15 @@ import { Vector2D, createVector } from "./geometry";
 
 const canvas: HTMLCanvasElement = document.getElementById("myCanvas") as HTMLCanvasElement;
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const ctx = canvas.getContext("2d")!;
+ctx.imageSmoothingEnabled = false;
+
 const sprites = [
     document.getElementById("undefinedSprite"),
     document.getElementById("ignorantSprite"),
     document.getElementById("goodGuySprite"),
-    document.getElementById("groundSprite"),
+    document.getElementById("waypointSprite"),
 ].map((element) => element as HTMLImageElement);
 
 /**
@@ -44,21 +48,63 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
 }
 
 /**
+ * Draw a line on the canvas
+ * @param begin the beginning of the line
+ * @param end the ending of the line
+ * @param color the color of the line
+ */
+function drawLine(begin: Vector2D, end: Vector2D, color: string){
+    ctx?.beginPath();
+    ctx.lineWidth = 1;
+    ctx?.moveTo(begin.x, begin.y);
+    ctx?.lineTo(end.x, end.y);
+    ctx.strokeStyle = color;
+    ctx?.stroke();
+}
+
+/**
+ * Display a bar representing the ignorance remaining in an actor, assuming max ignorance is 10.
+ * If the actor has undefined ignorance, do nothing
+ * 
+ * @param actor the actor of which ignorance is to be displayed
+ * @param scale the scale of the canvas
+ */
+function drawActorIgnorance(actor: Actor, scale: Vector2D){
+    if (actor.ignorance === undefined){
+        return;
+    }
+
+    const barSize = scale.x;
+    const barOffset = createVector(0, -scale.y / 10);
+    const healthBarBegin = createVector(actor.position.x * scale.x + barOffset.x, actor.position.y * scale.y + barOffset.y);
+
+    drawLine(healthBarBegin,
+        createVector(actor.position.x * scale.x + barOffset.x + barSize, actor.position.y * scale.y + barOffset.y),
+        '#ff0000');
+    
+    drawLine(healthBarBegin,
+        createVector((actor.position.x * scale.x + barOffset.x + barSize) * actor.ignorance / 10, actor.position.y * scale.y + barOffset.y),
+        '#00ff00');
+}
+
+/**
  * Draws the content of the world to the canvas
  * @param world The world
  * @param actors The actors
  */
 async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     // Update canvas
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const ctx = canvas.getContext("2d")!;
-    ctx.imageSmoothingEnabled = true;
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
+    // Draw actor sprite
     actors.forEach((actor) => 
         ctx?.drawImage(getActorSprite(actor.kind), 
             actor.position.x * canvasScale.x, actor.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
+    // Draw Actor ignorance
+    // Only draw ignorance of ignorant
+    actors.filter((actor) => actor.kind === "ignorant").forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
+
     // wait
     await delay(1000);
 }

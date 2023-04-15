@@ -120,7 +120,7 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors);
-		finished = i++ === 5;
+		finished = i++ === 100;
 	}
 	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);
