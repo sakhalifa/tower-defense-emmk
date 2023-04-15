@@ -110,19 +110,16 @@ function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: numbe
 function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number, currentNextWaypointPosition: Vector2D): Actor["externalProps"] {
 	const nextWaypoint = findNextWaypoint(actors, currentNextWaypointNumber);
 	if (nextWaypoint !== undefined) {
-		return { nextWaypointNumber: nextWaypoint.externalProps.waypointNumber, nextWaypointPosition: nextWaypoint.externalProps.position };
+		return { nextWaypointNumber: nextWaypoint.externalProps.waypointNumber, nextWaypointPosition: nextWaypoint.position };
 	}
 	return { nextWaypointNumber: currentNextWaypointNumber, nextWaypointPosition: currentNextWaypointPosition };
 }
 
 function translateTowardWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
-	const nextWaypoint = findNextWaypoint(actors, actor.externalProps.nextWaypointPosition)!;
 	const newPosition = translatePoint(actor.position, movementVector);
 	if (isDeepStrictEqual(actor?.externalProps?.nextWaypointPosition, newPosition)) {
-		return { ...actor, position: newPosition, externalProps: { nextWaypointNumber: nextWaypoint.externalProps.waypointNumber, nextWaypointPosition: nextWaypoint.externalProps.position } };
-	}
-	if (actor.kind === "healer") {
-		console.log("not on waypoint");
+		return { ...actor, position: newPosition,
+			externalProps: updateNextWaypoint(actors, actor.externalProps.nextWaypointNumber, actor.externalProps.nextWaypointPosition) };
 	}
 	return { ...actor, position: newPosition };
 }

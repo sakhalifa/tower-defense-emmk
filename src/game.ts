@@ -36,7 +36,7 @@ function initPhases(): Array<Phase> {
 }
 
 // not pure
-function initWaypoints(world: World): Array<Actor> {
+function initWayPoints(world: World): Array<Actor> {
 	return [
 		createSpawner(createVector(0, 0)),
 		createSpawner(createVector(0, 1)),
@@ -57,7 +57,7 @@ function initOtherActors(path: Array<Actor>): Array<Actor> {
 
 //not pure
 function initActors(world: World): Array<Actor> {
-	const path: Array<Actor> = initWaypoints(world);
+	const path: Array<Actor> = initWayPoints(world);
 	return path.concat(initOtherActors(path));
 }
 
@@ -122,7 +122,7 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors);
-		finished = i++ === 10;
+		finished = i++ === 15;
 	}
 	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);

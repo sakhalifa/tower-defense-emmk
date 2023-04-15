@@ -56,9 +56,6 @@ function moveRight(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes[
 
 function moveTowardNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
 	if (movingActor?.externalProps?.nextWaypointPosition === undefined) {
-		if (movingActor.kind === "healer") {
-			console.log("undef nextway");
-		}
 		return createVector(0, 0);
 	} else {
 		return movingVector(movingActor.position, movingActor.externalProps.nextWaypointPosition);
