@@ -34,18 +34,6 @@
         <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot">
           <i class="fa-solid fa-fire-flame-curved fa-xl"></i>
         </button>
-        <button id="hot" class="btn hot" aria-label="Set temperature to hot">
-          <i class="fa-solid fa-sun fa-xl"></i>
-        </button>
-        <button id="warm" class="btn warm" aria-label="Set temperature to warm">
-          <i class="fa-solid fa-cloud fa-xl"></i>
-        </button>
-        <button id="cold" class="btn cold" aria-label="Set temperature to cold">
-          <i class="fa-solid fa-snowflake fa-xl"></i>
-        </button>
-        <button id="very-cold" class="btn very-cold" aria-label="Set temperature to very cold">
-          <i class="fa-solid fa-icicles fa-xl"></i>
-        </button>
       </div>
     </div>
   </div>
@@ -77,12 +65,8 @@
     if (i <= 10)
       clearInterval(intervalHandler)
     tempFill.style.setProperty("top", `${i}px`);
-    bg(i);
+    document.body.className = `${FILL_HEIGHT[Math.trunc(i/58)]}-bg`;
     i--;
-  }
-
-  function bg(x) {
-    document.body.className = `${FILL_HEIGHT[Math.trunc(x/58)]}-bg`;
   }
 
 </script>
