@@ -1,5 +1,5 @@
 import { Vector2D, createVector, vector2DToString, translatePoint } from "./geometry";
-import { isDeepStrictEqual } from "util";
+import { isDeepStrictEqual } from "./util";
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
