@@ -15,4 +15,15 @@ function getRandomArrayElement<T>(fromArray: Array<T>): T {
 	return fromArray[Math.floor(Math.random() * fromArray.length)];
 }
 
-export { sum, getRandomArrayElement };
+/**
+ * Substitutes the i-th character of a string with another string.
+ * @param baseString The string to replace the character
+ * @param index The index to replace the character
+ * @param replacement The replacement string
+ * @returns The string with the replaced character
+ */
+function stringReplaceAt(baseString: string, index: number, replacement: string): string {
+	return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
+}
+
+export { sum, getRandomArrayElement, stringReplaceAt };

@@ -2,22 +2,17 @@ import { Vector2D, createVector, vector2DToString, translatePoint } from "./geom
 import { isDeepStrictEqual } from "util";
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
-import type { World } from "./world";
-import { getRandomArrayElement } from "./util";
+import { stringReplaceAt } from "./util";
 
-/**
- * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
- */
-type ActorActions = {
-	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
-};
+import type { World } from "./world";
+import type { ActorActions } from "./actor_actions";
+
+type Walker = "ignorant" | "healer";
 
 /**
  * All the different actor kinds.
  */
-type Kind = "ignorant" | "goodGuy" | "ground" | "healer" | "spawner" | "spaghettimonster";
-
-type Walker = "ignorant" | "healer"; // limit of functional programming, I would like to use inheritance to make sure Walker only contains elements from Kind
+type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettimonster";
 
 /**
  * All the default actions 
@@ -51,17 +46,6 @@ type Actor = {
  */
 function actorToString(actor: Actor): string {
 	return `{position: ${vector2DToString(actor.position)}${actor.ignorance !== undefined ? ', fp:' + actor.ignorance : ''}}`;
-}
-
-/**
- * Substitutes the i-th character of a string with another string.
- * @param baseString The string to replace the character
- * @param index The index to replace the character
- * @param replacement The replacement string
- * @returns The string with the replaced character
- */
-function stringReplaceAt(baseString: string, index: number, replacement: string): string {
-	return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
 }
 
 /**

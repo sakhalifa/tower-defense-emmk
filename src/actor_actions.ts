@@ -4,6 +4,13 @@ import type { ActionReturnTypes, Phase } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
 
 /**
+ * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
+ */
+type ActorActions = {
+	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
+};
+
+/**
  * The "spawner" action.
  * It has a 50% chance to spawn a new actor, which has 50% chance to be an ignorant, or 50% chance to be a healer.
  * @param actors The actors in the world
@@ -104,3 +111,4 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemy
 }
 
 export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, moveTowardNextWaypoint };
+export type {ActorActions};
