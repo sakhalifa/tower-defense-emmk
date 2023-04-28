@@ -139,6 +139,6 @@ function createSpaghettimonster(position: Vector2D, wayPointNumber : number): Ac
 	return createActor(position, {}, "spaghettimonster", { wayPointNumber: wayPointNumber });
 }
 
-export { actorToString, actorToStringInWorld, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, translateActor, stringReplaceAt, filterByKind as findKind, defaultActions };
+export { actorToString, actorToStringInWorld, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, translateActor, stringReplaceAt, filterByKind, defaultActions };
 export type { Actor, Kind };
  
