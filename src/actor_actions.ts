@@ -2,6 +2,7 @@ import { isDeepStrictEqual } from "./util";
 import { Actor, createHealer, createIgnorant } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
+import { getAttackPower, getHealPower, getNextWaypointPosition, getRange } from "./props";
 
 /**
  * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
@@ -50,7 +51,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ActionReturnTypes["spawn"] {
  */
 function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes["temperatureRise"] {
 	return actors.find((a) => a.kind === "spaghettimonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
-		? 0 : (actor.externalProps?.attackPower ?? 1);
+		? 0 : (getAttackPower(actor) ?? 1);
 }
 
 /**
@@ -61,11 +62,11 @@ function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes[
  * @returns all the actors that will be healed, and the amount for which every actor healed will be healed
  */
 function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
-	const range = actor.externalProps?.range ?? 3;
+	const range = getRange(actor) ?? 3;
 	const actorIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
 	currentActor.kind === "ignorant" && distance(currentActor.position, actor.position) <= range ? actorsToHeal.concat(actorIndex) : actorsToHeal,
 	[]);
-	const amount = actorIndices.map((_) => actor.externalProps?.healPower ?? 1);
+	const amount = actorIndices.map((_) => getHealPower(actor) ?? 1);
 	return { actorIndices, amount }; // amount is an array of the same number...
 }
 
@@ -74,10 +75,10 @@ function moveRight(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes[
 }
 
 function moveTowardNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
-	if (movingActor?.externalProps?.nextWaypointPosition === undefined) {
+	if (getNextWaypointPosition(movingActor) === undefined) {
 		return createVector(0, 0);
 	} else {
-		return movingVector(movingActor.position, movingActor.externalProps.nextWaypointPosition);
+		return movingVector(movingActor.position, getNextWaypointPosition(movingActor)!);
 	}
 }
 
@@ -103,9 +104,9 @@ function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
  * @returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
  */
 function convertEnemies(actors: Array<Actor>, actor: Actor): ActionReturnTypes["convertEnemies"] {
-	const range = actor.externalProps?.range ?? 3;
+	const range = getRange(actor) ?? 3;
 	const actorIndices = actors.filter((currentActor) => currentActor !== actor && currentActor.kind !== "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
-	const amount = actorIndices.map((_) => actor.externalProps?.attackPower ?? 1);
+	const amount = actorIndices.map((_) => getAttackPower(actor) ?? 1);
 	return { actorIndices, amount };
 }
 

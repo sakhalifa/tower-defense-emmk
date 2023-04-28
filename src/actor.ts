@@ -3,10 +3,11 @@ import { isDeepStrictEqual } from "./util";
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
-import { defaultActions, heal, moveTowardNextWaypoint } from "./actor_actions";
+import { defaultActions, heal, moveTowardNextWaypoint, temperatureRise } from "./actor_actions";
 
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
+import { getNextWaypointNumber, getNextWaypointPosition, getWaypointNumber, setNextWaypointNumber, setNextWaypointPosition, setWaypointNumber } from "./props";
 
 /**
  * Actors that can move by themselves on the board.
@@ -71,7 +72,7 @@ function findKind(actors: Array<Actor>, kind: Kind): Array<Actor> {
  * @param ignorance The ignorance points
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], ignorance?: number = 10): Actor {
+function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], ignorance: number = 10): Actor {
 	return { position: position, actions: { ...defaultActions, ...actions }, tags: tags, kind: kind, ignorance: ignorance, externalProps: externalProps };
 }
 
@@ -109,7 +110,7 @@ function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: numbe
 function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number, currentNextWaypointPosition: Vector2D): Actor["externalProps"] {
 	const nextWaypoint = findNextWaypoint(actors, currentNextWaypointNumber);
 	if (nextWaypoint !== undefined) {
-		return { nextWaypointNumber: nextWaypoint.externalProps.waypointNumber, nextWaypointPosition: nextWaypoint.position };
+		return { nextWaypointNumber: getWaypointNumber(nextWaypoint), nextWaypointPosition: nextWaypoint.position };
 	}
 	return { nextWaypointNumber: currentNextWaypointNumber, nextWaypointPosition: currentNextWaypointPosition };
 }
@@ -124,15 +125,23 @@ function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: num
  */
 function translateAndUpdateWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
 	const newPosition = translatePoint(actor.position, movementVector);
-	if (isDeepStrictEqual(newPosition, actor?.externalProps?.nextWaypointPosition)) {
-		return { ...actor, position: newPosition,
-			externalProps: updateNextWaypoint(actors, actor.externalProps.nextWaypointNumber, actor.externalProps.nextWaypointPosition) };
+	const currentNextWaypointPosition = getNextWaypointPosition(actor);
+	const currentNextWaypointNumber = getNextWaypointNumber(actor)!;
+	if (isDeepStrictEqual(newPosition, currentNextWaypointPosition)) {
+		const nextWaypoint = findNextWaypoint(actors, getWaypointNumber(actor)!);
+		return setNextWaypointNumber(
+			setNextWaypointPosition({ ...actor, position: newPosition }, nextWaypoint?.position ?? currentNextWaypointPosition!),
+			nextWaypoint ? getNextWaypointNumber(nextWaypoint)! : currentNextWaypointNumber);
+		// return {
+		// 	...actor, position: newPosition,
+		// 	externalProps: updateNextWaypoint(actors, actor.externalProps.nextWaypointNumber, actor.externalProps.nextWaypointPosition)
+		// };
 	}
 	return { ...actor, position: newPosition };
 }
 
 function createIgnorant(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[]): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags);
+	return createActor(position, { move: moveTowardNextWaypoint, temperatureRise: temperatureRise }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags);
 }
 
 /**
