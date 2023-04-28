@@ -69,15 +69,11 @@ function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
 	return { actorIndices, amount }; // amount is an array of the same number...
 }
 
-function moveRight(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
-	return createVector(1, 0);
-}
-
 function moveTowardNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
-	if (movingActor?.externalProps?.nextWaypointPosition === undefined) {
+	if (movingActor?.externalProps?.waypointTarget === undefined) {
 		return createVector(0, 0);
 	} else {
-		return movingVector(movingActor.position, movingActor.externalProps.nextWaypointPosition);
+		return movingVector(movingActor.position, movingActor.externalProps.waypointTarget);
 	}
 }
 

@@ -76,7 +76,7 @@ test("findNextWaypoint test", () => {
         .toEqual(undefined);
 });
 
-function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number): Actor | undefined {
-	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentNextWaypointNumber + 1);
+function findNextWaypoint(actors: Array<Actor>, currentwaypointTargetNumber: number): Actor | undefined {
+	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentwaypointTargetNumber + 1);
 }
 
