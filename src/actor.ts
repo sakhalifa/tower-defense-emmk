@@ -86,34 +86,22 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 }
 
 //not pure
-/**
- * 
- * @param actors 
- * @param currentWaypointTargetNumber 
- * @returns 
- */
-function findNextWaypointTarget(actors: Array<Actor>, actor: Actor): [Vector2D, number] {
-	const possibilities = actors.filter((currentActor) => currentActor?.externalProps?.waypointNumber === actor.externalProps.waypointTargetNumber + 1);
+function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, waypointTargetNumber: number): Actor["externalProps"] {
+	const possibilities = actors.filter((currentActor) => currentActor?.externalProps?.waypointNumber === waypointTargetNumber + 1);
 	if (possibilities.length === 0) {
-		return actor.externalProps.waypointTarget;
+		return { waypointTargetNumber: waypointTargetNumber, waypointTarget: waypointTarget };
 	}
 	const nextWaypointTarget = getRandomArrayElement(possibilities);
-	return [nextWaypointTarget.position, nextWaypointTarget.externalProps.waypointNumber];
+	return { waypointTargetNumber: nextWaypointTarget.externalProps.waypointNumber, waypointTarget: nextWaypointTarget.position };
 }
 
-function updateNextWaypoint(actors: Array<Actor>, actor: Actor): Actor["externalProps"] {
-	const [nextWaypointTarget, updatedWaypointTargetNumber] = findNextWaypointTarget(actors, actor);
-	//const updatedWaypointTargetNumber = nextWaypointTarget !== actor.externalProps.waypointTarget ? actor.externalProps.waypointTargetNumber + 1;
-	return { waypointTargetNumber: updatedWaypointTargetNumber, waypointTarget: nextWaypointTarget };
-}
-
-function translateTowardWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
-	const newPosition = translatePoint(actor.position, movementVector);
-	if (isDeepStrictEqual(newPosition, actor?.externalProps?.waypointTarget)) {
-		return { ...actor, position: newPosition,
-			externalProps: updateNextWaypoint(actors, actor) };
+function translateTowardWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+	const newPosition = translatePoint(movingActor.position, movementVector);
+	if ((movingActor.kind === "healer" || movingActor.kind === "ignorant") && isDeepStrictEqual(newPosition, movingActor?.externalProps?.waypointTarget)) {
+		return { ...movingActor, position: newPosition,
+			externalProps: findNextWaypointTarget(actors, movingActor.externalProps.waypointTarget, movingActor.externalProps.waypointTargetNumber) };
 	}
-	return { ...actor, position: newPosition };
+	return { ...movingActor, position: newPosition };
 }
 
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, tags?: string[]): Actor {
@@ -137,7 +125,7 @@ const walkerCreator: WalkerCreator = {
 };
 
 function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, tags?: string[], ignorance?: number): Actor {
-	const firstWaypoint = findNextWaypointTarget(path, 0);
+	const firstWaypoint = findNextWaypointTarget(path, position, 0);
 	return walkerCreator[kind](position, firstWaypoint?.position ?? position, tags, ignorance);
 }
 
