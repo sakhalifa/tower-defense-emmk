@@ -71,7 +71,7 @@ function findKind(actors: Array<Actor>, kind: Kind): Array<Actor> {
  * @param ignorance The ignorance points
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], ignorance?: number): Actor {
+function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], ignorance?: number = 10): Actor {
 	return { position: position, actions: { ...defaultActions, ...actions }, tags: tags, kind: kind, ignorance: ignorance, externalProps: externalProps };
 }
 
@@ -131,15 +131,15 @@ function translateAndUpdateWaypoint(actors: Array<Actor>, actor: Actor, movement
 	return { ...actor, position: newPosition };
 }
 
-function createIgnorant(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
+function createIgnorant(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[]): Actor {
+	return createActor(position, { move: moveTowardNextWaypoint }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
-function createHealer(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint, heal: heal }, "healer", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
+function createHealer(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[]): Actor {
+	return createActor(position, { move: moveTowardNextWaypoint, heal: heal }, "healer", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags);
 }
 
 type WalkerCreator = {
