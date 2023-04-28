@@ -1,6 +1,6 @@
 import type { Vector2D } from "./../src/geometry";
 
-import { vector2DToString, translatePoint, createVector } from "./../src/geometry";
+import { vector2DToString, translatePoint, createVector, distance } from "./../src/geometry";
 
 
 test("Vector create test", () => {
@@ -26,5 +26,14 @@ test("Vector to string test", () => {
         .toEqual("(-456, 1220100)");
     expect(vector2DToString({ x: 0.45673, y: 1274849.230 }))
         .toEqual("(0.45673, 1274849.23)");
+});
+
+test("Distance test", () => {
+    expect(distance(createVector(0, 0), createVector(0, 0))).toBeCloseTo(0);
+    expect(distance(createVector(0, 0), createVector(1, 1))).toBeCloseTo(1.41);
+    expect(distance(createVector(0, 0), createVector(0, 10))).toBeCloseTo(10);
+    expect(distance(createVector(0, 0), createVector(10, 0))).toBeCloseTo(10);
+    expect(distance(createVector(0, 10), createVector(0, 0))).toBeCloseTo(10);
+    expect(distance(createVector(10, 5), createVector(0, 5))).toBeCloseTo(10);
 });
 
