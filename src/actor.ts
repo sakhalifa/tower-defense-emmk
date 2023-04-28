@@ -101,7 +101,7 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
-function createIgnorant(position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor{
+function createIgnorant(position: Vector2D, actions: ActorActions, tags?: string[], ignorance: number = 10): Actor{
 	return createActor(position, actions, "ignorant", { nextWayPoint: 1 }, tags, ignorance);
 }
 

@@ -1,7 +1,7 @@
-import { isDeepStrictEqual } from "util";
 import { Actor, createHealer, createIgnorant, defaultActions } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
+import { isDeepStrictEqual } from "./util";
 
 /**
  * The "spawner" action.
@@ -15,7 +15,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ActionReturnTypes["spawn"] {
 		return undefined;
 	else {
 		if (Math.random() < 0.5)
-			return createIgnorant();
+			return createIgnorant(actor.position);
 		else
 			return createHealer();
 	}
@@ -93,8 +93,8 @@ function catapultParalyze(actors: Array<Actor>, actor: Actor): ActionReturnTypes
 	const range = actor.externalProps?.range ?? 3;
 	const closestPos = actors
 		.filter((a) => a.kind === "ignorant" && distance(a.position, actor.position) <= range)
-		.reduce((prev, cur) => {
-			const [maxPos, maxDist] = prev as [Vector2D, number];
+		.reduce<[Vector2D, number]>((prev, cur) => {
+			const [maxPos, maxDist] = prev;
 			const curDist = distance(cur.position, actor.position);
 			if (curDist > maxDist)
 				return [cur.position, curDist];
