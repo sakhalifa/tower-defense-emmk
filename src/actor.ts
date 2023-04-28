@@ -1,13 +1,13 @@
-import { Vector2D, createVector, vector2DToString, translatePoint } from "./geometry";
-import { isDeepStrictEqual } from "./util";
+import { Vector2D, vector2DToString, translatePoint } from "./geometry";
+import { isDeepStrictEqual, getRandomArrayElement } from "./util";
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
-import { defaultActions, heal, moveTowardNextWaypoint, temperatureRise } from "./actor_actions";
+import { defaultActions, heal, moveTowardWaypointTarget, temperatureRise } from "./actor_actions";
 
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
-import { getNextWaypointNumber, getNextWaypointPosition, getWaypointNumber, setNextWaypointNumber, setNextWaypointPosition, setWaypointNumber } from "./props";
+import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget } from "./props";
 
 /**
  * Actors that can move by themselves on the board.
@@ -87,73 +87,42 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
-/**
- * Randoly choose a waypoint with a number at "given number + 1" and returns it
- * 
- * @param actors All world's actors
- * @param currentNextWaypointNumber a waypoint number 
- * @returns a waypoint with a number that is 1 higher than the given number, randomly choosen among all the waypoints at that value
- */
-function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number): Actor | undefined {
-	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentNextWaypointNumber + 1);
-}
-
-/**
- * Return an externalProps dict with updated waypoint position. If current waypoint is the one with the highest number,
- * returns externalProps containing its number and position, otherwise, returns externalProps containing the number and position
- * of a higher waypoint.
- * 
- * @param actors The list of all actors. It contains the waypoints
- * @param currentNextWaypointNumber The number of the current waypoint
- * @param currentNextWaypointPosition The position of the current waypoint
- * @returns  An updated externalPropos dict.
- */
-function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number, currentNextWaypointPosition: Vector2D): Actor["externalProps"] {
-	const nextWaypoint = findNextWaypoint(actors, currentNextWaypointNumber);
-	if (nextWaypoint !== undefined) {
-		return { nextWaypointNumber: getWaypointNumber(nextWaypoint), nextWaypointPosition: nextWaypoint.position };
+//not pure
+function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, waypointTargetNumber: number): Actor["externalProps"] {
+	const possibilities = actors.filter((currentActor) => currentActor?.externalProps?.waypointNumber === waypointTargetNumber + 1);
+	if (possibilities.length === 0) {
+		return { waypointTargetNumber: waypointTargetNumber, waypointTarget: waypointTarget };
 	}
-	return { nextWaypointNumber: currentNextWaypointNumber, nextWaypointPosition: currentNextWaypointPosition };
+	const nextWaypointTarget = getRandomArrayElement(possibilities);
+	return { waypointTargetNumber: nextWaypointTarget.externalProps.waypointNumber, waypointTarget: nextWaypointTarget.position };
 }
 
-/**
- * Get the new position of an actor and use it to check if its targeted waypoint should be updated to the next waypoint or not.
- * 
- * @param actors All the game's actors
- * @param actor The actor moving
- * @param movementVector the movement of the actor
- * @returns A new actor, translated of its movement vector and with its waypoint goal updated. 
- */
-function translateAndUpdateWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
-	const newPosition = translatePoint(actor.position, movementVector);
-	const currentNextWaypointPosition = getNextWaypointPosition(actor);
-	const currentNextWaypointNumber = getNextWaypointNumber(actor)!;
-	if (isDeepStrictEqual(newPosition, currentNextWaypointPosition)) {
-		const nextWaypoint = findNextWaypoint(actors, getWaypointNumber(actor)!);
-		return setNextWaypointNumber(
-			setNextWaypointPosition({ ...actor, position: newPosition }, nextWaypoint?.position ?? currentNextWaypointPosition!),
-			nextWaypoint ? getNextWaypointNumber(nextWaypoint)! : currentNextWaypointNumber);
-		// return {
-		// 	...actor, position: newPosition,
-		// 	externalProps: updateNextWaypoint(actors, actor.externalProps.nextWaypointNumber, actor.externalProps.nextWaypointPosition)
-		// };
+function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+	const newPosition = translatePoint(movingActor.position, movementVector);
+	const currentWaypointTarget = getWaypointTarget(movingActor);
+	if ((movingActor.kind === "healer" || movingActor.kind === "ignorant") && isDeepStrictEqual(newPosition, currentWaypointTarget)) {
+		const currentWaypointTargetNumber = getWaypointTargetNumber(movingActor);
+		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));
+		return setWaypointTargetNumber(
+			setWaypointTarget({ ...movingActor, position: newPosition }, nextWaypoint.waypointTarget),
+			nextWaypoint.waypointTargetNumber);
 	}
-	return { ...actor, position: newPosition };
+	return { ...movingActor, position: newPosition };
 }
 
-function createIgnorant(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[]): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint, temperatureRise: temperatureRise }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags);
+function createIgnorant(position: Vector2D, waypointTarget: Vector2D, tags?: string[]): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, tags);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
-function createHealer(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[]): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint, heal: heal }, "healer", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags);
+function createHealer(position: Vector2D, waypointTarget: Vector2D, tags?: string[]): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, heal: heal }, "healer", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, tags);
 }
 
 type WalkerCreator = {
-	[key in Walker]: (position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number) => Actor
+	[key in Walker]: (position: Vector2D, waypointTarget: Vector2D, tags?: string[], ignorance?: number) => Actor
 };
 
 const walkerCreator: WalkerCreator = {
@@ -162,8 +131,8 @@ const walkerCreator: WalkerCreator = {
 };
 
 function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, tags?: string[], ignorance?: number): Actor {
-	const firstWaypoint = findNextWaypoint(path, 0);
-	return walkerCreator[kind](position, firstWaypoint?.position ?? position, tags, ignorance);
+	const firstWaypoint = findNextWaypointTarget(path, position, 0);
+	return walkerCreator[kind](position, firstWaypoint.waypointTarget, tags, ignorance);
 }
 
 /**
@@ -187,5 +156,5 @@ function createSpaghettimonster(position: Vector2D, waypointNumber: number): Act
 	return createActor(position, {}, "spaghettimonster", { waypointNumber: waypointNumber });
 }
 
-export { actorToString, actorToStringInWorld, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, translateActor, stringReplaceAt, filterByKind, defaultActions };
+export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind, defaultActions };
 export type { Actor, Kind };

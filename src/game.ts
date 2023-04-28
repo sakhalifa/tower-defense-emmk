@@ -1,9 +1,8 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import type { Actor } from "./actor";
+import { Actor, filterByKind } from "./actor";
 import { isPositionInWorld, createWorld } from "./world";
-import { Phase } from "./phase";
-import { Actor, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, filterByKind } from "./actor";
+import { createGround, createSpaghettimonster, createSpawner, createWalker } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
@@ -48,7 +47,7 @@ function initWayPoints(world: World): Array<Actor> {
 
 //not pure
 function initOtherActors(path: Array<Actor>): Array<Actor> {
-	const entries = findKind(path, "spawner");
+	const entries = filterByKind(path, "spawner");
 	return [
 		createWalker("ignorant", path, getRandomArrayElement(entries).position, undefined, 4),
 		createWalker("healer", path, getRandomArrayElement(entries).position, undefined, 4)
@@ -122,7 +121,7 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors);
-		finished = i++ === 15;
+		finished = i++ === 10;
 	}
 	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);

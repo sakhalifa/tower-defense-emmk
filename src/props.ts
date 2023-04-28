@@ -25,32 +25,32 @@ function getRange(actor: Actor): number | undefined {
 	return actor?.externalProps.range;
 }
 
-function getNextWaypointPosition(actor: Actor): Vector2D | undefined {
-	return actor?.externalProps.nextWaypointPosition;
+function getWaypointTarget(actor: Actor): Vector2D {
+	return actor?.externalProps.waypointTarget;
 }
 
-function setNextWaypointPosition(actor: Actor, nextWaypointPosition: Vector2D): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, nextWaypointPosition } };
+function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, waypointTarget: waypointTarget } };
 }
 
-function getWaypointNumber(actor: Actor): number | undefined {
+function getWaypointNumber(actor: Actor): number {
 	return actor.externalProps.waypointNumber;
 }
 
 function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, waypointNumber } };
+	return { ...actor, externalProps: { ...actor.externalProps, waypointNumber: waypointNumber } };
 }
 
-function getNextWaypointNumber(actor: Actor): number | undefined {
-	return actor.externalProps.nextWaypointNumber;
+function getWaypointTargetNumber(actor: Actor): number {
+	return actor.externalProps.waypointTargetNumber;
 }
 
-function setNextWaypointNumber(actor: Actor, nextWaypointNumber: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, nextWaypointNumber } };
+function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, waypointTargetNumber: waypointTargetNumber } };
 }
 
 export {
 	setAttackPower, getAttackPower, setHealPower, getHealPower, setRange, getRange,
-	getNextWaypointPosition, setNextWaypointPosition, getWaypointNumber, setWaypointNumber,
-	getNextWaypointNumber, setNextWaypointNumber
+	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
+	getWaypointTargetNumber, setWaypointTargetNumber
 };
