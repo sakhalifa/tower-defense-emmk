@@ -16,7 +16,8 @@ function getRandomArrayElement<T>(fromArray: Array<T>): T {
 }
 
 function isDeepStrictEqual(object1: any, object2: any) {
-
+	if (object1 !== object2 && (object1 === undefined || object2 === undefined))
+		return false;
 	const objKeys1 = Object.keys(object1);
 	const objKeys2 = Object.keys(object2);
 
