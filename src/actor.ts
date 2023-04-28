@@ -3,7 +3,7 @@ import { isDeepStrictEqual } from "util";
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
-import { defaultActions } from "./actor_actions";
+import { defaultActions, heal, moveTowardNextWaypoint } from "./actor_actions";
 
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
@@ -112,19 +112,19 @@ function translateTowardWaypoint(actors: Array<Actor>, actor: Actor, movementVec
 	return { ...actor, position: newPosition };
 }
 
-function createIgnorant(position: Vector2D, actions: ActorActions, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
-	return createActor(position, actions, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
+function createIgnorant(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
+	return createActor(position, { move: moveTowardNextWaypoint }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
-function createHealer(position: Vector2D, actions: ActorActions, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
-	return createActor(position, actions, "healer", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
+function createHealer(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
+	return createActor(position, { move: moveTowardNextWaypoint, heal: heal }, "healer", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
 }
 
 type WalkerCreator = {
-	[key in Walker]: (position: Vector2D, actions: ActorActions, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number) => Actor
+	[key in Walker]: (position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number) => Actor
 };
 
 const walkerCreator: WalkerCreator = {
@@ -132,9 +132,9 @@ const walkerCreator: WalkerCreator = {
 	healer: createHealer
 };
 
-function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, actions: ActorActions, tags?: string[], ignorance?: number): Actor {
+function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, tags?: string[], ignorance?: number): Actor {
 	const firstWaypoint = findNextWaypoint(path, 0);
-	return walkerCreator[kind](position, actions, firstWaypoint?.position ?? position, tags, ignorance);
+	return walkerCreator[kind](position, firstWaypoint?.position ?? position, tags, ignorance);
 }
 
 /**
