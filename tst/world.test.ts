@@ -4,8 +4,8 @@ import { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex
 
 test("createWorld test", () => {
     expect(createWorld(50, 20, 0)).toEqual({width: 50, height: 20, turnsElapsed: 0});
-    expect(createWorld(-5, 5, 0)).toThrowError();
-    expect(createWorld(5, 5.3, 0)).toThrowError();
+    expect(() => createWorld(-5, 5, 0)).toThrow();
+    expect(() => createWorld(5, 5.3, 0)).toThrow();
 });
 
 test("isPositionInWorld test", () => {
@@ -48,6 +48,6 @@ test("worldToString test", () => {
 });
 
 test("worldStringVectorToIndex test", () => {
-    expect(worldStringVectorToIndex(createWorld(1, 2, 0), createVector(2, 3))).toThrowError();
+    expect(() => worldStringVectorToIndex(createWorld(1, 2, 0), createVector(2, 3))).toThrowError();
     expect(worldStringVectorToIndex(createWorld(2, 2, 0), createVector(1, 1))).toBe(7);
 });

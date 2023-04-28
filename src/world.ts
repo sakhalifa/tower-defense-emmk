@@ -18,6 +18,12 @@ type World = {
  * @returns A world with the given width and height and turns elapsed.
  */
 function createWorld(width: number, height: number, turnsElapsed: number): World {
+	if (width <= 0 || height <= 0){
+		throw new Error("World size values must be positive");
+	}
+	if (!Number.isInteger(width) || !Number.isInteger(height)){
+		throw new Error("World size values must be integers");
+	}
 	return {
 		width: width,
 		height: height,
@@ -46,6 +52,9 @@ function worldToString(world: World): string {
 
 
 function vectorIndexInWorldString(world: World, vector: Vector2D): number {
+	if (!isPositionInWorld(world, vector)){
+		throw new Error("Position is not in world");
+	}
 	return vector.y * (world.width * 2 + 1) + vector.x * 2;
 }
 
