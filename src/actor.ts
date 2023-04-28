@@ -72,8 +72,15 @@ function actorToStringInWorld(world: World, worldString: string, actor: Actor): 
 	return stringReplaceAt(worldString, worldStringVectorToIndex(world, actor.position), actor.kind.charAt(0));
 }
 
-function findKind(actors: Array<Actor>, kind : Kind): Array<Actor> {
-	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === kind ? entries.concat(currentActor) : entries, []);
+/**
+ * Return a new array containing actors with the specified kind.
+ * 
+ * @param actors The array to filter from 
+ * @param kind The kind to keep
+ * @returns A new array with actor from the given array, of the given kind
+ */
+function filterByKind(actors: Array<Actor>, kind : Kind): Array<Actor> {
+	return actors.filter((actor) => actor.kind === kind);
 }
 
 /**
@@ -132,6 +139,6 @@ function createSpaghettimonster(position: Vector2D, wayPointNumber : number): Ac
 	return createActor(position, {}, "spaghettimonster", { wayPointNumber: wayPointNumber });
 }
 
-export { actorToString, actorToStringInWorld, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, translateActor, stringReplaceAt, findKind, defaultActions };
+export { actorToString, actorToStringInWorld, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, translateActor, stringReplaceAt, filterByKind, defaultActions };
 export type { Actor, Kind };
  

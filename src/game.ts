@@ -1,7 +1,7 @@
 import type { World } from "./world";
 import { isPositionInWorld, createWorld } from "./world";
 import { Phase } from "./phase";
-import { Actor, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, findKind } from "./actor";
+import { Actor, createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, filterByKind } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
@@ -56,7 +56,7 @@ function initOtherActors(entries: Array<Actor>): Array<Actor> {
 //not pure
 function initActors(world: World): Array<Actor> {
 	const path = initWayPoints(world);
-	return path.concat(initOtherActors(findKind(path, "spawner")));
+	return path.concat(initOtherActors(filterByKind(path, "spawner")));
 }
 
 /**
