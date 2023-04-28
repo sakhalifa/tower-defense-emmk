@@ -1,8 +1,8 @@
 import { isDeepStrictEqual } from "./util";
 import { Actor, createHealer, createIgnorant } from "./actor";
-import type { ActionReturnTypes, Phase } from "./phase";
+import type { ActionReturnTypes } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
-import { getAttackPower, getHealPower, getNextWaypointPosition, getRange } from "./props";
+import { getAttackPower, getHealPower, getWaypointTarget, getRange } from "./props";
 
 /**
  * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
@@ -70,11 +70,11 @@ function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
 	return { actorIndices, amount }; // amount is an array of the same number...
 }
 
-function moveTowardNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
-	if (getNextWaypointPosition(movingActor) === undefined) {
+function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
+	if (getWaypointTarget(movingActor) === undefined) {
 		return createVector(0, 0);
 	} else {
-		return movingVector(movingActor.position, getNextWaypointPosition(movingActor)!);
+		return movingVector(movingActor.position, getWaypointTarget(movingActor));
 	}
 }
 
@@ -119,5 +119,5 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemy
 	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveTowardNextWaypoint, defaultActions };
+export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions };
 export type {ActorActions};

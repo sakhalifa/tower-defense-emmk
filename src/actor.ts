@@ -3,11 +3,11 @@ import { isDeepStrictEqual, getRandomArrayElement } from "./util";
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
-import { defaultActions, heal, moveTowardNextWaypoint, temperatureRise } from "./actor_actions";
+import { defaultActions, heal, moveTowardWaypointTarget, temperatureRise } from "./actor_actions";
 
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
-import { getNextWaypointNumber, getNextWaypointPosition, getWaypointNumber, setNextWaypointNumber, setNextWaypointPosition, setWaypointNumber } from "./props";
+import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget } from "./props";
 
 /**
  * Actors that can move by themselves on the board.
@@ -96,66 +96,28 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
 	return { waypointTargetNumber: nextWaypointTarget.externalProps.waypointNumber, waypointTarget: nextWaypointTarget.position };
 }
 
-function translateTowardWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
 	const newPosition = translatePoint(movingActor.position, movementVector);
-	if ((movingActor.kind === "healer" || movingActor.kind === "ignorant") && isDeepStrictEqual(newPosition, movingActor?.externalProps?.waypointTarget)) {
-		return { ...movingActor, position: newPosition,
-			externalProps: findNextWaypointTarget(actors, movingActor.externalProps.waypointTarget, movingActor.externalProps.waypointTargetNumber) };
-				}
-	return { ...movingActor, position: newPosition };
-}
-/**
- * Return an externalProps dict with updated waypoint position. If current waypoint is the one with the highest number,
- * returns externalProps containing its number and position, otherwise, returns externalProps containing the number and position
- * of a higher waypoint.
- * 
- * @param actors The list of all actors. It contains the waypoints
- * @param currentNextWaypointNumber The number of the current waypoint
- * @param currentNextWaypointPosition The position of the current waypoint
- * @returns  An updated externalPropos dict.
- */
-function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number, currentNextWaypointPosition: Vector2D): Actor["externalProps"] {
-	const nextWaypoint = findNextWaypointTarget(actors, currentNextWaypointPosition, currentNextWaypointNumber);
-	if (nextWaypoint !== undefined) {
-		return { nextWaypointNumber: getWaypointNumber(nextWaypoint), nextWaypointPosition: nextWaypoint.position };
-	}
-	return { nextWaypointNumber: currentNextWaypointNumber, nextWaypointPosition: currentNextWaypointPosition };
-}
-
-/**
- * Get the new position of an actor and use it to check if its targeted waypoint should be updated to the next waypoint or not.
- * 
- * @param actors All the game's actors
- * @param actor The actor moving
- * @param movementVector the movement of the actor
- * @returns A new actor, translated of its movement vector and with its waypoint goal updated. 
- */
-function translateAndUpdateWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
-	const newPosition = translatePoint(actor.position, movementVector);
-	const currentNextWaypointPosition = getNextWaypointPosition(actor);
-	const currentNextWaypointNumber = getNextWaypointNumber(actor)!;
-	if (isDeepStrictEqual(newPosition, currentNextWaypointPosition)) {
-		const nextWaypoint = findNextWaypointTarget(actors, actor.position, getWaypointNumber(actor)!);
-		return setNextWaypointNumber(
-			setNextWaypointPosition({ ...actor, position: newPosition }, nextWaypoint?.position ?? currentNextWaypointPosition!),
-			nextWaypoint ? getNextWaypointNumber(nextWaypoint)! : currentNextWaypointNumber);
-		// return {
-		// 	...actor, position: newPosition,
-		// 	externalProps: updateNextWaypoint(actors, actor.externalProps.nextWaypointNumber, actor.externalProps.nextWaypointPosition)
-		// };
+	const currentWaypointTarget = getWaypointTarget(movingActor);
+	if ((movingActor.kind === "healer" || movingActor.kind === "ignorant") && isDeepStrictEqual(newPosition, currentWaypointTarget)) {
+		const currentWaypointTargetNumber = getWaypointTargetNumber(movingActor);
+		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));
+		return setWaypointTargetNumber(
+			setWaypointTarget({ ...movingActor, position: newPosition }, nextWaypoint.waypointTarget),
+			nextWaypoint.waypointTargetNumber);
 	}
 	return { ...movingActor, position: newPosition };
 }
 
-function createIgnorant(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[]): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint, temperatureRise: temperatureRise }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags);
+function createIgnorant(position: Vector2D, waypointTarget: Vector2D, tags?: string[]): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, tags);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
 function createHealer(position: Vector2D, waypointTarget: Vector2D, tags?: string[]): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint, heal: heal }, "healer", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, tags);
+	return createActor(position, { move: moveTowardWaypointTarget, heal: heal }, "healer", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, tags);
 }
 
 type WalkerCreator = {
@@ -169,7 +131,7 @@ const walkerCreator: WalkerCreator = {
 
 function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, tags?: string[], ignorance?: number): Actor {
 	const firstWaypoint = findNextWaypointTarget(path, position, 0);
-	return walkerCreator[kind](position, firstWaypoint?.position ?? position, tags, ignorance);
+	return walkerCreator[kind](position, firstWaypoint.waypointTarget, tags, ignorance);
 }
 
 /**
@@ -193,5 +155,5 @@ function createSpaghettimonster(position: Vector2D, waypointNumber: number): Act
 	return createActor(position, {}, "spaghettimonster", { waypointNumber: waypointNumber });
 }
 
-export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint as translateTowardWaypoint, findNextWaypoint, stringReplaceAt, findKind, defaultActions };
+export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, findKind, defaultActions };
 export type { Actor, Kind };
