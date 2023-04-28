@@ -99,9 +99,7 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
 
 function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
 	const newPosition = translatePoint(movingActor.position, movementVector);
-	const currentWaypointTarget = getWaypointTarget(movingActor);
-	if ((movingActor.kind === "healer" || movingActor.kind === "ignorant") && isDeepStrictEqual(newPosition, currentWaypointTarget)) {
-		const currentWaypointTargetNumber = getWaypointTargetNumber(movingActor);
+	if (isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
 		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));
 		return setWaypointTargetNumber(
 			setWaypointTarget({ ...movingActor, position: newPosition }, nextWaypoint.waypointTarget),
