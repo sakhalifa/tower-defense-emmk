@@ -26,7 +26,7 @@ function getRange(actor: Actor): number | undefined {
 }
 
 function getWaypointTarget(actor: Actor): Vector2D {
-	return actor?.externalProps.waypointTarget;
+	return actor.externalProps.waypointTarget!;
 }
 
 function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
@@ -34,7 +34,7 @@ function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
 }
 
 function getWaypointNumber(actor: Actor): number {
-	return actor.externalProps.waypointNumber;
+	return actor.externalProps.waypointNumber!;
 }
 
 function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
@@ -42,7 +42,7 @@ function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
 }
 
 function getWaypointTargetNumber(actor: Actor): number {
-	return actor.externalProps.waypointTargetNumber;
+	return actor.externalProps.waypointTargetNumber!;
 }
 
 function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Actor {
