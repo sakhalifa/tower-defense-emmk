@@ -1,8 +1,7 @@
+import { isDeepStrictEqual } from "./util";
 import { Actor, createHealer, createIgnorant } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
-import { isDeepStrictEqual } from "./util";
-import { removeEffectsPhase } from "./game_phases";
 
 /**
  * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
@@ -10,6 +9,7 @@ import { removeEffectsPhase } from "./game_phases";
 type ActorActions = {
 	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
 };
+
 /**
  * All the default actions 
  */
@@ -23,7 +23,6 @@ const defaultActions: Required<ActorActions> = {
 	paralyze: (allActors, oneActor) => { return { actorIndices: [], composedActors: [] }; },
 	removeEffects: (allActors, oneActor) => false
 };
-
 
 /**
  * The "spawner" action.
@@ -39,7 +38,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ActionReturnTypes["spawn"] {
 		if (Math.random() < 0.5)
 			return createIgnorant(actor.position);
 		else
-			return createHealer();
+			return createHealer(actor.position);
 	}
 }
 

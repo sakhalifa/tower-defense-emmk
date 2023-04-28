@@ -2,11 +2,10 @@ import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 import { isPositionInWorld, createWorld } from "./world";
-import { createGround, createSpaghettimonster, createSpawner, createHealer, createIgnorant, createWalker, findKind, findNextWaypoint } from "./actor";
+import { createGround, createSpaghettimonster, createSpawner, createWalker, findKind } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { moveRight, heal, moveTowardNextWaypoint } from "./actor_actions";
 import { getRandomArrayElement } from "./util";
 
 /**
@@ -50,8 +49,8 @@ function initWayPoints(world: World): Array<Actor> {
 function initOtherActors(path: Array<Actor>): Array<Actor> {
 	const entries = findKind(path, "spawner");
 	return [
-		createWalker("ignorant", path, getRandomArrayElement(entries).position, { move: moveRight }, undefined, 4),
-		createWalker("healer", path, getRandomArrayElement(entries).position, { move: moveTowardNextWaypoint, heal: heal }, undefined, 4)
+		createWalker("ignorant", path, getRandomArrayElement(entries).position, undefined, 4),
+		createWalker("healer", path, getRandomArrayElement(entries).position, undefined, 4)
 	];
 }
 

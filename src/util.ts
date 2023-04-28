@@ -15,8 +15,19 @@ function getRandomArrayElement<T>(fromArray: Array<T>): T {
 	return fromArray[Math.floor(Math.random() * fromArray.length)];
 }
 
+/**
+ * Substitutes the i-th character of a string with another string.
+ * @param baseString The string to replace the character
+ * @param index The index to replace the character
+ * @param replacement The replacement string
+ * @returns The string with the replaced character
+ */
+function stringReplaceAt(baseString: string, index: number, replacement: string): string {
+	return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
+}
+
 function isDeepStrictEqual(object1: any, object2: any) {
-	if (object1 !== object2 && (object1 === undefined || object2 === undefined))
+	if(object1 !== object2 && (object1 === undefined || object2 === undefined))
 		return false;
 	const objKeys1 = Object.keys(object1);
 	const objKeys2 = Object.keys(object2);
@@ -42,15 +53,4 @@ function isObject(object: any) {
 	return object !== null && typeof object === "object";
 }
 
-/**
- * Substitutes the i-th character of a string with another string.
- * @param baseString The string to replace the character
- * @param index The index to replace the character
- * @param replacement The replacement string
- * @returns The string with the replaced character
- */
-function stringReplaceAt(baseString: string, index: number, replacement: string): string {
-	return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
-}
-
-export { sum, getRandomArrayElement, isObject, isDeepStrictEqual, stringReplaceAt };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject };
