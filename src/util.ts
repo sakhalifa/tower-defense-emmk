@@ -26,4 +26,31 @@ function stringReplaceAt(baseString: string, index: number, replacement: string)
 	return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
 }
 
-export { sum, getRandomArrayElement, stringReplaceAt };
+function isDeepStrictEqual(object1: any, object2: any) {
+	if(object1 !== object2 && (object1 === undefined || object2 === undefined))
+		return false;
+	const objKeys1 = Object.keys(object1);
+	const objKeys2 = Object.keys(object2);
+
+	if (objKeys1.length !== objKeys2.length) return false;
+
+	for (const key of objKeys1) {
+		const value1 = object1[key];
+		const value2 = object2[key];
+
+		const isObjects = isObject(value1) && isObject(value2);
+
+		if ((isObjects && !isDeepStrictEqual(value1, value2)) ||
+			(!isObjects && value1 !== value2)
+		) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function isObject(object: any) {
+	return object !== null && typeof object === "object";
+}
+
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject };

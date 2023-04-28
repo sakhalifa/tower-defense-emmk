@@ -1,4 +1,4 @@
-import { isDeepStrictEqual } from "util";
+import { isDeepStrictEqual } from "./util";
 import { Actor, createHealer, createIgnorant } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
