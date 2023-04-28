@@ -11,6 +11,18 @@ type ActorActions = {
 };
 
 /**
+ * All the default actions 
+ */
+const defaultActions: Required<ActorActions> = {
+	spawn: (allActors, oneActor) => undefined,
+	temperatureRise: (allActors, oneActor) => 0,
+	heal: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
+	convertEnemies: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
+	enemyFlee: (allActors, oneActor) => false,
+	move: (allActors, oneActor) => { return createVector(0, 0); }
+};
+
+/**
  * The "spawner" action.
  * It has a 50% chance to spawn a new actor, which has 50% chance to be an ignorant, or 50% chance to be a healer.
  * @param actors The actors in the world
@@ -110,5 +122,5 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemy
 	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, moveTowardNextWaypoint };
+export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, moveTowardNextWaypoint, defaultActions };
 export type {ActorActions};

@@ -3,28 +3,20 @@ import { isDeepStrictEqual } from "util";
 import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
+import { defaultActions } from "./actor_actions";
 
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
 
+/**
+ * Actors that can move by themselves on the board.
+ */
 type Walker = "ignorant" | "healer";
 
 /**
  * All the different actor kinds.
  */
 type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettimonster";
-
-/**
- * All the default actions 
- */
-const defaultActions: Required<ActorActions> = {
-	spawn: (allActors, oneActor) => undefined,
-	temperatureRise: (allActors, oneActor) => 0,
-	heal: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
-	convertEnemies: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
-	enemyFlee: (allActors, oneActor) => false,
-	move: (allActors, oneActor) => { return createVector(0, 0); }
-};
 
 /**
  * An actor. It has a position, a kind, faith points, different actions, tags and additional properties that are not typed.
@@ -59,6 +51,12 @@ function actorToStringInWorld(world: World, worldString: string, actor: Actor): 
 	return stringReplaceAt(worldString, worldStringVectorToIndex(world, actor.position), actor.kind.charAt(0));
 }
 
+/**
+ * Returns the actors from the given actors that are of the given kind
+ * @param actors The actors being filtered
+ * @param kind The kind used to filter the actors
+ * @returns the actors from the given actors that are of the given kind
+ */
 function findKind(actors: Array<Actor>, kind: Kind): Array<Actor> {
 	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === kind ? entries.concat(currentActor) : entries, []);
 }
@@ -87,6 +85,12 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
+/**
+ * 
+ * @param actors 
+ * @param currentNextWaypointNumber 
+ * @returns 
+ */
 function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number): Actor | undefined {
 	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentNextWaypointNumber + 1);
 }
