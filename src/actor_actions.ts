@@ -2,6 +2,7 @@ import { Actor, createHealer, createIgnorant } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
 import { isDeepStrictEqual } from "./util";
+import { removeEffectsPhase } from "./game_phases";
 
 /**
  * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
@@ -18,7 +19,9 @@ const defaultActions: Required<ActorActions> = {
 	heal: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
 	convertEnemies: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
 	enemyFlee: (allActors, oneActor) => false,
-	move: (allActors, oneActor) => { return createVector(0, 0); }
+	move: (allActors, oneActor) => { return createVector(0, 0); },
+	paralyze: (allActors, oneActor) => { return { actorIndices: [], composedActors: [] }; },
+	removeEffects: (allActors, oneActor) => false
 };
 
 
@@ -142,9 +145,9 @@ function catapultParalyze(actors: Array<Actor>, actor: Actor): ActionReturnTypes
 		const childActor = actors[i];
 		const actions = Object.entries(childActor.actions).reduce((oldObject, [key, value]) => {
 			if (key !== "move")
-				return {...oldObject, key: value};
+				return { ...oldObject, key: value };
 			else {
-				return {...oldObject, key: paralyzeMove};
+				return { ...oldObject, key: paralyzeMove };
 			}
 		}, {});
 
