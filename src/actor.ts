@@ -86,15 +86,26 @@ function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"])
 }
 
 /**
+ * Randoly choose a waypoint with a number at "given number + 1" and returns it
  * 
- * @param actors 
- * @param currentNextWaypointNumber 
- * @returns 
+ * @param actors All world's actors
+ * @param currentNextWaypointNumber a waypoint number 
+ * @returns a waypoint with a number that is 1 higher than the given number, randomly choosen among all the waypoints at that value
  */
 function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number): Actor | undefined {
 	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentNextWaypointNumber + 1);
 }
 
+/**
+ * Return an externalProps dict with updated waypoint position. If current waypoint is the one with the highest number,
+ * returns externalProps containing its number and position, otherwise, returns externalProps containing the number and position
+ * of a higher waypoint.
+ * 
+ * @param actors The list of all actors. It contains the waypoints
+ * @param currentNextWaypointNumber The number of the current waypoint
+ * @param currentNextWaypointPosition The position of the current waypoint
+ * @returns  An updated externalPropos dict.
+ */
 function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number, currentNextWaypointPosition: Vector2D): Actor["externalProps"] {
 	const nextWaypoint = findNextWaypoint(actors, currentNextWaypointNumber);
 	if (nextWaypoint !== undefined) {
@@ -103,7 +114,15 @@ function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: num
 	return { nextWaypointNumber: currentNextWaypointNumber, nextWaypointPosition: currentNextWaypointPosition };
 }
 
-function translateTowardWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+/**
+ * Get the new position of an actor and use it to check if its targeted waypoint should be updated to the next waypoint or not.
+ * 
+ * @param actors All the game's actors
+ * @param actor The actor moving
+ * @param movementVector the movement of the actor
+ * @returns A new actor, translated of its movement vector and with its waypoint goal updated. 
+ */
+function translateAndUpdateWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
 	const newPosition = translatePoint(actor.position, movementVector);
 	if (isDeepStrictEqual(newPosition, actor?.externalProps?.nextWaypointPosition)) {
 		return { ...actor, position: newPosition,
@@ -158,5 +177,5 @@ function createSpaghettimonster(position: Vector2D, waypointNumber: number): Act
 	return createActor(position, {}, "spaghettimonster", { waypointNumber: waypointNumber });
 }
 
-export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateTowardWaypoint, findNextWaypoint, stringReplaceAt, findKind, defaultActions };
+export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint as translateTowardWaypoint, findNextWaypoint, stringReplaceAt, findKind, defaultActions };
 export type { Actor, Kind };
