@@ -1,4 +1,4 @@
-import { Actor, translateActor } from "./actor";
+import { Actor , translateTowardWaypoint} from "./actor";
 import { ActionReturnTypes } from "./phase";
 import { sum } from "./util";
 
@@ -26,7 +26,7 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Action
 }
 
 function movePhase(oldActors: Array<Actor>, movementVectors: Array<ActionReturnTypes["move"]>): Array<Actor> {
-	return movementVectors.map((movementVector, actorIndex) => translateActor(oldActors[actorIndex], movementVector));
+	return movementVectors.map((movementVector, actorIndex) => translateTowardWaypoint(oldActors, oldActors[actorIndex], movementVector));
 }
 
 function updateIgnorance(actor: Actor, actorIndex: number, healResults: Array<ActionReturnTypes["heal"]>): Actor {

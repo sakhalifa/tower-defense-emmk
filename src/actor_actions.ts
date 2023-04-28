@@ -1,7 +1,26 @@
-import { Actor, createHealer, createIgnorant, defaultActions } from "./actor";
+import { Actor, createHealer, createIgnorant } from "./actor";
 import type { ActionReturnTypes, Phase } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
 import { isDeepStrictEqual } from "./util";
+
+/**
+ * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
+ */
+type ActorActions = {
+	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
+};
+/**
+ * All the default actions 
+ */
+const defaultActions: Required<ActorActions> = {
+	spawn: (allActors, oneActor) => undefined,
+	temperatureRise: (allActors, oneActor) => 0,
+	heal: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
+	convertEnemies: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
+	enemyFlee: (allActors, oneActor) => false,
+	move: (allActors, oneActor) => { return createVector(0, 0); }
+};
+
 
 /**
  * The "spawner" action.
@@ -54,8 +73,26 @@ function moveRight(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes[
 	return createVector(1, 0);
 }
 
-function moveToNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
-	return actors.find((currentActor) => currentActor?.externalProps?.wayPointNumber === movingActor.externalProps.nextWayPointNumber)?.position ?? createVector(0, 0);
+function moveTowardNextWaypoint(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
+	if (movingActor?.externalProps?.nextWaypointPosition === undefined) {
+		return createVector(0, 0);
+	} else {
+		return movingVector(movingActor.position, movingActor.externalProps.nextWaypointPosition);
+	}
+}
+
+function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
+	if (fromPosition.x < toPosition.x) {
+		return createVector(1, 0);
+	} else if (fromPosition.x > toPosition.x) {
+		return createVector(-1, 0);
+	} else if (fromPosition.y < toPosition.y) {
+		return createVector(0, 1);
+	} else if (fromPosition.y > toPosition.y) {
+		return createVector(0, -1);
+	} else {
+		return createVector(0, 0);
+	}
 }
 
 /**
@@ -123,4 +160,5 @@ function catapultParalyze(actors: Array<Actor>, actor: Actor): ActionReturnTypes
 	return { actorIndices, composedActors };
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, catapultParalyze, moveToNextWaypoint };
+export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveRight, catapultParalyze, moveTowardNextWaypoint, defaultActions };
+export type { ActorActions };
