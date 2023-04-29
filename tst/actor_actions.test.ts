@@ -2,7 +2,7 @@ import { createHealer, createIgnorant, createSpaghettimonster } from "../src/act
 import { temperatureRise, heal, movingVector } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
-import { setHunger, setHealPower } from "../src/props";
+import { setHunger, setSpreadIgnorancePower } from "../src/props";
 
 test("TemperatureRise test", () => {
     const world = createWorld(5, 5, 0);
@@ -24,7 +24,7 @@ test("TemperatureRise test", () => {
 test("heal test", () => {
     
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
-    const healer = setHealPower(createHealer(createVector(0, 0), createVector(0, 0)), 3);
+    const healer = setSpreadIgnorancePower(createHealer(createVector(0, 0), createVector(0, 0)), 3);
     // const actors = [ignorant, healer];
 
     // Not enough specifications to make this tests, waiting fot the team to decide a correct behavior
