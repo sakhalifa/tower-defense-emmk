@@ -19,7 +19,7 @@ type Walker = "ignorant" | "healer";
 type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettimonster";
 
 /**
- * An actor. It has a position, a kind, faith points, different actions, tags and additional properties that are not typed.
+ * An actor. It has a position, a kind, faith points, different actions, and additional properties that are not typed.
  * Additional properties should always check kind and/or tag before actually accessing them.
  */
 type Actor = {
@@ -27,7 +27,6 @@ type Actor = {
 	actions: ActorActions;
 	kind: Kind;
 	externalProps?: any;
-	tags?: string[];
 	ignorance?: number;
 };
 
@@ -68,12 +67,11 @@ function filterByKind(actors: Array<Actor>, kind : Kind): Array<Actor> {
  * @param actions The actions
  * @param kind The kind
  * @param externalProps The external properties
- * @param tags The tags
  * @param ignorance The ignorance points
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, externalProps?: any, tags?: string[], ignorance: number = 10): Actor {
-	return { position: position, actions: { ...defaultActions, ...actions }, tags: tags, kind: kind, ignorance: ignorance, externalProps: externalProps };
+function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, externalProps?: any, ignorance?: number): Actor {
+	return { position: position, actions: { ...defaultActions, ...actions }, kind: kind, ignorance: ignorance, externalProps: externalProps };
 }
 
 /**
@@ -107,19 +105,19 @@ function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, mo
 	return { ...movingActor, position: newPosition };
 }
 
-function createIgnorant(position: Vector2D, waypointTarget: Vector2D, tags?: string[]): Actor {
-	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, tags);
+function createIgnorant(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 10): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
 }
 
 /**
  * Constructor for a default "healer" actor
  */
-function createHealer(position: Vector2D, waypointTarget: Vector2D, tags?: string[]): Actor {
-	return createActor(position, { move: moveTowardWaypointTarget, heal: heal }, "healer", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, tags);
+function createHealer(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 7): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, heal: heal }, "healer", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
 }
 
 type WalkerCreator = {
-	[key in Walker]: (position: Vector2D, waypointTarget: Vector2D, tags?: string[], ignorance?: number) => Actor
+	[key in Walker]: (position: Vector2D, waypointTarget: Vector2D, ignorance?: number) => Actor
 };
 
 const walkerCreator: WalkerCreator = {
@@ -127,9 +125,9 @@ const walkerCreator: WalkerCreator = {
 	healer: createHealer
 };
 
-function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, tags?: string[], ignorance?: number): Actor {
+function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, ignorance?: number): Actor {
 	const firstWaypoint = findNextWaypointTarget(path, position, 0);
-	return walkerCreator[kind](position, firstWaypoint.waypointTarget, tags, ignorance);
+	return walkerCreator[kind](position, firstWaypoint.waypointTarget, ignorance);
 }
 
 /**
@@ -154,4 +152,4 @@ function createSpaghettimonster(position: Vector2D, waypointNumber: number): Act
 }
 
 export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind, defaultActions };
-export type { Actor, Kind };
+export type { Actor, Kind, Walker };

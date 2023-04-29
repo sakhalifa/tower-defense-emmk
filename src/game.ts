@@ -49,8 +49,8 @@ function initWayPoints(world: World): Array<Actor> {
 function initOtherActors(path: Array<Actor>): Array<Actor> {
 	const entries = filterByKind(path, "spawner");
 	return [
-		createWalker("ignorant", path, getRandomArrayElement(entries).position, undefined, 4),
-		createWalker("healer", path, getRandomArrayElement(entries).position, undefined, 4)
+		createWalker("ignorant", path, getRandomArrayElement(entries).position, 4),
+		createWalker("healer", path, getRandomArrayElement(entries).position, 4)
 	];
 }
 

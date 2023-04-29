@@ -1,5 +1,7 @@
+import type { Actor, Walker } from "./actor";
+
 import { isDeepStrictEqual } from "./util";
-import { Actor, createHealer, createIgnorant } from "./actor";
+import { createHealer, createIgnorant } from "./actor";
 import { distance, createVector, Vector2D } from "./geometry";
 import { getHunger, getHealPower, getWaypointTarget, getRange } from "./props";
 
@@ -75,7 +77,8 @@ function heal(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["heal
 }
 
 function moveTowardWaypointTarget(movingActor: Actor): ReturnType<ActorActions["move"]> {
-	if (getWaypointTarget(movingActor) === undefined) {
+	if (movingActor.kind !== "healer" && movingActor.kind !== "ignorant") {
+		console.log(movingActor.kind);
 		return createVector(0, 0);
 	} else {
 		return movingVector(movingActor.position, getWaypointTarget(movingActor));
