@@ -12,7 +12,7 @@ type ActorActions = {
 	spawn: (actors: Array<Actor>, actor: Actor) => Actor | undefined;
     temperatureRise: (actors: Array<Actor>, actor: Actor) => number;
     convertEnemies: (actors: Array<Actor>, actor: Actor) => {actorIndices: Array<number>, amount: Array<number>};
-    heal: (actors: Array<Actor>, actor: Actor) => {actorIndices: number[], amount: number[]};
+    spreadIgnorance: (actors: Array<Actor>, actor: Actor) => {actorIndices: number[], amount: number[]};
     enemyFlee: (actors: Array<Actor>, actor: Actor) => boolean;
     move: (actors: Array<Actor>, actor: Actor) => Vector2D;
 };
@@ -23,7 +23,7 @@ type ActorActions = {
 const defaultActions: Required<ActorActions> = {
 	spawn: (allActors, oneActor) => undefined,
 	temperatureRise: (allActors, oneActor) => 0,
-	heal: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
+	spreadIgnorance: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
 	convertEnemies: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
 	enemyFlee: (allActors, oneActor) => false,
 	move: (allActors, oneActor) => { return createVector(0, 0); }
@@ -31,7 +31,7 @@ const defaultActions: Required<ActorActions> = {
 
 /**
  * The "spawner" action.
- * It has a 50% chance to spawn a new actor, which has 70% chance to be an ignorant, or 30% chance to be a healer.
+ * It has a 50% chance to spawn a new actor, which has 70% chance to be an ignorant, or 30% chance to be an ignoranceSpreader.
  * @param actors The actors in the world
  * @param actor The current actor that does the action
  * @returns A new actor to be spawned
@@ -62,17 +62,17 @@ function temperatureRise(actors: Array<Actor>, actor: Actor): ReturnType<ActorAc
 }
 
 /**
- * The "heal" action.
- * It returns all the actors the actor will heal, and the amount for which every actor healed will be healed.
+ * The "spreadIgnorance" action.
+ * It returns all the actors the actor will spread ignorance to, and the amount for which every actor will be impacted.
  * @param actors The actors in the world
- * @param healer The current actor that does the action
- * @returns all the actors that will be healed, and the amount for which every actor healed will be healed
+ * @param ignoranceSpreader The current actor that spreads ignorance
+ * @returns all the actors the actor will spread ignorance to, and the amount for which every actor will be impacted.
  */
-function heal(actors: Array<Actor>, healer: Actor): ReturnType<ActorActions["heal"]> {
+function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor): ReturnType<ActorActions["spreadIgnorance"]> {
 	const actorsToHealIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
-	currentActor.kind === "ignorant" && distance(currentActor.position, healer.position) <= getRange(healer) ? actorsToHeal.concat(actorIndex) : actorsToHeal,
+	currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToHeal.concat(actorIndex) : actorsToHeal,
 	[]);
-	const amount = actorsToHealIndices.map((_) => getSpreadIgnorancePower(healer));
+	const amount = actorsToHealIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
 	return { actorIndices: actorsToHealIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 
@@ -121,5 +121,5 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions[
 	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions };
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions };
 export type {ActorActions};

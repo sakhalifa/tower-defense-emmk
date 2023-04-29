@@ -9,12 +9,12 @@ function getHunger(actor: Actor): number {
 	return actor.externalProps.hunger;
 }
 
-function setSpreadIgnorancePower(actor: Actor, healPower: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, healPower } };
+function setSpreadIgnorancePower(actor: Actor, spreadIgnorancePower: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, spreadIgnorancePower: spreadIgnorancePower } };
 }
 
 function getSpreadIgnorancePower(actor: Actor): number {
-	return actor.externalProps.healPower;
+	return actor.externalProps.spreadIgnorancePower;
 }
 
 function setRange(actor: Actor, range: number): Actor {

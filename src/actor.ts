@@ -2,7 +2,7 @@ import { Vector2D, vector2DToString, translatePoint } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
-import { defaultActions, heal, moveTowardWaypointTarget, temperatureRise } from "./actor_actions";
+import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise } from "./actor_actions";
 
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
@@ -11,7 +11,7 @@ import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, se
 /**
  * Actors that can move by themselves on the board.
  */
-type Walker = "ignorant" | "healer";
+type Walker = "ignorant" | "ignoranceSpreader";
 
 /**
  * All the different actor kinds.
@@ -110,10 +110,10 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, ignorance:
 }
 
 /**
- * Constructor for a default "healer" actor
+ * Constructor for a default "ignoranceSpreader" actor
  */
-function createHealer(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 7): Actor {
-	return createActor(position, { move: moveTowardWaypointTarget, heal: heal }, "healer", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
+function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 7): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance }, "ignoranceSpreader", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
 }
 
 type WalkerCreator = {
@@ -122,7 +122,7 @@ type WalkerCreator = {
 
 const walkerCreator: WalkerCreator = {
 	ignorant: createIgnorant,
-	healer: createHealer
+	ignoranceSpreader: createIgnoranceSpreader
 };
 
 function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, ignorance?: number): Actor {
@@ -151,5 +151,5 @@ function createSpaghettimonster(position: Vector2D, waypointNumber: number): Act
 	return createActor(position, {}, "spaghettimonster", { waypointNumber: waypointNumber });
 }
 
-export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind, defaultActions };
+export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind, defaultActions };
 export type { Actor, Kind, Walker };

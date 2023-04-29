@@ -5,7 +5,7 @@ import { isPositionInWorld, createWorld } from "./world";
 import { createGround, createSpaghettimonster, createSpawner, createWalker } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
-import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
+import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
 import { getRandomArrayElement } from "./util";
 
 /**
@@ -29,7 +29,7 @@ function initPhases(): Array<Phase> {
 		createPhase("temperatureRise", temperatureRisePhase),
 		createPhase("convertEnemies", convertEnemiesPhase),
 		createPhase("move", movePhase),
-		createPhase("heal", healPhase),
+		createPhase("spreadIgnorance", spreadIgnorancePhase),
 		createPhase("enemyFlee", enemyFleePhase),
 	];
 }
@@ -50,7 +50,7 @@ function initOtherActors(path: Array<Actor>): Array<Actor> {
 	const entries = filterByKind(path, "spawner");
 	return [
 		createWalker("ignorant", path, getRandomArrayElement(entries).position),
-		createWalker("healer", path, getRandomArrayElement(entries).position)
+		createWalker("ignoranceSpreader", path, getRandomArrayElement(entries).position)
 	];
 }
 

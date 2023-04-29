@@ -10,18 +10,18 @@ function move(_: Array<Actor>, __: Actor) {
     return createVector(0, 0);
 }
 
-function heal(_: Array<Actor>, __: Actor) {
+function spreadIgnorance(_: Array<Actor>, __: Actor) {
     return {actorIndices: [0], amount: [0]};
 }
 
 function buildDummyActor(): Actor{
-    return { position: createVector(0, 1), actions: { move: move, heal: heal }, kind: "ignorant" };
+    return { position: createVector(0, 1), actions: { move: move, spreadIgnorance: spreadIgnorance }, kind: "ignorant" };
 }
 
 test("Actor create test", () => {
-    expect(createActor(createVector(0, 1), { move, heal }, "ignorant"))
+    expect(createActor(createVector(0, 1), { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
         .toEqual(buildDummyActor());
-    expect(createActor(createVector(100, 100), { move, heal }, "ignorant"))
+    expect(createActor(createVector(100, 100), { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
         .not.toEqual(buildDummyActor());
     expect(createActor(createVector(0, 1), { move }, "ignorant"))
         .not.toEqual(buildDummyActor());
@@ -30,7 +30,7 @@ test("Actor create test", () => {
 test("Actor to string test", () => {
     expect(actorToString({
         position: createVector(0, 1),
-        actions: { move, heal },
+        actions: { move, spreadIgnorance: spreadIgnorance },
         kind: "ignorant"
     })).toEqual("{position: (0, 1)}");
 });
@@ -38,7 +38,7 @@ test("Actor to string test", () => {
 test("Actor translate test", () => {
     expect(translateActor(buildDummyActor(), createVector(0, 0))).toEqual(buildDummyActor());
     expect(translateActor(buildDummyActor(), createVector(1, 3))).not.toEqual(buildDummyActor());
-    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual({ position: createVector(1, 4), actions: { move: move, heal: heal }, kind: "ignorant" });
+    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual({ position: createVector(1, 4), actions: { move: move, heal: spreadIgnorance }, kind: "ignorant" });
 });
 
 test("String replace test", () => {

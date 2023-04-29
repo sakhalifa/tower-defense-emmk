@@ -30,25 +30,25 @@ function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<Ac
 	return movementVectors.map((movementVector, actorIndex) => translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], movementVector));
 }
 
-function updateIgnorance(actor: Actor, actorIndex: number, healResults: Array<ReturnType<ActorActions["heal"]>>): Actor {
+function updateIgnorance(actor: Actor, actorIndex: number, spreadIgnoranceResults: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Actor {
 	return {
 		...actor,
-		ignorance: healResults.reduce((ignoranceAcc, healResult) =>
-					(ignoranceAcc ?? 0) + ((healResult.amount[healResult.actorIndices.indexOf(actorIndex)] ?? 0)),
+		ignorance: spreadIgnoranceResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
+					(ignoranceAcc ?? 0) + ((spreadIgnoranceResult.amount[spreadIgnoranceResult.actorIndices.indexOf(actorIndex)] ?? 0)),
 					actor.ignorance)
 	};
 }
 
 /**
- * The executePhase function for the "heal" phase.
- * It ensures all enemies healed are actually healed.
+ * The executePhase function for the "spreadIgnorance" phase.
+ * It ensures all enemies who receive the ignorance have actually more ignorance.
  * @param oldActors The actors before the phase
  * @param phaseResult The results of the phase
- * @returns A proposal for the actors after executing the "heal" phase
+ * @returns A proposal for the actors after executing the "spreadIgnorance" phase
  */
-function healPhase(oldActors: Array<Actor>, healVectors: Array<ReturnType<ActorActions["heal"]>>): Array<Actor> {
+function spreadIgnorancePhase(oldActors: Array<Actor>, spreadIgnoranceVectors: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Array<Actor> {
 
-	return oldActors.map((currentActor, actorIndex) => updateIgnorance(currentActor, actorIndex, healVectors));
+	return oldActors.map((currentActor, actorIndex) => updateIgnorance(currentActor, actorIndex, spreadIgnoranceVectors));
 }
 
 /**
@@ -80,4 +80,4 @@ function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<A
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
 
-export { spawnPhase, temperatureRisePhase, healPhase, convertEnemiesPhase, enemyFleePhase, movePhase };
+export { spawnPhase, temperatureRisePhase, spreadIgnorancePhase, convertEnemiesPhase, enemyFleePhase, movePhase };

@@ -40,7 +40,7 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
             return sprites[2];
         case "ground":
             return sprites[3];
-        case "healer":
+        case "ignoranceSpreader":
             return sprites[2];
         default:
             return sprites[0];
