@@ -37,14 +37,15 @@ const defaultActions: Required<ActorActions> = {
  * @returns A new actor to be spawned
  */
 function spawn(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["spawn"]> {
-	if (Math.random() < 0.5)
-		return undefined;
-	else {
-		if (Math.random() < 0.7)
-			return createIgnorant();
-		else
-			return createHealer();
-	}
+	//if (Math.random() < 0.5)
+	//	return undefined;
+	//else {
+	//	if (Math.random() < 0.7)
+	//		return createIgnorant();
+	//	else
+	//		return createHealer();
+	//}
+	return undefined;
 }
 
 /**
