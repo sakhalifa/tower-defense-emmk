@@ -9,11 +9,11 @@ function getHunger(actor: Actor): number {
 	return actor.externalProps.hunger;
 }
 
-function setHealPower(actor: Actor, healPower: number): Actor {
+function setSpreadIgnorancePower(actor: Actor, healPower: number): Actor {
 	return { ...actor, externalProps: { ...actor.externalProps, healPower } };
 }
 
-function getHealPower(actor: Actor): number {
+function getSpreadIgnorancePower(actor: Actor): number {
 	return actor.externalProps.healPower;
 }
 
@@ -50,7 +50,7 @@ function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Ac
 }
 
 export {
-	setHunger, getHunger, setHealPower, getHealPower, setRange, getRange,
+	setHunger, getHunger, setSpreadIgnorancePower, getSpreadIgnorancePower, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber
 };

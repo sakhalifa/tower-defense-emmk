@@ -3,7 +3,7 @@ import type { Actor, Walker } from "./actor";
 import { isDeepStrictEqual } from "./util";
 import { createHealer, createIgnorant } from "./actor";
 import { distance, createVector, Vector2D } from "./geometry";
-import { getHunger, getHealPower, getWaypointTarget, getRange } from "./props";
+import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
 
 /**
  * All the possibles actions for an actor.
@@ -72,7 +72,7 @@ function heal(actors: Array<Actor>, healer: Actor): ReturnType<ActorActions["hea
 	const actorsToHealIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
 	currentActor.kind === "ignorant" && distance(currentActor.position, healer.position) <= getRange(healer) ? actorsToHeal.concat(actorIndex) : actorsToHeal,
 	[]);
-	const amount = actorsToHealIndices.map((_) => getHealPower(healer));
+	const amount = actorsToHealIndices.map((_) => getSpreadIgnorancePower(healer));
 	return { actorIndices: actorsToHealIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 
