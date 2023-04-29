@@ -1,4 +1,4 @@
-import { createIgnorant, createSpaghettimonster } from "../src/actor";
+import { createHealer, createIgnorant, createSpaghettimonster } from "../src/actor";
 import { temperatureRise, heal, movingVector } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
@@ -9,7 +9,7 @@ test("TemperatureRise test", () => {
 
     const monster = createSpaghettimonster(createVector(2, 2), 1);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
-    const onPoint = setHunger(createIgnorant(createVector(0, 0), createVector(0, 0)), 3);
+    const onPoint = setHunger(createIgnorant(createVector(2, 2), createVector(0, 0)), 3);
     
     const actors = [monster, ignorant, onPoint];
 
@@ -20,15 +20,23 @@ test("TemperatureRise test", () => {
     expect(temperatureRise(actors, onPoint)).toBe(3);
 });
 
+
 test("heal test", () => {
     
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
-    const healer = setHealPower(createIgnorant(createVector(0, 0), createVector(0, 0)), 3);
-    const actors = [ignorant, healer];
+    const healer = setHealPower(createHealer(createVector(0, 0), createVector(0, 0)), 3);
+    // const actors = [ignorant, healer];
 
+    // Not enough specifications to make this tests, waiting fot the team to decide a correct behavior
     // Healing a fully ignorant ignorant, should not heal
-    expect(heal(actors, healer).amount.length).toBe(0);
+    // expect(heal(actors, healer).amount[0]).toBe(0);
+    // Heal should heal himself
+    expect(heal([healer], healer).amount.length).toBe(0);
+    
+    // ignorant shouldn't heal
+    // expect(heal([ignorant], ignorant).amount.length).toBe(0);
 });
+
 
 test("movingVector test", () => {
     // default movement direction check
