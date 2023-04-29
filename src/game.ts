@@ -37,7 +37,11 @@ function initPhases(): Array<Phase> {
 	];
 }
 
-// not pure
+/**
+ * Randomly creates the waypoints of the world (creates spawners, ground, and spaghettimonster)
+ * @param world the world on which the waypoints are created
+ * @returns the created waypoints of the world
+ */
 function initWayPoints(world: World): Array<Actor> {
 	return [
 		createSpawner(createVector(0, 0)),

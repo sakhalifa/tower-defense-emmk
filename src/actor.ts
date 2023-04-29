@@ -19,7 +19,9 @@ type Walker = "ignorant" | "ignoranceSpreader";
 type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettimonster";
 
 /**
- * An actor. It has a position, a kind, faith points, different actions, and additional properties that are not typed.
+ * An actor. It has a position in the world, a kind, ignorance points,
+ * different actions describing its behavior during the differents Phases of the game,
+ * and additional properties that are not typed.
  * Additional properties should always check kind and/or tag before actually accessing them.
  */
 type Actor = {
@@ -31,8 +33,8 @@ type Actor = {
 };
 
 /**
- * Returns the string representation of the actor
- * @param actor The actor
+ * Returns the string representation of the given actor
+ * @param actor The actor that is described by the returned string
  * @returns the string representation of the actor
  */
 function actorToString(actor: Actor): string {
@@ -40,11 +42,11 @@ function actorToString(actor: Actor): string {
 }
 
 /**
- * Returns the string representation of the world with its actors
- * @param world The world
- * @param worldString The world string
- * @param actor The actor
- * @returns The string representation of the world with its actors
+ * Returns the string representation of the world with the given actor in it
+ * @param world The world represented by worldString, and where the actors are
+ * @param worldString The string that represents the world, but not necessarily representing all of the actors in the world
+ * @param actor The actor that is being added to the string representation of the world
+ * @returns The string representation of the world with the given actor in it
  */
 function actorToStringInWorld(world: World, worldString: string, actor: Actor): string {
 	return stringReplaceAt(worldString, worldStringVectorToIndex(world, actor.position), actor.kind.charAt(0));
@@ -63,11 +65,11 @@ function filterByKind(actors: Array<Actor>, kind : Kind): Array<Actor> {
 
 /**
  * Actor constructor
- * @param position The position
- * @param actions The actions
- * @param kind The kind
- * @param externalProps The external properties
- * @param ignorance The ignorance points
+ * @param position The position of the created Actor
+ * @param actions The actions of the created Actor
+ * @param kind The kind of the created Actor
+ * @param externalProps The external properties of the created Actor
+ * @param ignorance The ignorance points of the created Actor
  * @returns A new actor
  */
 function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, externalProps?: any, ignorance?: number): Actor {
@@ -76,7 +78,7 @@ function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: K
 
 /**
  * Applies a translation to the actor's position and returns the translated actor.
- * @param actor The actor
+ * @param actor The actor that is being tranlated
  * @param movementVector The movement vector
  * @returns The actor after its position was translated according to a movement vector
  */
@@ -84,7 +86,13 @@ function translateActor(actor: Actor, movementVector: ReturnType<ActorActions["m
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
-//not pure
+/**
+ * Returns the informations about the waypoint that should be the target once the given waypoint is reached
+ * @param actors all the actors of the game
+ * @param waypointTarget the position of the current waypoint target
+ * @param waypointTargetNumber the number of the current waypoint target
+ * @returns a dictionnary containing the informations about the waypoint that should be the target once the given waypoint is reached
+ */
 function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, waypointTargetNumber: number): Actor["externalProps"] {
 	const possibilities = actors.filter((currentActor) => currentActor?.externalProps?.waypointNumber === waypointTargetNumber + 1);
 	if (possibilities.length === 0) {
@@ -94,6 +102,13 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
 	return { waypointTargetNumber: nextWaypointTarget.externalProps.waypointNumber, waypointTarget: nextWaypointTarget.position };
 }
 
+/**
+ * Translates the movingActor according to the given movementVector, and updates this waypointTarget if it has been reached
+ * @param actors all the actors of the game
+ * @param movingActor the actor that is being translated
+ * @param movementVector the movement defining where the movingActor is moving
+ * @returns the movingActor with its updated position (after the movement)
+ */ 
 function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	const newPosition = translatePoint(movingActor.position, movementVector);
 	if (isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
@@ -105,26 +120,54 @@ function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, mo
 	return { ...movingActor, position: newPosition };
 }
 
+/**
+ * Constructor for a default "ignorant" actor
+ * @param position the position where the ignorant is in the world
+ * @param waypointTarget the next position that the ignorant has to reach
+ * @param ignorance the level of ignorance of the ignorant
+ * @returns the created Actor of kind "ignorant"
+ */
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 10): Actor {
 	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
 }
 
 /**
  * Constructor for a default "ignoranceSpreader" actor
+ * @param position the position where the ignoranceSpreader is in the world
+ * @param waypointTarget the next position that the ignoranceSpreader has to reach
+ * @param ignorance the level of ignorance of the ignoranceSpreader
+ * @returns the created Actor of kind "ignoranceSpreader"
  */
 function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 7): Actor {
 	return createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance }, "ignoranceSpreader", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
 }
 
+/**
+ * Type that should be respected for creating a dictionnary containing the constructors of the Actors that can move by themselves during the move Phase.
+ * see {@link walkerCreator}
+ */
 type WalkerCreator = {
 	[key in Walker]: (position: Vector2D, waypointTarget: Vector2D, ignorance?: number) => Actor
 };
 
+/**
+ * Constructors for the Actors that can move by themselves during the move Phase.
+ * The elements of the dictionnary are constrained by the type {@link WalkerCreator}
+ */
 const walkerCreator: WalkerCreator = {
 	ignorant: createIgnorant,
 	ignoranceSpreader: createIgnoranceSpreader
 };
 
+/**
+ * Generic fonction called to create Actors that can move by themselves during the move Phase.
+ * Those Actors are listed in the type {@link Walker}.
+ * @param kind the kind of the created Actor
+ * @param path the waypoints constraining the path on which the Actor will move
+ * @param position the position of the created Actor
+ * @param ignorance the ignorance of the created Actor
+ * @returns the created Actor whose kind is listed in the type {@link Walker}
+ */
 function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, ignorance?: number): Actor {
 	const firstWaypoint = findNextWaypointTarget(path, position, 0);
 	return walkerCreator[kind](position, firstWaypoint.waypointTarget, ignorance);
@@ -132,6 +175,8 @@ function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, igno
 
 /**
  * Constructor for a default "spawner" actor
+ * @param position the position where the spawner is in the world
+ * @returns the created Actor of kind "spawner"
  */
 function createSpawner(position: Vector2D): Actor {
 	return createActor(position, {}, "spawner", { waypointNumber: 0 });
@@ -139,6 +184,8 @@ function createSpawner(position: Vector2D): Actor {
 
 /**
  * Constructor for a default "ground" actor
+ * @param waypointNumber the number indexing the order in which the waypoints have to be reached
+ * @returns the created Actor of kind "ground"
  */
 function createGround(position: Vector2D, waypointNumber: number): Actor {
 	return createActor(position, {}, "ground", { waypointNumber: waypointNumber });
@@ -146,6 +193,8 @@ function createGround(position: Vector2D, waypointNumber: number): Actor {
 
 /**
  * Constructor for a default "spaghettimonster" actor
+ * @param waypointNumber the number indexing the order in which the waypoints have to be reached
+ * @returns the created Actor of kind "spaghettimonster"
  */
 function createSpaghettimonster(position: Vector2D, waypointNumber: number): Actor {
 	return createActor(position, {}, "spaghettimonster", { waypointNumber: waypointNumber });
