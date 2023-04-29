@@ -1,5 +1,6 @@
 import type { ActorActions } from "./actor_actions";
 import type { Actor } from "./actor";
+
 import { translateAndUpdateWaypoint} from "./actor";
 import { sum } from "./util";
 

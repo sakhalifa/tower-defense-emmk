@@ -50,8 +50,13 @@ function worldToString(world: World): string {
 	return `${' '.repeat(world.width * 2)}\n`.repeat(world.height - 1).concat(`${' '.repeat(world.width * 2)}`);
 }
 
-
-function vectorIndexInWorldString(world: World, vector: Vector2D): number {
+/**
+ * Returns the position of the character representing the content of what is at the position described by the given vector, in the given world
+ * @param world the world represented by a string where a character represents the given vector
+ * @param vector the vector representing the position, represented as a character in the world string representation
+ * @returns the position of the character representing the content of what is at the position described by the given vector, in the given world
+ */
+function worldStringVectorToIndex(world: World, vector: Vector2D): number {
 	if (!isPositionInWorld(world, vector)){
 		throw new Error("Position is not in world");
 	}
@@ -59,7 +64,7 @@ function vectorIndexInWorldString(world: World, vector: Vector2D): number {
 }
 
 export {
-	createWorld, worldToString, isPositionInWorld, vectorIndexInWorldString as worldStringVectorToIndex
+	createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex
 };
 
 export type {

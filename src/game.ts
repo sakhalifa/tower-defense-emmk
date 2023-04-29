@@ -1,7 +1,6 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
-import type { ActorActions } from "./actor_actions";
 
 import { filterByKind } from "./actor";
 import { isPositionInWorld, createWorld } from "./world";
@@ -52,7 +51,7 @@ function initWayPoints(world: World): Array<Actor> {
 	];
 }
 
-//not pure
+
 function initOtherActors(path: Array<Actor>): Array<Actor> {
 	const entries = filterByKind(path, "spawner");
 	return [

@@ -1,7 +1,6 @@
-import type { Actor, Walker } from "./actor";
+import type { Actor } from "./actor";
 
 import { isDeepStrictEqual } from "./util";
-import { createIgnoranceSpreader, createIgnorant } from "./actor";
 import { distance, createVector, Vector2D } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
 
