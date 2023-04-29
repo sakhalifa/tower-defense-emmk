@@ -19,11 +19,9 @@ type Phase = {
  * @param executePhase The function that computes the new actor array according to the results of the phase from all the actors
  * @returns A new phase
  */
-function createPhase<Key extends keyof ActorActions>(funcName: Key,
+function createPhase<Key extends keyof ActorActions>(funcName: Key & (keyof ActorActions),
     executePhase: (oldActors: Array<Actor>, phaseResults: Array<ReturnType<ActorActions[Key]>>) => Array<Actor>): Phase {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    return { funcName: funcName, executePhase: executePhase };
+    return { funcName: funcName, executePhase: executePhase } as Phase;
 }
 
 export type { Phase };

@@ -1,6 +1,9 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import { Actor, filterByKind } from "./actor";
+import type { Actor } from "./actor";
+import type { ActorActions } from "./actor_actions";
+
+import { filterByKind } from "./actor";
 import { isPositionInWorld, createWorld } from "./world";
 import { createGround, createSpaghettimonster, createSpawner, createWalker } from "./actor";
 import { createPhase } from "./phase";
@@ -98,9 +101,7 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 	return phases.reduce((someActors, aPhase) => {
 		const proposals: Actor[]
 			= aPhase.executePhase(someActors,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor))
+				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
 			);
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
