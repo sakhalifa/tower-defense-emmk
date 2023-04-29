@@ -49,8 +49,8 @@ function initWayPoints(world: World): Array<Actor> {
 function initOtherActors(path: Array<Actor>): Array<Actor> {
 	const entries = filterByKind(path, "spawner");
 	return [
-		createWalker("ignorant", path, getRandomArrayElement(entries).position, 4),
-		createWalker("healer", path, getRandomArrayElement(entries).position, 4)
+		createWalker("ignorant", path, getRandomArrayElement(entries).position),
+		createWalker("healer", path, getRandomArrayElement(entries).position)
 	];
 }
 
@@ -100,7 +100,7 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
 			= aPhase.executePhase(someActors,
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				someActors.map((anActor) => anActor.actions?.[aPhase.funcName]?.(someActors, anActor))
+				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor))
 			);
 		return resolveProposals(world, someActors, proposals);
 	}, actors);

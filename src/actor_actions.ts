@@ -13,8 +13,8 @@ type ActorActions = {
     temperatureRise: (actors: Array<Actor>, actor: Actor) => number;
     convertEnemies: (actors: Array<Actor>, actor: Actor) => {actorIndices: Array<number>, amount: Array<number>};
     heal: (actors: Array<Actor>, actor: Actor) => {actorIndices: number[], amount: number[]};
-    enemyFlee: (actor: Actor) => boolean;
-    move: (actor: Actor) => Vector2D;
+    enemyFlee: (actors: Array<Actor>, actor: Actor) => boolean;
+    move: (actors: Array<Actor>, actor: Actor) => Vector2D;
 };
 
 /**
@@ -25,8 +25,8 @@ const defaultActions: Required<ActorActions> = {
 	temperatureRise: (allActors, oneActor) => 0,
 	heal: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
 	convertEnemies: (allActors, oneActor) => { return { actorIndices: [], amount: [] }; },
-	enemyFlee: (oneActor) => false,
-	move: (oneActor) => { return createVector(0, 0); }
+	enemyFlee: (allActors, oneActor) => false,
+	move: (allActors, oneActor) => { return createVector(0, 0); }
 };
 
 /**
@@ -77,13 +77,13 @@ function heal(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["heal
 	return { actorIndices, amount }; // amount is an array of the same number...
 }
 
-function moveTowardWaypointTarget(movingActor: Actor): ReturnType<ActorActions["move"]> {
-	if (movingActor.kind !== "healer" && movingActor.kind !== "ignorant") {
-		console.log(movingActor.kind);
-		return createVector(0, 0);
-	} else {
+function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor): ReturnType<ActorActions["move"]> {
+	//console.log(movingActor.kind);
+	//if (movingActor.kind !== "healer" && movingActor.kind !== "ignorant") { // in Walker !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//	return createVector(0, 0);
+	//} else {
 		return movingVector(movingActor.position, getWaypointTarget(movingActor));
-	}
+	//}
 }
 
 function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
@@ -121,7 +121,7 @@ function convertEnemies(actors: Array<Actor>, actor: Actor): ReturnType<ActorAct
  * @param actor The current actor that does the action
  * @returns true iif the current actor decides to not exist anymore
  */
-function enemyFlee(actor: Actor): ReturnType<ActorActions["enemyFlee"]> {
+function enemyFlee(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["enemyFlee"]> {
 	if (actor.kind === "ground" || actor.kind === "goodGuy")
 		return false;
 	return (actor?.ignorance ?? 0) <= 0;
