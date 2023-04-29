@@ -76,13 +76,13 @@ function drawActorIgnorance(actor: Actor, scale: Vector2D){
 
     const barSize = scale.x;
     const barOffset = createVector(0, -scale.y / 10);
-    const healthBarBegin = createVector(actor.position.x * scale.x + barOffset.x, actor.position.y * scale.y + barOffset.y);
+    const ignoranceBarBegin = createVector(actor.position.x * scale.x + barOffset.x, actor.position.y * scale.y + barOffset.y);
 
-    drawLine(healthBarBegin,
+    drawLine(ignoranceBarBegin,
         createVector(actor.position.x * scale.x + barOffset.x + barSize, actor.position.y * scale.y + barOffset.y),
         '#ff0000');
     
-    drawLine(healthBarBegin,
+    drawLine(ignoranceBarBegin,
         createVector((actor.position.x * scale.x + barOffset.x + barSize) * actor.ignorance / 10, actor.position.y * scale.y + barOffset.y),
         '#00ff00');
 }

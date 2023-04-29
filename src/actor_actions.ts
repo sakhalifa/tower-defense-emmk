@@ -1,7 +1,7 @@
 import type { Actor, Walker } from "./actor";
 
 import { isDeepStrictEqual } from "./util";
-import { createHealer, createIgnorant } from "./actor";
+import { createIgnoranceSpreader, createIgnorant } from "./actor";
 import { distance, createVector, Vector2D } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
 
@@ -43,7 +43,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["spa
 	//	if (Math.random() < 0.7)
 	//		return createIgnorant();
 	//	else
-	//		return createHealer();
+	//		return createIgnoranceSpreader();
 	//}
 	return undefined;
 }
@@ -69,11 +69,11 @@ function temperatureRise(actors: Array<Actor>, actor: Actor): ReturnType<ActorAc
  * @returns all the actors the actor will spread ignorance to, and the amount for which every actor will be impacted.
  */
 function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor): ReturnType<ActorActions["spreadIgnorance"]> {
-	const actorsToHealIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
-	currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToHeal.concat(actorIndex) : actorsToHeal,
+	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) => 
+	currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
 	[]);
-	const amount = actorsToHealIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
-	return { actorIndices: actorsToHealIndices, amount }; // amount is an array of the same number, but this could be changed
+	const amount = actorsToSpreadIgnoranceIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
+	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 
 function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor /* type it with Walker ? */): ReturnType<ActorActions["move"]> {
@@ -121,5 +121,5 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions[
 	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions };
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, movingVector, defaultActions };
 export type {ActorActions};
