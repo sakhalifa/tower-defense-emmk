@@ -208,6 +208,6 @@ i {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: first baseline;
     background-color: #FDF0D5;
 }

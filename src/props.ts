@@ -1,12 +1,12 @@
 import { Actor } from "./actor";
 import { Vector2D } from "./geometry";
 
-function setAttackPower(actor: Actor, attackPower: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, attackPower } };
+function setHunger(actor: Actor, hunger: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, hunger } };
 }
 
-function getAttackPower(actor: Actor): number | undefined {
-	return actor.externalProps?.attackPower;
+function getHunger(actor: Actor): number | undefined {
+	return actor.externalProps?.hunger;
 }
 
 function setHealPower(actor: Actor, healPower: number): Actor {
@@ -25,32 +25,32 @@ function getRange(actor: Actor): number | undefined {
 	return actor?.externalProps.range;
 }
 
-function getNextWaypointPosition(actor: Actor): Vector2D | undefined {
-	return actor?.externalProps.nextWaypointPosition;
+function getWaypointTarget(actor: Actor): Vector2D {
+	return actor.externalProps.waypointTarget!;
 }
 
-function setNextWaypointPosition(actor: Actor, nextWaypointPosition: Vector2D): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, nextWaypointPosition } };
+function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, waypointTarget: waypointTarget } };
 }
 
-function getWaypointNumber(actor: Actor): number | undefined {
-	return actor.externalProps.waypointNumber;
+function getWaypointNumber(actor: Actor): number {
+	return actor.externalProps.waypointNumber!;
 }
 
 function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, waypointNumber } };
+	return { ...actor, externalProps: { ...actor.externalProps, waypointNumber: waypointNumber } };
 }
 
-function getNextWaypointNumber(actor: Actor): number | undefined {
-	return actor.externalProps.nextWaypointNumber;
+function getWaypointTargetNumber(actor: Actor): number {
+	return actor.externalProps.waypointTargetNumber!;
 }
 
-function setNextWaypointNumber(actor: Actor, nextWaypointNumber: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, nextWaypointNumber } };
+function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, waypointTargetNumber: waypointTargetNumber } };
 }
 
 export {
-	setAttackPower, getAttackPower, setHealPower, getHealPower, setRange, getRange,
-	getNextWaypointPosition, setNextWaypointPosition, getWaypointNumber, setWaypointNumber,
-	getNextWaypointNumber, setNextWaypointNumber
+	setHunger, getHunger, setHealPower, getHealPower, setRange, getRange,
+	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
+	getWaypointTargetNumber, setWaypointTargetNumber
 };

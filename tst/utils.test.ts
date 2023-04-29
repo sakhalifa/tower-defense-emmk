@@ -21,7 +21,7 @@ test("getRandomArrayElement", ()=>{
     expect(getRandomArrayElement([1])).toBe(1);
 
     // Run this one multiple times
-    const numberArray = [1, 2, 3, 4, 5]
+    const numberArray = [1, 2, 3, 4, 5];
     expect(numberArray.includes(getRandomArrayElement(numberArray))).toBeTruthy();
     expect(numberArray.includes(getRandomArrayElement(numberArray))).toBeTruthy();
     expect(numberArray.includes(getRandomArrayElement(numberArray))).toBeTruthy();

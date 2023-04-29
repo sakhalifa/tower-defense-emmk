@@ -2,21 +2,21 @@ import { createIgnorant, createSpaghettimonster } from "../src/actor";
 import { temperatureRise, heal, movingVector } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
-import { setAttackPower, setHealPower } from "../src/props";
+import { setHunger, setHealPower } from "../src/props";
 
 test("TemperatureRise test", () => {
     const world = createWorld(5, 5, 0);
 
     const monster = createSpaghettimonster(createVector(2, 2), 1);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
-    const onPoint = setAttackPower(createIgnorant(createVector(0, 0), createVector(0, 0)), 3);
+    const onPoint = setHunger(createIgnorant(createVector(0, 0), createVector(0, 0)), 3);
     
     const actors = [monster, ignorant, onPoint];
 
-    // The ignorant is not at the same position as the spaghetti monster, so it shouldn't attack
+    // The ignorant is not at the same position as the spaghetti monster, so it souldn't eat the spaghetti monster
     expect(temperatureRise(actors, ignorant)).toBe(0);
 
-    // Ignorant on the same position as the spaghetti monster, should attack
+    // Ignorant on the same position as the spaghetti monster, should eat the spaghetti monster
     expect(temperatureRise(actors, onPoint)).toBe(3);
 });
 
@@ -27,7 +27,7 @@ test("heal test", () => {
     const actors = [ignorant, healer];
 
     // Healing a fully ignorant ignorant, should not heal
-    expect(heal(actors, healer).amount.length).toBe(0)
+    expect(heal(actors, healer).amount.length).toBe(0);
 });
 
 test("movingVector test", () => {
