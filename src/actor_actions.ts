@@ -123,5 +123,5 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemy
 	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveTowardNextWaypoint, defaultActions };
+export { temperatureRise, heal, convertEnemies, enemyFlee, spawn, moveTowardNextWaypoint, movingVector, defaultActions };
 export type {ActorActions};
