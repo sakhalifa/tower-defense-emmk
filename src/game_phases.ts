@@ -1,5 +1,6 @@
-import { Actor , translateAndUpdateWaypoint} from "./actor";
-import { ActionReturnTypes } from "./phase";
+import type { ActorActions } from "./actor_actions";
+import type { Actor } from "./actor";
+import { translateAndUpdateWaypoint} from "./actor";
 import { sum } from "./util";
 
 /**
@@ -9,7 +10,7 @@ import { sum } from "./util";
  * @param phaseResult The results of the phase
  * @returns A proposal for the actors after executing the "spawn" phase
  */
-function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["spawn"]>): Array<Actor> {
+function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["spawn"]>>): Array<Actor> {
 	return oldActors.concat(phaseResult.filter((v) => v !== undefined) as Array<Actor>);
 }
 
@@ -20,16 +21,16 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnType
  * @param phaseResult The results of the phase
  * @returns A proposal for the actors after executing the "temperatureRise" phase
  */
-function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["temperatureRise"]>): Array<Actor> {
+function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["temperatureRise"]>>): Array<Actor> {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	return oldActors.map((a) => a.kind !== "spaghettimonster" ? a : { ...a, faith_point: a.ignorance! - sum(phaseResult) });
 }
 
-function movePhase(oldActors: Array<Actor>, movementVectors: Array<ActionReturnTypes["move"]>): Array<Actor> {
+function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
 	return movementVectors.map((movementVector, actorIndex) => translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], movementVector));
 }
 
-function updateIgnorance(actor: Actor, actorIndex: number, healResults: Array<ActionReturnTypes["heal"]>): Actor {
+function updateIgnorance(actor: Actor, actorIndex: number, healResults: Array<ReturnType<ActorActions["heal"]>>): Actor {
 	return {
 		...actor,
 		ignorance: healResults.reduce((ignoranceAcc, healResult) =>
@@ -45,7 +46,7 @@ function updateIgnorance(actor: Actor, actorIndex: number, healResults: Array<Ac
  * @param phaseResult The results of the phase
  * @returns A proposal for the actors after executing the "heal" phase
  */
-function healPhase(oldActors: Array<Actor>, healVectors: Array<ActionReturnTypes["heal"]>): Array<Actor> {
+function healPhase(oldActors: Array<Actor>, healVectors: Array<ReturnType<ActorActions["heal"]>>): Array<Actor> {
 
 	return oldActors.map((currentActor, actorIndex) => updateIgnorance(currentActor, actorIndex, healVectors));
 }
@@ -57,7 +58,7 @@ function healPhase(oldActors: Array<Actor>, healVectors: Array<ActionReturnTypes
  * @param phaseResult The results of the pase
  * @returns A proposal for the actors after executing the "convertEnemies" phase
  */
-function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["convertEnemies"]>): Array<Actor> {
+function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["convertEnemies"]>>): Array<Actor> {
 	return oldActors.map((a, i) => phaseResult.reduce((actor, curResult) => {
 		const idx = curResult.actorIndices.indexOf(i);
 		if (idx !== -1) {
@@ -75,7 +76,7 @@ function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ActionR
  * @param phaseResult The results of the phase
  * @returns A proposal for the actors after executing the "enemyFlee" phase
  */
-function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ActionReturnTypes["enemyFlee"]>): Array<Actor> {
+function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["enemyFlee"]>>): Array<Actor> {
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
 

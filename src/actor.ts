@@ -1,6 +1,5 @@
 import { Vector2D, vector2DToString, translatePoint } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
-import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
 import { defaultActions, heal, moveTowardWaypointTarget, temperatureRise } from "./actor_actions";
@@ -73,7 +72,7 @@ function filterByKind(actors: Array<Actor>, kind : Kind): Array<Actor> {
  * @param ignorance The ignorance points
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], ignorance: number = 10): Actor {
+function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, externalProps?: any, tags?: string[], ignorance: number = 10): Actor {
 	return { position: position, actions: { ...defaultActions, ...actions }, tags: tags, kind: kind, ignorance: ignorance, externalProps: externalProps };
 }
 
@@ -83,7 +82,7 @@ function createActor(position: Vector2D, actions: ActorActions, kind: Kind, exte
  * @param movementVector The movement vector
  * @returns The actor after its position was translated according to a movement vector
  */
-function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+function translateActor(actor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
@@ -97,7 +96,7 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
 	return { waypointTargetNumber: nextWaypointTarget.externalProps.waypointNumber, waypointTarget: nextWaypointTarget.position };
 }
 
-function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	const newPosition = translatePoint(movingActor.position, movementVector);
 	if (isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
 		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));
