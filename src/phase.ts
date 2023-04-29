@@ -1,29 +1,17 @@
 import type { Actor } from "./actor";
-import { Vector2D } from "./geometry";
-
-/**
- * Helper type that ensures the types of {@link Phase} and {@link Actor} are coherent
- */
-type ActionReturnTypes = {
-    spawn: Actor | undefined;
-    temperatureRise: number;
-    convertEnemies: {actorIndices: Array<number>, amount: Array<number>};
-    heal: {actorIndices: number[], amount: number[]};
-    enemyFlee: boolean;
-    move: Vector2D;
-};
+import type { ActorActions } from "./actor_actions";
 
 /**
  * A phase. It takes the result of all the actions of the actors and returns a new
  * array of actors with the actions applied. It does not resolve conflicts.
- * It is mapped according to {@link ActionReturnTypes} for consistency.
+ * It is mapped according to {@link ActorActions} for consistency.
  */
 type Phase = {
-    [Key in keyof ActionReturnTypes]: {
+    [Key in keyof ActorActions]: {
         funcName: Key;
-        executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[Key]>) => Array<Actor>;
+        executePhase: (oldActors: Array<Actor>, phaseResults: Array<ReturnType<ActorActions[Key]>>) => Array<Actor>;
     }
-}[keyof ActionReturnTypes];
+}[keyof ActorActions];
 
 /**
  * Constructor for a phase
@@ -31,17 +19,13 @@ type Phase = {
  * @param executePhase The function that computes the new actor array according to the results of the phase from all the actors
  * @returns A new phase
  */
-function createPhase<Key extends keyof ActionReturnTypes>(funcName: Key,
-    executePhase: (oldActors: Array<Actor>, phaseResults: Array<ActionReturnTypes[Key]>) => Array<Actor>): Phase {
+function createPhase<Key extends keyof ActorActions>(funcName: Key,
+    executePhase: (oldActors: Array<Actor>, phaseResults: Array<ReturnType<ActorActions[Key]>>) => Array<Actor>): Phase {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     return { funcName: funcName, executePhase: executePhase };
 }
 
-export type {
-    Phase, ActionReturnTypes
-};
+export type { Phase };
 
-export {
-    createPhase
-};
+export { createPhase };

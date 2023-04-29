@@ -1,6 +1,5 @@
 import { Vector2D, vector2DToString, translatePoint } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
-import { ActionReturnTypes } from "./phase";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
 import { defaultActions, heal, moveTowardWaypointTarget, temperatureRise } from "./actor_actions";

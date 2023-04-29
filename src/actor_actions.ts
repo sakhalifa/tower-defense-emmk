@@ -1,14 +1,18 @@
 import { isDeepStrictEqual } from "./util";
 import { Actor, createHealer, createIgnorant } from "./actor";
-import type { ActionReturnTypes } from "./phase";
 import { distance, createVector, Vector2D } from "./geometry";
 import { getAttackPower, getHealPower, getWaypointTarget, getRange } from "./props";
 
 /**
- * All the possibles actions for an actor. It is mapped to {@link ActionReturnTypes} for consistency.
+ * All the possibles actions for an actor.
  */
 type ActorActions = {
-	[Key in keyof ActionReturnTypes]?: (actors: Array<Actor>, actor: Actor) => ActionReturnTypes[Key];
+	spawn: (actors: Array<Actor>, actor: Actor) => Actor | undefined;
+    temperatureRise: (actors: Array<Actor>, actor: Actor) => number;
+    convertEnemies: (actors: Array<Actor>, actor: Actor) => {actorIndices: Array<number>, amount: Array<number>};
+    heal: (actors: Array<Actor>, actor: Actor) => {actorIndices: number[], amount: number[]};
+    enemyFlee: (actors: Array<Actor>, actor: Actor) => boolean;
+    move: (actors: Array<Actor>, actor: Actor) => Vector2D;
 };
 
 /**
@@ -25,16 +29,16 @@ const defaultActions: Required<ActorActions> = {
 
 /**
  * The "spawner" action.
- * It has a 50% chance to spawn a new actor, which has 50% chance to be an ignorant, or 50% chance to be a healer.
+ * It has a 50% chance to spawn a new actor, which has 70% chance to be an ignorant, or 30% chance to be a healer.
  * @param actors The actors in the world
  * @param actor The current actor that does the action
  * @returns A new actor to be spawned
  */
-function spawn(actors: Array<Actor>, actor: Actor): ActionReturnTypes["spawn"] {
+function spawn(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["spawn"]> {
 	if (Math.random() < 0.5)
 		return undefined;
 	else {
-		if (Math.random() < 0.5)
+		if (Math.random() < 0.7)
 			return createIgnorant();
 		else
 			return createHealer();
@@ -49,7 +53,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ActionReturnTypes["spawn"] {
  * @param actor The current actor that does the action
  * @returns The amount of damage to do to the spaghetti monster
  */
-function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes["temperatureRise"] {
+function temperatureRise(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["temperatureRise"]> {
 	return actors.find((a) => a.kind === "spaghettimonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
 		? 0 : (getAttackPower(actor) ?? 1);
 }
@@ -61,7 +65,7 @@ function temperatureRise(actors: Array<Actor>, actor: Actor): ActionReturnTypes[
  * @param actor The current actor that does the action
  * @returns all the actors that will be healed, and the amount for which every actor healed will be healed
  */
-function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
+function heal(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["heal"]> {
 	const range = getRange(actor) ?? 3;
 	const actorIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
 	currentActor.kind === "ignorant" && distance(currentActor.position, actor.position) <= range ? actorsToHeal.concat(actorIndex) : actorsToHeal,
@@ -70,7 +74,7 @@ function heal(actors: Array<Actor>, actor: Actor): ActionReturnTypes["heal"] {
 	return { actorIndices, amount }; // amount is an array of the same number...
 }
 
-function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor): ActionReturnTypes["move"] {
+function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor): ReturnType<ActorActions["move"]> {
 	if (getWaypointTarget(movingActor) === undefined) {
 		return createVector(0, 0);
 	} else {
@@ -99,7 +103,7 @@ function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
  * @param actor The current actor that does the action
  * @returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
  */
-function convertEnemies(actors: Array<Actor>, actor: Actor): ActionReturnTypes["convertEnemies"] {
+function convertEnemies(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["convertEnemies"]> {
 	const range = getRange(actor) ?? 3;
 	const actorIndices = actors.filter((currentActor) => currentActor !== actor && currentActor.kind !== "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
 	const amount = actorIndices.map((_) => getAttackPower(actor) ?? 1);
@@ -113,7 +117,7 @@ function convertEnemies(actors: Array<Actor>, actor: Actor): ActionReturnTypes["
  * @param actor The current actor that does the action
  * @returns true iif the current actor decides to not exist anymore
  */
-function enemyFlee(actors: Array<Actor>, actor: Actor): ActionReturnTypes["enemyFlee"] {
+function enemyFlee(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["enemyFlee"]> {
 	if (actor.kind === "ground" || actor.kind === "goodGuy")
 		return false;
 	return (actor?.ignorance ?? 0) <= 0;
