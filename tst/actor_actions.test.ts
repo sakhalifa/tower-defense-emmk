@@ -30,7 +30,7 @@ test("spreadIgnorance test", () => {
     // Not enough specifications to make this tests, waiting fot the team to decide a correct behavior
     // Spreading ignorance to a fully ignorant ignorant, should not increase its ignorance
     // expect(spreadIgnorance(actors, ignoranceSpreader).amount[0]).toBe(0);
-    // Heal should heal himself
+    // IgnorantSpreader shouldn't increase its own ignorance
     expect(spreadIgnorance([ignoranceSpreader], ignoranceSpreader).amount.length).toBe(0);
     
     // ignorant shouldn't spread ignorance
