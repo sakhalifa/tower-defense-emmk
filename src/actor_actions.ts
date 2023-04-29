@@ -3,7 +3,7 @@ import type { Actor, Walker } from "./actor";
 import { isDeepStrictEqual } from "./util";
 import { createHealer, createIgnorant } from "./actor";
 import { distance, createVector, Vector2D } from "./geometry";
-import { getHunger, getHealPower, getWaypointTarget, getRange } from "./props";
+import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
 
 /**
  * All the possibles actions for an actor.
@@ -65,25 +65,19 @@ function temperatureRise(actors: Array<Actor>, actor: Actor): ReturnType<ActorAc
  * The "heal" action.
  * It returns all the actors the actor will heal, and the amount for which every actor healed will be healed.
  * @param actors The actors in the world
- * @param actor The current actor that does the action
+ * @param healer The current actor that does the action
  * @returns all the actors that will be healed, and the amount for which every actor healed will be healed
  */
-function heal(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["heal"]> {
-	const range = getRange(actor) ?? 3;
-	const actorIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
-	currentActor.kind === "ignorant" && distance(currentActor.position, actor.position) <= range ? actorsToHeal.concat(actorIndex) : actorsToHeal,
+function heal(actors: Array<Actor>, healer: Actor): ReturnType<ActorActions["heal"]> {
+	const actorsToHealIndices: Array<number> = actors.reduce((actorsToHeal: Array<number>, currentActor: Actor, actorIndex: number) => 
+	currentActor.kind === "ignorant" && distance(currentActor.position, healer.position) <= getRange(healer) ? actorsToHeal.concat(actorIndex) : actorsToHeal,
 	[]);
-	const amount = actorIndices.map((_) => getHealPower(actor) ?? 1);
-	return { actorIndices, amount }; // amount is an array of the same number...
+	const amount = actorsToHealIndices.map((_) => getSpreadIgnorancePower(healer));
+	return { actorIndices: actorsToHealIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 
-function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor): ReturnType<ActorActions["move"]> {
-	//console.log(movingActor.kind);
-	//if (movingActor.kind !== "healer" && movingActor.kind !== "ignorant") { // in Walker !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//	return createVector(0, 0);
-	//} else {
-		return movingVector(movingActor.position, getWaypointTarget(movingActor));
-	//}
+function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor /* type it with Walker ? */): ReturnType<ActorActions["move"]> {
+	return movingVector(movingActor.position, getWaypointTarget(movingActor));
 }
 
 function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
