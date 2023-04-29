@@ -1,12 +1,12 @@
 import { Actor } from "./actor";
 import { Vector2D } from "./geometry";
 
-function setAttackPower(actor: Actor, attackPower: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, attackPower } };
+function setHunger(actor: Actor, hunger: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, hunger } };
 }
 
-function getAttackPower(actor: Actor): number | undefined {
-	return actor.externalProps?.attackPower;
+function getHunger(actor: Actor): number | undefined {
+	return actor.externalProps?.hunger;
 }
 
 function setHealPower(actor: Actor, healPower: number): Actor {
@@ -50,7 +50,7 @@ function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Ac
 }
 
 export {
-	setAttackPower, getAttackPower, setHealPower, getHealPower, setRange, getRange,
+	setHunger, getHunger, setHealPower, getHealPower, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber
 };

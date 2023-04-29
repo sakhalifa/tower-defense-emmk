@@ -1,7 +1,7 @@
 import { isDeepStrictEqual } from "./util";
 import { Actor, createHealer, createIgnorant } from "./actor";
 import { distance, createVector, Vector2D } from "./geometry";
-import { getAttackPower, getHealPower, getWaypointTarget, getRange } from "./props";
+import { getHunger, getHealPower, getWaypointTarget, getRange } from "./props";
 
 /**
  * All the possibles actions for an actor.
@@ -55,7 +55,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["spa
  */
 function temperatureRise(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["temperatureRise"]> {
 	return actors.find((a) => a.kind === "spaghettimonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
-		? 0 : (getAttackPower(actor) ?? 1);
+		? 0 : (getHunger(actor) ?? 1);
 }
 
 /**
@@ -106,7 +106,7 @@ function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
 function convertEnemies(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["convertEnemies"]> {
 	const range = getRange(actor) ?? 3;
 	const actorIndices = actors.filter((currentActor) => currentActor !== actor && currentActor.kind !== "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
-	const amount = actorIndices.map((_) => getAttackPower(actor) ?? 1);
+	const amount = actorIndices.map((_) => getHunger(actor) ?? 1);
 	return { actorIndices, amount };
 }
 
