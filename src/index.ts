@@ -110,7 +110,7 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
 }
 
 async function main(){
-    const world: World = initWorld(7, 7);
+    const world: World = initWorld(12, 12);
 	let actors: Array<Actor> = initWayPointActors(world);
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
@@ -118,7 +118,7 @@ async function main(){
 	while (!finished) {
 		actors = nextTurn(phases, world, actors);
 		await displayWorldToCanvas(world, actors);
-		finished = i++ === 5;
+		finished = i++ === 25;
 	}
 }
 
