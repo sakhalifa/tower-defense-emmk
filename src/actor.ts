@@ -104,7 +104,7 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
 }
 
 /**
- * Translates the movingActor according to the given movementVector, and updates this waypointTarget if it has been reached
+ * Translates the movingActor according to the given movementVector, and updates its waypointTarget if it has been reached
  * @param actors all the actors of the game
  * @param movingActor the actor that is being translated
  * @param movementVector the movement defining where the movingActor is moving
@@ -169,9 +169,10 @@ const walkerCreator: WalkerCreator = {
  * @param ignorance the ignorance of the created Actor
  * @returns the created Actor whose kind is listed in the type {@link Walker}
  */
-function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, ignorance?: number): Actor {
-	const firstWaypoint = findNextWaypointTarget(path, position, 0);
-	return walkerCreator[kind](position, firstWaypoint.waypointTarget, ignorance);
+function createWalker(kind: Walker, path: Array<Actor>, ignorance?: number): Actor {
+	const spawnPosition = getRandomArrayElement(filterByKind(path, "spawner")).position;
+	const firstWaypoint = findNextWaypointTarget(path, spawnPosition, 0);
+	return walkerCreator[kind](spawnPosition, firstWaypoint.waypointTarget, ignorance);
 }
 
 /**

@@ -2,13 +2,11 @@ import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 
-import { filterByKind } from "./actor";
 import { isPositionInWorld, createWorld } from "./world";
 import { createGround, createSpaghettimonster, createSpawner, createWalker } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { getRandomArrayElement } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -53,10 +51,9 @@ function initWayPoints(world: World): Array<Actor> {
 
 
 function initOtherActors(path: Array<Actor>): Array<Actor> {
-	const entries = filterByKind(path, "spawner");
 	return [
-		createWalker("ignorant", path, getRandomArrayElement(entries).position),
-		createWalker("ignoranceSpreader", path, getRandomArrayElement(entries).position)
+		createWalker("ignorant", path),
+		createWalker("ignoranceSpreader", path)
 	];
 }
 
