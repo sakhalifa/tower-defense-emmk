@@ -35,6 +35,14 @@ function initPhases(): Array<Phase> {
 	];
 }
 
+/**
+ * Returns an array of 1 to max_positions unique aligned positions
+ * @param world the world on which the positions are computed
+ * @param max_positions the maximum number of positions inside the returned array
+ * @param axis the returned positions can reach each other by a translation along this axis
+ * @param lineNumber the coordinate of the returned position on the not-given axis
+ * @returns an array of 1 to max_positions unique positions, that all have the same coordinate value on the axis that was not given
+ */
 function createPositionsAlongAxis(world: World, max_positions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
 	if (max_positions < 1) {
 		throw new Error("At least one position must be returned");
@@ -42,62 +50,64 @@ function createPositionsAlongAxis(world: World, max_positions: number, axis: Axi
 	if ((axis === "x" && max_positions > world.width) || (axis === "y" && max_positions > world.height)) {
 		throw new Error("It is impossible to return more than n unique positions along a line of n positions.");
 	}
-	function createPositionsAlongAxisTailRecursive(max_spawners: number, existingSpawners: Array<Vector2D>): Array<Vector2D> {
-		let newSpawnerPosition: Vector2D;
-		if (max_spawners === 1) {
+	function createPositionsAlongAxisTailRecursive(max_positions: number, existingPositions: Array<Vector2D>): Array<Vector2D> {
+		let newPosition: Vector2D;
+		if (max_positions === 1) {
 			do {
-				newSpawnerPosition = randomPositionAlongAxis(world, axis, lineNumber);
-			} while (existingSpawners.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
-			return existingSpawners.concat(newSpawnerPosition);
+				newPosition = randomPositionAlongAxis(world, axis, lineNumber);
+			} while (existingPositions.find((currentPos) => isDeepStrictEqual(currentPos, newPosition)));
+			return existingPositions.concat(newPosition);
 		} else {
 			if (Math.random() < 0.5) {
 				do {
-					newSpawnerPosition = randomPositionAlongAxis(world, axis, lineNumber);
-				} while (existingSpawners.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
-				return createPositionsAlongAxisTailRecursive(max_spawners - 1, existingSpawners.concat(newSpawnerPosition));
+					newPosition = randomPositionAlongAxis(world, axis, lineNumber);
+				} while (existingPositions.find((currentPos) => isDeepStrictEqual(currentPos, newPosition)));
+				return createPositionsAlongAxisTailRecursive(max_positions - 1, existingPositions.concat(newPosition));
 			} else {
-				return createPositionsAlongAxisTailRecursive(max_spawners - 1, existingSpawners);
+				return createPositionsAlongAxisTailRecursive(max_positions - 1, existingPositions);
 			}
 		}
 	}
 	return createPositionsAlongAxisTailRecursive(max_positions, []);
 }
 
+function initSpawners(world: World, maxSpawners: number, spawnersAxis : Axis, spawnerLineNumber: number): Array<Actor> {
+	return createPositionsAlongAxis(world, maxSpawners, spawnersAxis, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition));
+}
+
+function initGrounds(world: World, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Actor> {
+	return Array.from({ length: numberOfGroundLines },
+		(_, index) => (createPositionsAlongAxis(world, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
+												.map((groundPosition) => createGround(groundPosition, index + 1)))
+		).flat();
+}
+
+function initSpaghettiMonster(world: World, maxSpaghettiMonsters: number, spaghettiMonsterAxis : Axis, spaghettimonsterLineNumber: number, wayPointNumber: number): Array<Actor> {
+	return createPositionsAlongAxis(world, maxSpaghettiMonsters, spaghettiMonsterAxis, spaghettimonsterLineNumber).map((spaghettiMonsterPosition) => createSpaghettimonster(spaghettiMonsterPosition, wayPointNumber));
+}
+
+function computeIntermidiateWaypointsLineNumber(intermidiateWaypointsNumber: number, spaghettimonsterLineNumber: number, maxLineNumber: number): Array<number> {
+	return Array.from({ length: intermidiateWaypointsNumber },
+		(_, index) => ((spaghettimonsterLineNumber === 0) ? (intermidiateWaypointsNumber - index) : (1 + index))
+		* maxLineNumber / (intermidiateWaypointsNumber + 1))
+		.map((lineNumber) => Math.floor(lineNumber));
+}
+
 /**
  * Randomly creates the waypoints of the world (creates spawners, ground, and spaghettimonster)
  * @param world the world on which the waypoints are created
+ * @param intermidiateWaypointsNumber the number of waypoints that have to be reached by the moving actors (spawner and spaghettimonster not included)
  * @returns the created waypoints of the world
  */
 function initWayPointActors(world: World, intermidiateWaypointsNumber: number): Array<Actor> {
 	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
-	let spawnerLineNumber: number;
-	let spaghettimonsterLineNumber: number;
-	if (spawnersAxis === "x") {
-		if (Math.random() < 0.5) {
-			spawnerLineNumber = 0;
-		} else {
-			spawnerLineNumber = world.height - 1;
-		}
-		spaghettimonsterLineNumber = world.height - 1 - spawnerLineNumber;
-	} else {
-		if (Math.random() < 0.5) {
-			spawnerLineNumber = 0;
-		} else {
-			spawnerLineNumber = world.width - 1;
-		}
-		spaghettimonsterLineNumber = world.width - 1 - spawnerLineNumber;
-	}
-	const maxLineNumber = spawnerLineNumber + spaghettimonsterLineNumber;
-	const intermidiateWaypointsLineNumber: Array<number> = Array.from({ length: intermidiateWaypointsNumber },
-		(_, index) => ((spaghettimonsterLineNumber === 0) ? (intermidiateWaypointsNumber - index) : (1 + index))
-		* maxLineNumber / (intermidiateWaypointsNumber + 1))
-		.map((lineNumber) => Math.floor(lineNumber));
-	return createPositionsAlongAxis(world, 3, spawnersAxis, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition))
-	.concat(Array.from({ length: intermidiateWaypointsNumber },
-		(_, index) => (createPositionsAlongAxis(world, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermidiateWaypointsLineNumber[index])
-												.map((groundPosition) => createGround(groundPosition, index + 1)))
-		).flat())
-	.concat(createPositionsAlongAxis(world, 1, spawnersAxis, spaghettimonsterLineNumber).map((spaghettiMonsterPosition) => createSpaghettimonster(spaghettiMonsterPosition, 3)));
+	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
+	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
+	const spaghettimonsterLineNumber = maxLineNumber - spawnerLineNumber;
+	const intermidiateWaypointsLineNumber: Array<number> = computeIntermidiateWaypointsLineNumber(intermidiateWaypointsNumber, spaghettimonsterLineNumber, maxLineNumber);
+	return initSpawners(world, 3, spawnersAxis, spawnerLineNumber)
+	.concat(initGrounds(world, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermidiateWaypointsLineNumber, intermidiateWaypointsNumber))
+	.concat(initSpaghettiMonster(world, 1, spawnersAxis, spaghettimonsterLineNumber, intermidiateWaypointsNumber + 1));
 }
 
 /**
