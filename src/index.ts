@@ -106,11 +106,11 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     actors.filter((actor) => actor.kind === "ignorant").forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
 
     // wait
-    await delay(1000);
+    await delay(500);
 }
 
 async function main(){
-    const world: World = initWorld(12, 12);
+    const world: World = initWorld(15, 15);
 	let actors: Array<Actor> = initWayPointActors(world);
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
@@ -118,7 +118,7 @@ async function main(){
 	while (!finished) {
 		actors = nextTurn(phases, world, actors);
 		await displayWorldToCanvas(world, actors);
-		finished = i++ === 25;
+		finished = i++ === 50;
 	}
 }
 

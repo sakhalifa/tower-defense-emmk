@@ -1,13 +1,13 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
+import type { Axis } from "./util";
 
-import { isPositionInWorld, createWorld, randomPositionOnEdge } from "./world";
+import { isPositionInWorld, createWorld, randomPositionAlongAxis } from "./world";
 import { createGround, createSpaghettimonster, createSpawner } from "./actor";
 import { createPhase } from "./phase";
 import { Vector2D, createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { Direction, randomDirection, oppositeDirection } from "./directions";
 import { isDeepStrictEqual } from "./util";
 
 /**
@@ -35,29 +35,32 @@ function initPhases(): Array<Phase> {
 	];
 }
 
-function createSpawnerPositions(world: World, max_spawners: number, spawnerEdge: Direction): Array<Actor>{
-	if (max_spawners < 1 || max_spawners > world.height || max_spawners > world.width) {
-		throw new Error("invalid spawner number");
+function createPositionsAlongAxis(world: World, max_positions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
+	if (max_positions < 1) {
+		throw new Error("At least one position must be returned");
 	}
-	function createSpawnerPositionsTailRecursive(max_spawners: number, existingSpawners: Array<Vector2D>): Array<Vector2D> {
+	if ((axis === "x" && max_positions > world.width) || (axis === "y" && max_positions > world.height)) {
+		throw new Error("It is impossible to return more than n unique positions along a line of n positions.");
+	}
+	function createPositionsAlongAxisTailRecursive(max_spawners: number, existingSpawners: Array<Vector2D>): Array<Vector2D> {
 		let newSpawnerPosition: Vector2D;
 		if (max_spawners === 1) {
 			do {
-				newSpawnerPosition = randomPositionOnEdge(world, spawnerEdge);
+				newSpawnerPosition = randomPositionAlongAxis(world, axis, lineNumber);
 			} while (existingSpawners.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
 			return existingSpawners.concat(newSpawnerPosition);
 		} else {
 			if (Math.random() < 0.5) {
 				do {
-					newSpawnerPosition = randomPositionOnEdge(world, spawnerEdge);
+					newSpawnerPosition = randomPositionAlongAxis(world, axis, lineNumber);
 				} while (existingSpawners.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
-				return createSpawnerPositionsTailRecursive(max_spawners - 1, existingSpawners.concat(newSpawnerPosition));
+				return createPositionsAlongAxisTailRecursive(max_spawners - 1, existingSpawners.concat(newSpawnerPosition));
 			} else {
-				return createSpawnerPositionsTailRecursive(max_spawners - 1, existingSpawners);
+				return createPositionsAlongAxisTailRecursive(max_spawners - 1, existingSpawners);
 			}
 		}
 	}
-	return createSpawnerPositionsTailRecursive(max_spawners, []).map((spawnerPosition) => createSpawner(spawnerPosition));
+	return createPositionsAlongAxisTailRecursive(max_positions, []);
 }
 
 /**
@@ -66,11 +69,30 @@ function createSpawnerPositions(world: World, max_spawners: number, spawnerEdge:
  * @returns the created waypoints of the world
  */
 function initWayPointActors(world: World): Array<Actor> {
-	const spawnerEdge: Direction = randomDirection();
-	return createSpawnerPositions(world, 3, spawnerEdge).concat([
+	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+	let spawnerLineNumber: number;
+	let spaghettimonsterLineNumber: number;
+	if (spawnersAxis === "x") {
+		if (Math.random() < 0.5) {
+			spawnerLineNumber = 0;
+			spaghettimonsterLineNumber = world.height - 1;
+		} else {
+			spawnerLineNumber = world.height - 1;
+			spaghettimonsterLineNumber = 0;
+		}
+	} else {
+		if (Math.random() < 0.5) {
+			spawnerLineNumber = 0;
+			spaghettimonsterLineNumber = world.width - 1;
+		} else {
+			spawnerLineNumber = world.width - 1;
+			spaghettimonsterLineNumber = 0;
+		}
+	}
+	return createPositionsAlongAxis(world, 3, spawnersAxis, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition)).concat([
 		createGround(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), 1),
 		createGround(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), 2),
-		createSpaghettimonster(randomPositionOnEdge(world, oppositeDirection(spawnerEdge)), 3)
+		createSpaghettimonster(createPositionsAlongAxis(world, 1, spawnersAxis, spaghettimonsterLineNumber)[0], 3)
 	]);
 }
 

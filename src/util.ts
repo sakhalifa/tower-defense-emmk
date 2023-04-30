@@ -53,4 +53,8 @@ function isObject(object: any) {
 	return object !== null && typeof object === "object";
 }
 
+type Axis = "x" | "y";
+
+export type { Axis };
+
 export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject };

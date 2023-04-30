@@ -1,6 +1,6 @@
 import type { Vector2D } from "./geometry";
+import type { Axis } from "./util";
 
-import { Direction } from "./directions";
 import { createVector } from "./geometry";
 
 /**
@@ -35,23 +35,26 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
 }
 
 /**
- * Returns a random position in the world which is on the edge of the world corresponding to the given direction
+ * Returns a random position in the world which is computed along the given axis and line number, on the world
  * @param world the world on which the position is computed
- * @param edge the edge on which the position is located
- * @returns a random position in the world which is on the edge of the world corresponding to the given direction
+ * @param axis the axis on which the position is computed
+ * @param lineNumber the line number of the line (following the axis direction) on which the position is computed
+ * @returns a random position in the world which is computed along the given axis and line number, on the world
  */
-function randomPositionOnEdge(world: World, edge : Direction): Vector2D {
-	switch (edge) {
-		case Direction.east:
-			return createVector(world.width - 1, Math.floor(Math.random() * world.height));
-		case Direction.west:
-			return createVector(0, Math.floor(Math.random() * world.height));
-		case Direction.north:
-			return createVector(Math.floor(Math.random() * world.width), 0);
-		case Direction.south:
-			return createVector(Math.floor(Math.random() * world.width), world.height - 1);
+function randomPositionAlongAxis(world: World, axis : Axis, lineNumber: number): Vector2D {
+	if (lineNumber < 0) {
+		throw new Error("lineNumber must be > 0");
+	}
+	if ((axis === "x" && lineNumber > world.height - 1) || (axis === "y" && lineNumber > world.width - 1)) {
+		throw new Error("lineNumber is too high, and doesn't represent any line on the world.");
+	}
+	switch (axis) {
+		case "y":
+			return createVector(lineNumber, Math.floor(Math.random() * world.height));
+		case "x":
+			return createVector(Math.floor(Math.random() * world.width), lineNumber);
 		default:
-			throw new Error(`${edge} is not a valid direction`);
+			throw new Error(`${axis} is not a valid axis`);
 	}
 }
 
@@ -89,4 +92,4 @@ function worldStringVectorToIndex(world: World, vector: Vector2D): number {
 
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionOnEdge };
+export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionAlongAxis };
