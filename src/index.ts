@@ -2,7 +2,7 @@ import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Kind, Actor } from "./actor";
 
-import { initWorld, initPhases, nextTurn, initActors } from "./game";
+import { initWorld, initPhases, nextTurn, initWayPointActors } from "./game";
 import { Vector2D, createVector } from "./geometry";
 
 const canvas: HTMLCanvasElement = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -111,7 +111,7 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
 
 async function main(){
     const world: World = initWorld(7, 7);
-	let actors: Array<Actor> = initActors(world);
+	let actors: Array<Actor> = initWayPointActors(world);
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
 	let i = 0;

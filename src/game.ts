@@ -3,7 +3,7 @@ import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 
 import { isPositionInWorld, createWorld } from "./world";
-import { createGround, createSpaghettimonster, createSpawner, createWalker } from "./actor";
+import { createGround, createSpaghettimonster, createSpawner } from "./actor";
 import { createPhase } from "./phase";
 import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
@@ -39,7 +39,7 @@ function initPhases(): Array<Phase> {
  * @param world the world on which the waypoints are created
  * @returns the created waypoints of the world
  */
-function initWayPoints(world: World): Array<Actor> {
+function initWayPointActors(world: World): Array<Actor> {
 	return [
 		createSpawner(createVector(0, 0)),
 		createSpawner(createVector(0, 1)),
@@ -47,20 +47,6 @@ function initWayPoints(world: World): Array<Actor> {
 		createGround(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), 2),
 		createSpaghettimonster(createVector(world.width - 1, world.height - 1), 3)
 	];
-}
-
-
-function initOtherActors(path: Array<Actor>): Array<Actor> {
-	return [
-		createWalker("ignorant", path),
-		createWalker("ignoranceSpreader", path)
-	];
-}
-
-//not pure
-function initActors(world: World): Array<Actor> {
-	const path: Array<Actor> = initWayPoints(world);
-	return path.concat(initOtherActors(path));
 }
 
 /**
@@ -113,7 +99,7 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
  */
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(7, 7);
-	let actors: Array<Actor> = initActors(world);
+	let actors: Array<Actor> = initWayPointActors(world);
 	const phases: Array<Phase> = initPhases();
 	let finished: boolean = false;
 	let i = 0;
@@ -129,4 +115,4 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 }
 
 
-export { playGame, initWorld, initPhases, initActors, nextTurn };
+export { playGame, initWorld, initPhases, initWayPointActors, nextTurn };

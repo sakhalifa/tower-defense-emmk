@@ -6,7 +6,7 @@ import { vector2DToString, translatePoint } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
 import { worldStringVectorToIndex } from "./world";
 import { stringReplaceAt } from "./util";
-import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise } from "./actor_actions";
+import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn } from "./actor_actions";
 import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget } from "./props";
 
 /**
@@ -199,7 +199,7 @@ function createGround(position: Vector2D, waypointNumber: number): Actor {
  * @returns the created Actor of kind "spaghettimonster"
  */
 function createSpaghettimonster(position: Vector2D, waypointNumber: number): Actor {
-	return createActor(position, {}, "spaghettimonster", { waypointNumber: waypointNumber });
+	return createActor(position, {spawn: spawn}, "spaghettimonster", { waypointNumber: waypointNumber });
 }
 
 export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind };

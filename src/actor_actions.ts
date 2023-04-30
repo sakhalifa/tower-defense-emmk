@@ -1,6 +1,7 @@
 import type { Actor } from "./actor";
 
 import { isDeepStrictEqual } from "./util";
+import { createWalker } from "./actor";
 import { distance, createVector, Vector2D } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
 
@@ -36,15 +37,14 @@ const defaultActions: Required<ActorActions> = {
  * @returns A new actor to be spawned
  */
 function spawn(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["spawn"]> {
-	//if (Math.random() < 0.5)
-	//	return undefined;
-	//else {
-	//	if (Math.random() < 0.7)
-	//		return createIgnorant();
-	//	else
-	//		return createIgnoranceSpreader();
-	//}
-	return undefined;
+	if (Math.random() < 0.5)
+		return undefined;
+	else {
+		if (Math.random() < 0.7)
+			return createWalker("ignorant", actors);
+		else
+			return createWalker("ignoranceSpreader", actors);
+	}
 }
 
 /**
