@@ -27,7 +27,7 @@ function oppositeDirection(direction: Direction): Direction {
 }
 
 function randomDirection(): Direction {
-    return Math.random() % Direction.total;
+    return Math.floor(Math.random() * Direction.total);
 }
 
 export { Direction, oppositeDirection, randomDirection };

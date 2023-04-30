@@ -8,7 +8,7 @@ import { createPhase } from "./phase";
 import { Vector2D, createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
 import { Direction, randomDirection, oppositeDirection } from "./directions";
-import { isDeepStrictEqual } from "util";
+import { isDeepStrictEqual } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -22,7 +22,6 @@ function initWorld(width: number, height: number): World {
 }
 
 /**
- * 
  * @returns The array of phases
  */
 function initPhases(): Array<Phase> {
@@ -68,19 +67,10 @@ function createSpawnerPositions(world: World, max_spawners: number, spawnerEdge:
  */
 function initWayPointActors(world: World): Array<Actor> {
 	const spawnerEdge: Direction = randomDirection();
-	//let spawnerPositions: Array<Vector2D> = [randomPositionOnEdge(world, spawnerEdge)];
-	//if (Math.random() < 0.5) {
-	//	let newSpawnerPosition: Vector2D;
-	//	do {
-	//		newSpawnerPosition = randomPositionOnEdge(world, spawnerEdge);
-	//	} while (spawnerPositions.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
-	//	spawnerPositions = spawnerPositions.concat(newSpawnerPosition);
-	//}
-
-	return createSpawnerPositions(world, 3, Direction.west).concat([
+	return createSpawnerPositions(world, 3, spawnerEdge).concat([
 		createGround(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), 1),
 		createGround(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), 2),
-		createSpaghettimonster(createVector(world.width - 1, world.height - 1), 3)
+		createSpaghettimonster(randomPositionOnEdge(world, oppositeDirection(spawnerEdge)), 3)
 	]);
 }
 
