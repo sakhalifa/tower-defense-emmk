@@ -17,7 +17,7 @@ type Walker = "ignorant" | "ignoranceSpreader";
 /**
  * All the different actor kinds.
  */
-type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettimonster";
+type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettiMonster";
 
 /**
  * An actor. It has a position in the world, a kind, ignorance points,
@@ -194,13 +194,13 @@ function createGround(position: Vector2D, waypointNumber: number): Actor {
 }
 
 /**
- * Constructor for a default "spaghettimonster" actor
+ * Constructor for a default "spaghettiMonster" actor
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
- * @returns the created Actor of kind "spaghettimonster"
+ * @returns the created Actor of kind "spaghettiMonster"
  */
-function createSpaghettimonster(position: Vector2D, waypointNumber: number): Actor {
-	return createActor(position, {spawn: spawn}, "spaghettimonster", { waypointNumber: waypointNumber });
+function createspaghettiMonster(position: Vector2D, waypointNumber: number): Actor {
+	return createActor(position, {spawn: spawn}, "spaghettiMonster", { waypointNumber: waypointNumber });
 }
 
-export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind };
+export { actorToString, actorToStringInWorld, createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind };
 export type { Actor, Kind, Walker };

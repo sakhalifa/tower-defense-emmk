@@ -1,4 +1,4 @@
-import { createIgnoranceSpreader, createIgnorant, createSpaghettimonster } from "../src/actor";
+import { createIgnoranceSpreader, createIgnorant, createspaghettiMonster } from "../src/actor";
 import { temperatureRise, spreadIgnorance, movingVector } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
@@ -7,7 +7,7 @@ import { setHunger, setSpreadIgnorancePower } from "../src/props";
 test("TemperatureRise test", () => {
     const world = createWorld(5, 5, 0);
 
-    const monster = createSpaghettimonster(createVector(2, 2), 1);
+    const monster = createspaghettiMonster(createVector(2, 2), 1);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
     const onPoint = setHunger(createIgnorant(createVector(2, 2), createVector(0, 0)), 3);
     

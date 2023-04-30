@@ -56,7 +56,7 @@ function spawn(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["spa
  * @returns The amount of damage to do to the spaghetti monster
  */
 function temperatureRise(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["temperatureRise"]> {
-	return actors.find((a) => a.kind === "spaghettimonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
+	return actors.find((a) => a.kind === "spaghettiMonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
 		? 0 : (getHunger(actor) ?? 1);
 }
 

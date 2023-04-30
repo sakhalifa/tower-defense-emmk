@@ -24,7 +24,7 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<Actor
  */
 function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["temperatureRise"]>>): Array<Actor> {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	return oldActors.map((a) => a.kind !== "spaghettimonster" ? a : { ...a, faith_point: a.ignorance! - sum(phaseResult) });
+	return oldActors.map((a) => a.kind !== "spaghettiMonster" ? a : { ...a, faith_point: a.ignorance! - sum(phaseResult) });
 }
 
 function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
