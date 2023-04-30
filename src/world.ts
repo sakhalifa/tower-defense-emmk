@@ -1,4 +1,7 @@
-import { Vector2D } from "./geometry";
+import type { Vector2D } from "./geometry";
+
+import { Direction } from "./directions";
+import { createVector } from "./geometry";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
@@ -29,6 +32,27 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
 		height: height,
 		turnsElapsed
 	};
+}
+
+/**
+ * Returns a random position in the world which is on the edge of the world corresponding to the given direction
+ * @param world the world on which the position is computed
+ * @param edge the edge on which the position is located
+ * @returns a random position in the world which is on the edge of the world corresponding to the given direction
+ */
+function randomPositionOnEdge(world: World, edge : Direction): Vector2D {
+	switch (edge) {
+		case Direction.east:
+			return createVector(world.width - 1, Math.floor(Math.random() * world.height));
+		case Direction.west:
+			return createVector(0, Math.floor(Math.random() * world.height));
+		case Direction.north:
+			return createVector(Math.floor(Math.random() * world.width), 0);
+		case Direction.south:
+			return createVector(Math.floor(Math.random() * world.width), world.height - 1);
+		default:
+			throw new Error(`${edge} is not a valid direction`);
+	}
 }
 
 /**
@@ -63,10 +87,6 @@ function worldStringVectorToIndex(world: World, vector: Vector2D): number {
 	return vector.y * (world.width * 2 + 1) + vector.x * 2;
 }
 
-export {
-	createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex
-};
+export type { World };
 
-export type {
-	World
-};
+export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionOnEdge };

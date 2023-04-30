@@ -2,11 +2,13 @@ import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 
-import { isPositionInWorld, createWorld } from "./world";
+import { isPositionInWorld, createWorld, randomPositionOnEdge } from "./world";
 import { createGround, createSpaghettimonster, createSpawner } from "./actor";
 import { createPhase } from "./phase";
-import { createVector } from "./geometry";
+import { Vector2D, createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
+import { Direction, randomDirection, oppositeDirection } from "./directions";
+import { isDeepStrictEqual } from "util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -34,19 +36,52 @@ function initPhases(): Array<Phase> {
 	];
 }
 
+function createSpawnerPositions(world: World, max_spawners: number, spawnerEdge: Direction): Array<Actor>{
+	if (max_spawners < 1 || max_spawners > world.height || max_spawners > world.width) {
+		throw new Error("invalid spawner number");
+	}
+	function createSpawnerPositionsTailRecursive(max_spawners: number, existingSpawners: Array<Vector2D>): Array<Vector2D> {
+		let newSpawnerPosition: Vector2D;
+		if (max_spawners === 1) {
+			do {
+				newSpawnerPosition = randomPositionOnEdge(world, spawnerEdge);
+			} while (existingSpawners.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
+			return existingSpawners.concat(newSpawnerPosition);
+		} else {
+			if (Math.random() < 0.5) {
+				do {
+					newSpawnerPosition = randomPositionOnEdge(world, spawnerEdge);
+				} while (existingSpawners.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
+				return createSpawnerPositionsTailRecursive(max_spawners - 1, existingSpawners.concat(newSpawnerPosition));
+			} else {
+				return createSpawnerPositionsTailRecursive(max_spawners - 1, existingSpawners);
+			}
+		}
+	}
+	return createSpawnerPositionsTailRecursive(max_spawners, []).map((spawnerPosition) => createSpawner(spawnerPosition));
+}
+
 /**
  * Randomly creates the waypoints of the world (creates spawners, ground, and spaghettimonster)
  * @param world the world on which the waypoints are created
  * @returns the created waypoints of the world
  */
 function initWayPointActors(world: World): Array<Actor> {
-	return [
-		createSpawner(createVector(0, 0)),
-		createSpawner(createVector(0, 1)),
+	const spawnerEdge: Direction = randomDirection();
+	//let spawnerPositions: Array<Vector2D> = [randomPositionOnEdge(world, spawnerEdge)];
+	//if (Math.random() < 0.5) {
+	//	let newSpawnerPosition: Vector2D;
+	//	do {
+	//		newSpawnerPosition = randomPositionOnEdge(world, spawnerEdge);
+	//	} while (spawnerPositions.find((currentPos) => isDeepStrictEqual(currentPos, newSpawnerPosition)));
+	//	spawnerPositions = spawnerPositions.concat(newSpawnerPosition);
+	//}
+
+	return createSpawnerPositions(world, 3, Direction.west).concat([
 		createGround(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), 1),
 		createGround(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), 2),
 		createSpaghettimonster(createVector(world.width - 1, world.height - 1), 3)
-	];
+	]);
 }
 
 /**
