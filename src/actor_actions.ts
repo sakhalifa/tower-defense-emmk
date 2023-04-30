@@ -5,7 +5,7 @@ import { distance, createVector, Vector2D } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
 
 /**
- * All the possibles actions for an actor.
+ * All the possibles actions for an actor. These actions are called during the phases of the game.
  */
 type ActorActions = {
 	spawn: (actors: Array<Actor>, actor: Actor) => Actor | undefined;
@@ -17,7 +17,7 @@ type ActorActions = {
 };
 
 /**
- * All the default actions 
+ * All the default actions, so that each Phase can be called on each actor, even if the actor hasn't its specific phase function
  */
 const defaultActions: Required<ActorActions> = {
 	spawn: (allActors, oneActor) => undefined,
@@ -75,10 +75,23 @@ function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor): Return
 	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 
-function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor /* type it with Walker ? */): ReturnType<ActorActions["move"]> {
+/**
+ * Returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
+ * @param actors all the actors of the world
+ * @param movingActor the actor that is moving
+ * @returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
+ */
+function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor): ReturnType<ActorActions["move"]> {
 	return movingVector(movingActor.position, getWaypointTarget(movingActor));
 }
 
+/**
+ * Returns a Vector2D containing the information of the movement that has to be done in order to move towards the given toPosition.
+ * First, the movement is done along the abscissa axis, then along the ordinate axis.
+ * @param fromPosition the initial position, before the movement
+ * @param toPosition the position that we want to reach, from the fromPosition
+ * @returns a Vector2D containing the information of the movement that has to be done in order to move towards the given toPosition.
+ */
 function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
 	if (fromPosition.x < toPosition.x) {
 		return createVector(1, 0);
