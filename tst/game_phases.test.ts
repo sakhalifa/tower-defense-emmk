@@ -1,4 +1,4 @@
-import { createActor } from "../src/actor";
+import { createActor } from "../src/actor_creators";
 import { spawnPhase } from "../src/game_phases";
 import { createVector } from "../src/geometry";
 import { defaultActions } from "../src/actor_actions";

@@ -1,8 +1,9 @@
 import type { Actor } from "./actor";
+import type { Vector2D } from "./geometry";
 
 import { isDeepStrictEqual } from "./util";
-import { createWalker } from "./actor";
-import { distance, createVector, Vector2D } from "./geometry";
+import { createWalker } from "./actor_creators";
+import { distance, createVector, movingVector } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
 
 /**
@@ -86,27 +87,6 @@ function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor): Ret
 }
 
 /**
- * Returns a Vector2D containing the information of the movement that has to be done in order to move towards the given toPosition.
- * First, the movement is done along the abscissa axis, then along the ordinate axis.
- * @param fromPosition the initial position, before the movement
- * @param toPosition the position that we want to reach, from the fromPosition
- * @returns a Vector2D containing the information of the movement that has to be done in order to move towards the given toPosition.
- */
-function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
-	if (fromPosition.x < toPosition.x) {
-		return createVector(1, 0);
-	} else if (fromPosition.x > toPosition.x) {
-		return createVector(-1, 0);
-	} else if (fromPosition.y < toPosition.y) {
-		return createVector(0, 1);
-	} else if (fromPosition.y > toPosition.y) {
-		return createVector(0, -1);
-	} else {
-		return createVector(0, 0);
-	}
-}
-
-/**
  * The "convertEnemies" action.
  * It returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
  * @param actors The actors in the world
@@ -133,5 +113,6 @@ function enemyFlee(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions[
 	return (actor?.ignorance ?? 0) <= 0;
 }
 
-export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, movingVector, defaultActions };
 export type {ActorActions};
+
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions };

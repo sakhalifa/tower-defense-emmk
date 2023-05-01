@@ -4,7 +4,7 @@ import type { Actor } from "./actor";
 import type { Axis } from "./util";
 
 import { isPositionInWorld, createWorld, randomPositionAlongAxis } from "./world";
-import { createGround, createspaghettiMonster, createSpawner } from "./actor";
+import { createGround, createspaghettiMonster, createSpawner } from "./actor_creators";
 import { createPhase } from "./phase";
 import { Vector2D } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";

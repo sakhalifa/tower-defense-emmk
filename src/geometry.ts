@@ -42,6 +42,27 @@ function distance(a: Vector2D, b: Vector2D): number {
 	return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
-export { translatePoint, vector2DToString, createVector, distance };
+/**
+ * Returns a Vector2D containing the information of the movement that has to be done in order to move by one step from fromPosition towards the given toPosition.
+ * First, the movement is done along the abscissa axis, then along the ordinate axis.
+ * @param fromPosition the initial position, before the movement
+ * @param toPosition the position that we want to reach, from the fromPosition
+ * @returns a Vector2D containing the information of the movement that has to be done in order to move towards the given toPosition.
+ */
+function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
+	if (fromPosition.x < toPosition.x) {
+		return createVector(1, 0);
+	} else if (fromPosition.x > toPosition.x) {
+		return createVector(-1, 0);
+	} else if (fromPosition.y < toPosition.y) {
+		return createVector(0, 1);
+	} else if (fromPosition.y > toPosition.y) {
+		return createVector(0, -1);
+	} else {
+		return createVector(0, 0);
+	}
+}
+
+export { translatePoint, vector2DToString, createVector, distance, movingVector };
 
 export type { Vector2D };

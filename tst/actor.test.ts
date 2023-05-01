@@ -1,6 +1,7 @@
 import type { Actor } from "../src/actor";
 
-import { createActor, createGround, actorToString, translateActor, actorToStringInWorld } from "../src/actor";
+import { createActor, createGround } from "../src/actor_creators";
+import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
 import { defaultActions } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld, worldToString } from "../src/world";

@@ -1,5 +1,5 @@
-import { createIgnoranceSpreader, createIgnorant, createspaghettiMonster } from "../src/actor";
-import { temperatureRise, spreadIgnorance, movingVector } from "../src/actor_actions";
+import { createIgnoranceSpreader, createIgnorant, createspaghettiMonster } from "../src/actor_creators";
+import { temperatureRise, spreadIgnorance } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
 import { setHunger, setSpreadIgnorancePower } from "../src/props";
@@ -35,24 +35,4 @@ test("spreadIgnorance test", () => {
     
     // ignorant shouldn't spread ignorance
     // expect(spreadIgnorance([ignorant], ignorant).amount.length).toBe(0);
-});
-
-
-test("movingVector test", () => {
-    // default movement direction check
-    expect(movingVector(createVector(0, 0), createVector(0, 0))).toEqual(createVector(0, 0));
-    expect(movingVector(createVector(10, 0), createVector(0, 0))).toEqual(createVector(-1, 0));
-    expect(movingVector(createVector(0, 0), createVector(10, 0))).toEqual(createVector(1, 0));
-    expect(movingVector(createVector(0, -1), createVector(0, 0))).toEqual(createVector(0, 1));
-    expect(movingVector(createVector(0, 3), createVector(0, 5))).toEqual(createVector(0, 1));
-    expect(movingVector(createVector(8, 0), createVector(27, 0))).toEqual(createVector(1, 0));
-    expect(movingVector(createVector(-8, 0), createVector(-14, 0))).toEqual(createVector(-1, 0));
-    expect(movingVector(createVector(-8, 1), createVector(-8, 0))).toEqual(createVector(0, -1));
-
-    // Order of direction choosen test
-    // Should be first on the x axis, then on the y axis
-    expect(movingVector(createVector(0, 0), createVector(1, 1))).toEqual(createVector(1, 0));
-    expect(movingVector(createVector(0, 0), createVector(1, 2))).toEqual(createVector(1, 0));
-    expect(movingVector(createVector(1, 0), createVector(1, 2))).toEqual(createVector(0, 1));
-    expect(movingVector(createVector(4, 0), createVector(1, 2))).toEqual(createVector(-1, 0));
 });
