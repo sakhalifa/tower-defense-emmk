@@ -1,5 +1,3 @@
-import type { Vector2D } from "./../src/geometry";
-
 import { vector2DToString, translatePoint, createVector, distance } from "./../src/geometry";
 
 

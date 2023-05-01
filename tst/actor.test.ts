@@ -1,9 +1,8 @@
-import { Actor, actorToStringInWorld } from "../src/actor";
-import type { World } from "../src/world";
+import type { Actor } from "../src/actor";
 
-import { createActor, createGround, actorToString, translateActor, defaultActions } from "../src/actor";
+import { createActor, createGround, actorToString, translateActor, actorToStringInWorld } from "../src/actor";
+import { defaultActions } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
-
 import { createWorld, worldToString } from "../src/world";
 
 function move(_: Array<Actor>, __: Actor) {

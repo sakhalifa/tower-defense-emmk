@@ -16,7 +16,7 @@ test("TemperatureRise test", () => {
     // The ignorant is not at the same position as the spaghetti monster, so it souldn't eat the spaghetti monster
     expect(temperatureRise(actors, ignorant)).toBe(0);
 
-    // Ignorant on the same position as the spaghetti monster, should eat the spaghetti monster
+    // Ignorant on the same position as the spaghetti monsteexpect(Stack.stackCreateEmpty()).toEqual({});r, should eat the spaghetti monster
     expect(temperatureRise(actors, onPoint)).toBe(3);
 });
 

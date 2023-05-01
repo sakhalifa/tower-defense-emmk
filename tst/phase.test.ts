@@ -1,7 +1,7 @@
 import type { Actor } from "../src/actor";
+import type { Vector2D } from "../src/geometry";
+
 import { createPhase } from "../src/phase";
-import { translateActor } from "../src/actor";
-import { Vector2D, createVector } from "../src/geometry";
 
 test("createPhase test", () => {
     const myFunc = (_: Array<Actor>, __: Array<Vector2D>) => _;

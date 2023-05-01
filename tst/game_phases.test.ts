@@ -1,7 +1,7 @@
 import { createActor } from "../src/actor";
 import { spawnPhase } from "../src/game_phases";
 import { createVector } from "../src/geometry";
-import { ActorActions, defaultActions } from "../src/actor_actions";
+import { defaultActions } from "../src/actor_actions";
 
 
 test("SpawnPhase test", () => {
