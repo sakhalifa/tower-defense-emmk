@@ -4,7 +4,7 @@ import type { ActorActions } from "./actor_actions";
 
 import { vector2DToString, translatePoint } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
-import { worldStringVectorToIndex } from "./world";
+import { worldStringVectorToIndex, isPositionInWorld } from "./world";
 import { stringReplaceAt } from "./util";
 import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget } from "./props";
 
@@ -107,5 +107,15 @@ function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, mo
 	return { ...movingActor, position: newPosition };
 }
 
-export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind, findNextWaypointTarget };
+/**
+ * Returns whether an actor is valid among an environment (world, other actors...) given as parameters
+ * @param world The world where the actor is
+ * @param actor We want to know if this actor is valid
+ * @returns true iif the actor is in the world's bounds
+ */
+function isValidActorInEnvironment(world: World, actor: Actor): boolean {
+	return isPositionInWorld(world, actor.position);
+}
+
+export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind, findNextWaypointTarget, isValidActorInEnvironment };
 export type { Actor, Kind, Walker };

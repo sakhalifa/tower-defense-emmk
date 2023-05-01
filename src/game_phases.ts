@@ -48,7 +48,6 @@ function updateIgnorance(actor: Actor, actorIndex: number, spreadIgnoranceResult
  * @returns A proposal for the actors after executing the "spreadIgnorance" phase
  */
 function spreadIgnorancePhase(oldActors: Array<Actor>, spreadIgnoranceVectors: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Array<Actor> {
-
 	return oldActors.map((currentActor, actorIndex) => updateIgnorance(currentActor, actorIndex, spreadIgnoranceVectors));
 }
 

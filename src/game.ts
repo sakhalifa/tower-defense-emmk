@@ -3,12 +3,13 @@ import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 import type { Axis } from "./util";
 
-import { isPositionInWorld, createWorld, randomPositionAlongAxis } from "./world";
+import { createWorld, randomPositionAlongAxis } from "./world";
 import { createGround, createspaghettiMonster, createSpawner } from "./actor_creators";
+import { isValidActorInEnvironment } from "./actor";
 import { createPhase } from "./phase";
 import { Vector2D } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { isDeepStrictEqual } from "./util";
+import { isDeepStrictEqual, almostEvenlySpacedIntegers } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -114,20 +115,6 @@ function initspaghettiMonster(world: World, maxSpaghettiMonsters: number, spaghe
 }
 
 /**
- * return evenly spaced lines numbers for the future creation of intermediate waypoints (ground)
- * @param intermediateWaypointsNumber the number of lines of intermediate waypoints
- * @param spaghettiMonsterLineNumber the line on which the spaghettiMonster is, this line should be the last reachable line
- * @param maxLineNumber the number of the last line on the axis where the lines of waypoints with same waypointNumber are
- * @returns evenly spaced lines numbers for the future creation of intermediate waypoints (ground)
- */
-function computeIntermidiateWaypointsLineNumber(intermediateWaypointsNumber: number, spaghettiMonsterLineNumber: number, maxLineNumber: number): Array<number> {
-	return Array.from({ length: intermediateWaypointsNumber },
-		(_, index) => ((spaghettiMonsterLineNumber === 0) ? (intermediateWaypointsNumber - index) : (1 + index))
-		* maxLineNumber / (intermediateWaypointsNumber + 1))
-		.map((lineNumber) => Math.floor(lineNumber));
-}
-
-/**
  * Randomly creates the waypoints of the world (creates spawners, ground, and spaghettiMonster)
  * @param world the world on which the waypoints are created
  * @param intermediateWaypointsNumber the number of waypoints that have to be reached by the moving actors (spawner and spaghettiMonster not included)
@@ -138,20 +125,11 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number): 
 	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
 	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
 	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
-	const intermediateWaypointsLineNumber: Array<number> = computeIntermidiateWaypointsLineNumber(intermediateWaypointsNumber, spaghettiMonsterLineNumber, maxLineNumber);
+	const intermediateWaypointsLineNumber: Array<number> =
+	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
 	return initSpawners(world, 3, spawnersAxis, spawnerLineNumber)
 	.concat(initGrounds(world, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
 	.concat(initspaghettiMonster(world, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1));
-}
-
-/**
- * Returns whether an actor is in a valid state or not
- * @param world The world
- * @param actor The actor
- * @returns true iif the actor is in the world's bounds
- */
-function validNewActor(world: World, actor: Actor): boolean {
-	return isPositionInWorld(world, actor.position);
 }
 
 /**
@@ -163,7 +141,7 @@ function validNewActor(world: World, actor: Actor): boolean {
  */
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
-		if (validNewActor(world, currentProposal)) {
+		if (isValidActorInEnvironment(world, currentProposal)) {
 			return acc.concat(currentProposal);
 		} else {
 			return acc.concat(actors[actorIndex]); // doesn't check old position new state -> possible collisions etc

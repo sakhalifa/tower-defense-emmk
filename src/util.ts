@@ -58,6 +58,34 @@ function isObject(object: any) {
 
 type Axis = "x" | "y";
 
+/**
+ * Return numberOfValues evenly-spaced numbers between fromValue and toValue (evenly-spaced to the bounds as well).
+ * For example, 2 evenly-spaced numbers between 0 and 10 would be 3.333 and 6.666 because the steps are the same between 0, 3.333, 6.666, and 10.
+ * @param numberOfValues the number of evenly spaced values to return
+ * @param fromValue the minimum value that can be returned
+ * @param toValue the maximum value that can be returned
+ * @param mapFn an optional function to map the results
+ * @returns the evenly spaced values (fromValue and toValue are not included in the returned array)
+ */
+function evenlySpacedNumbers(numberOfValues: number, fromValue: number, toValue: number, mapFn: (value: number) => number = (x) => x): Array<number> {
+	const [min, max, indexingFunction]: [number, number, (x: number) => number] = fromValue < toValue ?
+	[fromValue, toValue, index => (index + 1)]
+	: [toValue, fromValue, index => (numberOfValues - index)];
+	return Array.from({ length: numberOfValues }, (_, index) => mapFn(indexingFunction(index) * (max - min) / (numberOfValues + 1) + min));
+}
+
+/**
+ * Return numberOfValues almost-evenly-spaced integers between fromValue and toValue (almost-evenly-spaced to the bounds as well).
+ * For example, 2 almost-evenly-spaced integers between 0 and 10 would be 3 and 6 because the steps are almost the same between 0, 3, 6, and 10.
+ * @param numberOfValues the number of evenly spaced values to return
+ * @param fromValue the minimum value that can be returned
+ * @param toValue the maximum value that can be returned
+ * @returns the evenly spaced values (fromValue and toValue are not included in the returned array)
+ */
+function almostEvenlySpacedIntegers(numberOfValues: number, fromValue: number, toValue: number): Array<number> {
+	return evenlySpacedNumbers(numberOfValues, fromValue, toValue, Math.floor);
+}
+
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers };
