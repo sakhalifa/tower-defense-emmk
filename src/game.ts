@@ -196,14 +196,13 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(10, 10);
 	let actors: Array<Actor> = initWayPointActors(world, 2);
 	const phases: Array<Phase> = initPhases();
-	let finished: boolean = false;
 	let i = 0;
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
-	while (!finished) {
+	while (i < 10) {
 		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors);
-		finished = i++ === 10;
+		++i;
 	}
 	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);
