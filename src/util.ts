@@ -27,8 +27,11 @@ function stringReplaceAt(baseString: string, index: number, replacement: string)
 }
 
 function isDeepStrictEqual(object1: any, object2: any) {
-	if(object1 !== object2 && (object1 === undefined || object2 === undefined))
+	if(object1 === object2)
+		return true;
+	if(object1 === undefined || object2 === undefined || !isObject(object1)) {
 		return false;
+	}
 	const objKeys1 = Object.keys(object1);
 	const objKeys2 = Object.keys(object2);
 
@@ -38,10 +41,10 @@ function isDeepStrictEqual(object1: any, object2: any) {
 		const value1 = object1[key];
 		const value2 = object2[key];
 
-		const isObjects = isObject(value1) && isObject(value2);
+		const areObjects = isObject(value1) && isObject(value2);
 
-		if ((isObjects && !isDeepStrictEqual(value1, value2)) ||
-			(!isObjects && value1 !== value2)
+		if ((areObjects && !isDeepStrictEqual(value1, value2)) ||
+			(!areObjects && value1 !== value2)
 		) {
 			return false;
 		}
