@@ -1,3 +1,5 @@
+import { isDeepStrictEqual } from "./util";
+
 /**
  * A 2D vector
  */
@@ -63,6 +65,18 @@ function movingVector(fromPosition: Vector2D, toPosition: Vector2D): Vector2D {
 	}
 }
 
-export { translatePoint, vector2DToString, createVector, distance, movingVector };
+function linkingPath(fromPosition: Vector2D, toPosition: Vector2D): Array<Vector2D> {
+	fromPosition = translatePoint(fromPosition, movingVector(fromPosition, toPosition));
+	function linkingPathTailRecursive(fromPosition: Vector2D, toPosition: Vector2D, positionsAccumulator: Array<Vector2D>): Array<Vector2D> {
+		if (isDeepStrictEqual(fromPosition, toPosition)) {
+			return positionsAccumulator;
+		}
+		const positionToAdd = translatePoint(fromPosition, movingVector(fromPosition, toPosition));
+		return linkingPathTailRecursive(positionToAdd, toPosition, positionsAccumulator.concat(fromPosition));
+	}
+	return linkingPathTailRecursive(fromPosition, toPosition, []);
+}
+
+export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath };
 
 export type { Vector2D };
