@@ -2,14 +2,15 @@ import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 import type { Axis } from "./util";
+import type { Vector2D } from "./geometry";
 
-import { createWorld, randomPositionAlongAxis } from "./world";
+import { createWorld } from "./world";
 import { createGround, createspaghettiMonster, createSpawner } from "./actor_creators";
 import { isValidActorInEnvironment } from "./actor";
 import { createPhase } from "./phase";
-import { Vector2D } from "./geometry";
+import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { isDeepStrictEqual, almostEvenlySpacedIntegers } from "./util";
+import { almostEvenlySpacedIntegers, randomUniqueIntegers } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -37,39 +38,19 @@ function initPhases(): Array<Phase> {
 }
 
 /**
- * Returns an array of 1 to maxPositions unique aligned positions
+ * Returns an array of 1 to maxPositions random unique aligned positions
  * @param world the world on which the positions are computed
  * @param maxPositions the maximum number of positions inside the returned array
  * @param axis the returned positions can reach each other by a translation along this axis
  * @param lineNumber the coordinate of the returned position on the not-given axis
- * @returns an array of 1 to maxPositions unique positions, that all have the same coordinate value on the axis that was not given
+ * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
 function createPositionsAlongAxis(world: World, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
 	if (maxPositions < 1) {
 		throw new Error("At least one position must be returned");
 	}
-	if ((axis === "x" && maxPositions > world.width) || (axis === "y" && maxPositions > world.height)) {
-		throw new Error("It is impossible to return more than n unique positions along a line of n positions.");
-	}
-	function createPositionsAlongAxisTailRecursive(maxPositions: number, existingPositions: Array<Vector2D>): Array<Vector2D> {
-		let newPosition: Vector2D;
-		if (maxPositions === 1) {
-			do {
-				newPosition = randomPositionAlongAxis(world, axis, lineNumber);
-			} while (existingPositions.find((currentPos) => isDeepStrictEqual(currentPos, newPosition)));
-			return existingPositions.concat(newPosition);
-		} else {
-			if (Math.random() < 0.5) {
-				do {
-					newPosition = randomPositionAlongAxis(world, axis, lineNumber);
-				} while (existingPositions.find((currentPos) => isDeepStrictEqual(currentPos, newPosition)));
-				return createPositionsAlongAxisTailRecursive(maxPositions - 1, existingPositions.concat(newPosition));
-			} else {
-				return createPositionsAlongAxisTailRecursive(maxPositions - 1, existingPositions);
-			}
-		}
-	}
-	return createPositionsAlongAxisTailRecursive(maxPositions, []);
+	return randomUniqueIntegers(1, maxPositions, 0, axis === "x" ? world.width : world.height)
+	.map((coord) => axis === "x" ? createVector(coord, lineNumber) : createVector(lineNumber, coord));
 }
 
 /**

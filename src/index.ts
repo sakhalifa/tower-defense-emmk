@@ -113,12 +113,11 @@ async function main(){
     const world: World = initWorld(15, 15);
 	let actors: Array<Actor> = initWayPointActors(world, Math.random() < 0.6 ? 2 : 3);
 	const phases: Array<Phase> = initPhases();
-	let finished: boolean = false;
 	let i = 0;
-	while (!finished) {
+	while (i < 50) {
 		actors = nextTurn(phases, world, actors);
 		await displayWorldToCanvas(world, actors);
-		finished = i++ === 50;
+        ++i;
 	}
 }
 

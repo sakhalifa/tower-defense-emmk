@@ -86,6 +86,53 @@ function almostEvenlySpacedIntegers(numberOfValues: number, fromValue: number, t
 	return evenlySpacedNumbers(numberOfValues, fromValue, toValue, Math.floor);
 }
 
+/**
+ * Returns a random integer x such as minValue <= x < maxValue
+ * @param minValue the minimum value that the returned integer can take
+ * @param maxValue the (maximum + 1) value that the returned integer can take
+ * @returns random integer x such as minValue <= x < maxValue
+ */
+function randomInteger(minValue: number, maxValue: number): number {
+	return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
+}
+
+/**
+ * Returns a random integer in [minValue, maxValue) and that is not present in the given "existingIntegers"
+ * @param minValue the minimum value that the returned integer can take
+ * @param maxValue the (maximum + 1) value that the returned integer can take
+ * @param existingIntegers the returned integer must not already be present in this array
+ * @returns a random integer in the given bounds and that is not present in the given "existingIntegers"
+ */
+function randomUniqueInteger(minValue: number, maxValue: number, existingIntegers : Array<number>) {
+	let randInt = randomInteger(minValue, maxValue);
+	while (existingIntegers.find((currentInt) => randInt === currentInt)) {
+		randInt = randomInteger(minValue, maxValue);
+	}
+	return randInt;
+}
+
+function randomUniqueIntegers(minNumberOfValues: number, maxNumberOfValues: number, minValue: number, maxValue: number): Array<number> {
+	if (maxValue - minValue < maxNumberOfValues) {
+		throw new Error("It is impossible to return more than n unique values among among n values.");
+	}
+	if (minNumberOfValues > maxNumberOfValues || minValue > maxValue) {
+		throw new Error("Params starting with 'min' must be inferior to their counterpart starting with 'max'");
+	}
+
+	function randomUniqueIntegersTailRecursive(minNumberOfValues: number, maxNumberOfValues: number, existingIntegers: Array<number>): Array<number> {
+		if (!maxNumberOfValues) {
+			return existingIntegers;
+		}
+		if (maxNumberOfValues === minNumberOfValues || Math.random() < 0.5) {
+			return randomUniqueIntegersTailRecursive(minNumberOfValues - 1, maxNumberOfValues - 1, existingIntegers
+				.concat(randomUniqueInteger(minValue, maxValue, existingIntegers)));
+		} else {
+			return randomUniqueIntegersTailRecursive(minNumberOfValues, maxNumberOfValues - 1, existingIntegers);
+		}
+	}
+	return randomUniqueIntegersTailRecursive(minNumberOfValues, maxNumberOfValues, []);
+}
+
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers };

@@ -1,6 +1,7 @@
 import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
 
+import { isDeepStrictEqual } from "./util";
 import { createVector } from "./geometry";
 
 /**
@@ -58,6 +59,15 @@ function randomPositionAlongAxis(world: World, axis : Axis, lineNumber: number):
 	}
 }
 
+function randomUniquePositionAlongAxis(world: World, axis: Axis, lineNumber: number, existingPositions: Array<Vector2D>) {
+	let newPosition = randomPositionAlongAxis(world, axis, lineNumber);
+	while (existingPositions.find((currentPos) => isDeepStrictEqual(currentPos, newPosition))) {
+		newPosition = randomPositionAlongAxis(world, axis, lineNumber);
+	}
+	return newPosition;
+}
+
+
 /**
  * Checks if a position is in a world or not
  * @param world The world
@@ -92,4 +102,4 @@ function worldStringVectorToIndex(world: World, vector: Vector2D): number {
 
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionAlongAxis };
+export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionAlongAxis, randomUniquePositionAlongAxis };
