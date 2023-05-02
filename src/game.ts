@@ -169,4 +169,4 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 }
 
 
-export { playGame, initWorld, initPhases, initWayPointActors, nextTurn };
+export { playGame, initWorld, initPhases, initActors, nextTurn };
