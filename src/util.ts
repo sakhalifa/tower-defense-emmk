@@ -111,6 +111,14 @@ function randomUniqueInteger(minValue: number, maxValue: number, existingInteger
 	return randInt;
 }
 
+/**
+ * Randomly returns minNumberOfValues to maxNumberOfValues (included) random unique integers (no repetition) whose values are in [minValue, maxValue)
+ * @param minNumberOfValues the minimum number of returned values
+ * @param maxNumberOfValues the maximum number of returned values
+ * @param minValue the minimum value that a returned value can take
+ * @param maxValue the (maximum + 1) value that a returned value can take
+ * @returns minNumberOfValues to maxNumberOfValues (included) random unique integers (no repetition) whose values are in [minValue, maxValue)
+ */
 function randomUniqueIntegers(minNumberOfValues: number, maxNumberOfValues: number, minValue: number, maxValue: number): Array<number> {
 	if (maxValue - minValue < maxNumberOfValues) {
 		throw new Error("It is impossible to return more than n unique values among among n values.");

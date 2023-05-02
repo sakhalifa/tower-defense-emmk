@@ -2,15 +2,13 @@ import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 import type { Axis } from "./util";
-import type { Vector2D } from "./geometry";
 
-import { createWorld } from "./world";
+import { createWorld, randomPositionAlongAxis } from "./world";
 import { createGround, createspaghettiMonster, createSpawner } from "./actor_creators";
 import { isValidActorInEnvironment } from "./actor";
 import { createPhase } from "./phase";
-import { createVector } from "./geometry";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { almostEvenlySpacedIntegers, randomUniqueIntegers } from "./util";
+import { almostEvenlySpacedIntegers } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -38,22 +36,6 @@ function initPhases(): Array<Phase> {
 }
 
 /**
- * Returns an array of 1 to maxPositions random unique aligned positions
- * @param world the world on which the positions are computed
- * @param maxPositions the maximum number of positions inside the returned array
- * @param axis the returned positions can reach each other by a translation along this axis
- * @param lineNumber the coordinate of the returned position on the not-given axis
- * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
- */
-function createPositionsAlongAxis(world: World, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
-	if (maxPositions < 1) {
-		throw new Error("At least one position must be returned");
-	}
-	return randomUniqueIntegers(1, maxPositions, 0, axis === "x" ? world.width : world.height)
-	.map((coord) => axis === "x" ? createVector(coord, lineNumber) : createVector(lineNumber, coord));
-}
-
-/**
  * Randomly initializes spawners
  * @param world the world where the spawners are created
  * @param maxSpawners the maximum number of returned spawners
@@ -62,7 +44,7 @@ function createPositionsAlongAxis(world: World, maxPositions: number, axis: Axis
  * @returns an array of 1 to maxSpawners spawners with unique positions, that all have the same coordinate value on the axis that was not given
  */
 function initSpawners(world: World, maxSpawners: number, spawnersAxis : Axis, spawnerLineNumber: number): Array<Actor> {
-	return createPositionsAlongAxis(world, maxSpawners, spawnersAxis, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition));
+	return randomPositionAlongAxis(world, maxSpawners, spawnersAxis, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition));
 }
 
 /**
@@ -76,7 +58,7 @@ function initSpawners(world: World, maxSpawners: number, spawnersAxis : Axis, sp
  */
 function initGrounds(world: World, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Actor> {
 	return Array.from({ length: numberOfGroundLines },
-		(_, index) => (createPositionsAlongAxis(world, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
+		(_, index) => (randomPositionAlongAxis(world, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
 		.map((groundPosition) => createGround(groundPosition, index + 1)))
 		).flat();
 }
@@ -91,7 +73,7 @@ function initGrounds(world: World, maxGroundsPerLine: number, groundsAxis : Axis
  * @returns an array of 1 to maxSpaghettiMonsters spaghettiMonsters with unique positions, that all have the same coordinate value on the axis that was not given
  */
 function initspaghettiMonster(world: World, maxSpaghettiMonsters: number, spaghettiMonstersAxis : Axis, spaghettiMonstersLineNumber: number, waypointNumber: number): Array<Actor> {
-	return createPositionsAlongAxis(world, maxSpaghettiMonsters, spaghettiMonstersAxis, spaghettiMonstersLineNumber)
+	return randomPositionAlongAxis(world, maxSpaghettiMonsters, spaghettiMonstersAxis, spaghettiMonstersLineNumber)
 	.map((spaghettiMonsterPosition) => createspaghettiMonster(spaghettiMonsterPosition, waypointNumber));
 }
 

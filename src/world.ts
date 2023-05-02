@@ -1,7 +1,7 @@
 import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
 
-import { isDeepStrictEqual } from "./util";
+import { randomUniqueIntegers } from "./util";
 import { createVector } from "./geometry";
 
 /**
@@ -36,37 +36,20 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
 }
 
 /**
- * Returns a random position in the world which is computed along the given axis and line number, on the world
- * @param world the world on which the position is computed
- * @param axis the axis on which the position is computed
- * @param lineNumber the line number of the line (following the axis direction) on which the position is computed
- * @returns a random position in the world which is computed along the given axis and line number, on the world
+ * Returns an array of 1 to maxPositions random unique aligned positions
+ * @param world the world on which the positions are computed
+ * @param maxPositions the maximum number of positions inside the returned array
+ * @param axis the returned positions can reach each other by a translation along this axis
+ * @param lineNumber the coordinate of the returned position on the not-given axis
+ * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
-function randomPositionAlongAxis(world: World, axis : Axis, lineNumber: number): Vector2D {
-	if (lineNumber < 0) {
-		throw new Error("lineNumber must be > 0");
+function randomPositionAlongAxis(world: World, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
+	if (maxPositions < 1) {
+		throw new Error("At least one position must be returned");
 	}
-	if ((axis === "x" && lineNumber > world.height - 1) || (axis === "y" && lineNumber > world.width - 1)) {
-		throw new Error("lineNumber is too high, and doesn't represent any line on the world.");
-	}
-	switch (axis) {
-		case "y":
-			return createVector(lineNumber, Math.floor(Math.random() * world.height));
-		case "x":
-			return createVector(Math.floor(Math.random() * world.width), lineNumber);
-		default:
-			throw new Error(`${axis} is not a valid axis`);
-	}
+	return randomUniqueIntegers(1, maxPositions, 0, axis === "x" ? world.width : world.height)
+	.map((coord) => axis === "x" ? createVector(coord, lineNumber) : createVector(lineNumber, coord));
 }
-
-function randomUniquePositionAlongAxis(world: World, axis: Axis, lineNumber: number, existingPositions: Array<Vector2D>) {
-	let newPosition = randomPositionAlongAxis(world, axis, lineNumber);
-	while (existingPositions.find((currentPos) => isDeepStrictEqual(currentPos, newPosition))) {
-		newPosition = randomPositionAlongAxis(world, axis, lineNumber);
-	}
-	return newPosition;
-}
-
 
 /**
  * Checks if a position is in a world or not
@@ -102,4 +85,4 @@ function worldStringVectorToIndex(world: World, vector: Vector2D): number {
 
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionAlongAxis, randomUniquePositionAlongAxis };
+export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionAlongAxis };
