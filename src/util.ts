@@ -9,7 +9,7 @@ function sum(array: Array<number>) {
 
 //not pure
 function getRandomArrayElement<T>(fromArray: Array<T>): T {
-	if (fromArray.length === 0) {
+	if (!fromArray.length) {
 		throw new Error('Cannot get a random element from an empty array');
 	}
 	return fromArray[Math.floor(Math.random() * fromArray.length)];
@@ -75,7 +75,7 @@ function evenlySpacedNumbers(numberOfValues: number, fromValue: number, toValue:
 }
 
 /**
- * Return numberOfValues almost-evenly-spaced integers between fromValue and toValue (almost-evenly-spaced to the bounds as well).
+ * Return numberOfValues almost-evenly-spaced integers (step values differ at most by 1) between fromValue and toValue (almost-evenly-spaced to the bounds as well).
  * For example, 2 almost-evenly-spaced integers between 0 and 10 would be 3 and 6 because the steps are almost the same between 0, 3, 6, and 10.
  * @param numberOfValues the number of evenly spaced values to return
  * @param fromValue the minimum value that can be returned

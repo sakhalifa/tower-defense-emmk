@@ -1,4 +1,4 @@
-import { getRandomArrayElement, isObject, stringReplaceAt, isDeepStrictEqual, sum, evenlySpacedNumbers } from "../src/util";
+import { getRandomArrayElement, isObject, stringReplaceAt, isDeepStrictEqual, sum, evenlySpacedNumbers, almostEvenlySpacedIntegers } from "../src/util";
 
 test("sum test", () => {
     // Test on integers
@@ -102,18 +102,54 @@ test("isObject test", () => {
 
 describe("evenlySpacedNumbers test", () => {
     test.each(Array.from({length: 5}, (_, i) => i))("evenlySpacedNumbers length of returned array", (x) => {
-        expect(evenlySpacedNumbers(x, 0, 10).length).toEqual(x);
+        expect(evenlySpacedNumbers(x, 0, 10)).toHaveLength(x);
     });
 
     test.each(Array.from({length: 5}, (_, i) => i))("evenlySpacedNumbers limits of returned values", (x) => {
-        evenlySpacedNumbers(x, x - 2, 2 - x).map((el) => el >= Math.min(x -2, 2 - x) && el <= Math.max(x -2, 2 - x)).forEach((el) => expect(el).toBeTruthy());
+        const bounds = [x - 2, 2 - x];
+        const upperBound = Math.max(bounds[0], bounds[1]);
+        const lowerBound = Math.min(bounds[0], bounds[1]);
+        evenlySpacedNumbers(x, bounds[0], bounds[1]).forEach((el) => {
+            expect(el).toBeGreaterThanOrEqual(lowerBound);
+            expect(el).toBeLessThanOrEqual(upperBound);
+        });
     });
 
     test.each(Array.from({length: 5}, (_, i) => i + 1))("evenlySpacedNumbers same step between returned values", (x) => {
-        const numbers = evenlySpacedNumbers(x, x - 2, 2 - x);
-        const firstStep = Math.abs((x - 2) - numbers[0]);
-        const lastStep = Math.abs(numbers[numbers.length - 1] - (2 - x));
+        const bounds = [x - 2, 2 - x];
+        const numbers = evenlySpacedNumbers(x, bounds[0], bounds[1]);
+        const firstStep = Math.abs(bounds[0] - numbers[0]);
+        const lastStep = Math.abs(numbers[numbers.length - 1] - bounds[1]);
         expect(firstStep).toBeCloseTo(lastStep);
-        numbers.forEach((el, index) => {if (index) expect(Math.abs(el - numbers[index - 1])).toBeCloseTo(firstStep);});
+        numbers.forEach((el, index) => {if (index) expect(Math.abs(el - numbers[index - 1])).toBeCloseTo(lastStep);});
+    });
+});
+
+describe("almostEvenlySpacedIntegers test", () => {
+    test.each(Array.from({length: 5}, (_, i) => i))("almostEvenlySpacedIntegers length of returned array", (x) => {
+        expect(almostEvenlySpacedIntegers(x, 0, 10)).toHaveLength(x);
+    });
+
+    test.each(Array.from({length: 5}, (_, i) => i))("almostEvenlySpacedIntegers limits of returned values", (x) => {
+        const bounds = [x - 2, 2 - x];
+        const upperBound = Math.max(bounds[0], bounds[1]);
+        const lowerBound = Math.min(bounds[0], bounds[1]);
+        almostEvenlySpacedIntegers(x, bounds[0], bounds[1]).forEach((el) => {
+            expect(el).toBeGreaterThanOrEqual(lowerBound);
+            expect(el).toBeLessThanOrEqual(upperBound);
+        });
+    });
+
+    test.each(Array.from({length: 5}, (_, i) => i + 1))("almostEvenlySpacedIntegers step between returned values differ by at most 1", (x) => {
+        const bounds = [x - 2, 2 - x];
+        const numbers = evenlySpacedNumbers(x, bounds[0], bounds[1]);
+        const firstStep = Math.abs(bounds[0] - numbers[0]);
+        const lastStep = Math.abs(numbers[numbers.length - 1] - bounds[1]);
+        expect(firstStep).toBeGreaterThanOrEqual(lastStep - 1);
+        expect(firstStep).toBeLessThanOrEqual(lastStep + 1);
+        numbers.forEach((el, index) => {if (index){
+            expect(Math.abs(el - numbers[index - 1])).toBeGreaterThanOrEqual(lastStep - 1);
+            expect(Math.abs(el - numbers[index - 1])).toBeLessThanOrEqual(lastStep + 1);
+        }});
     });
 });

@@ -31,7 +31,7 @@ test("spreadIgnorance test", () => {
     // Spreading ignorance to a fully ignorant ignorant, should not increase its ignorance
     // expect(spreadIgnorance(actors, ignoranceSpreader).amount[0]).toBe(0);
     // IgnorantSpreader shouldn't increase its own ignorance
-    expect(spreadIgnorance([ignoranceSpreader], ignoranceSpreader).amount.length).toBe(0);
+    expect(spreadIgnorance([ignoranceSpreader], ignoranceSpreader).amount).toHaveLength(0);
     
     // ignorant shouldn't spread ignorance
     // expect(spreadIgnorance([ignorant], ignorant).amount.length).toBe(0);
