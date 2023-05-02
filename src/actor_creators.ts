@@ -87,8 +87,8 @@ function createSpawner(position: Vector2D): Actor {
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
  * @returns the created Actor of kind "ground"
  */
-function createGround(position: Vector2D, waypointNumber: number): Actor {
-	return createActor(position, {}, "ground", { waypointNumber: waypointNumber });
+function createGround(position: Vector2D, waypointNumber?: number): Actor {
+	return createActor(position, {}, "ground", waypointNumber ? { waypointNumber: waypointNumber } : undefined);
 }
 
 /**

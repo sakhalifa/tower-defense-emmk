@@ -56,7 +56,7 @@ function initSpawners(world: World, maxSpawners: number, spawnersAxis : Axis, sp
  * @param numberOfGroundLines The number of lines of grounds (in groundsAxis direction) where grounds are created
  * @returns an array of numberOfGroundLines to maxGroundsPerLine * numberOfGroundLines grounds with unique positions
  */
-function initGrounds(world: World, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Actor> {
+function initGroundWaypoints(world: World, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Actor> {
 	return Array.from({ length: numberOfGroundLines },
 		(_, index) => (randomPositionAlongAxis(world, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
 		.map((groundPosition) => createGround(groundPosition, index + 1)))
@@ -91,16 +91,26 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number): 
 	const intermediateWaypointsLineNumber: Array<number> =
 	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
 	return initSpawners(world, 3, spawnersAxis, spawnerLineNumber)
-	.concat(initGrounds(world, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
+	.concat(initGroundWaypoints(world, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
 	.concat(initspaghettiMonster(world, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1));
 }
 
+function initActors(world: World, intermediateWaypointsNumber: number): Array<Actor> {
+	const waypoints = initWayPointActors(world, intermediateWaypointsNumber);
+	return waypoints.concat(positionsLinkingWaypoints(waypoints).map((position) => createGround(position)));
+}
+
+function positionsLinkingWaypoints(waypoints: Array<Actor>): Array<Vector2D> {
+	waypoints.reduce((acc: Array<Array<Actor>>, waypoint, index) => acc.concat([waypoint]), []);
+	return [];
+}
+
 /**
- * Ensures all actors are in a valid state and if they are not, resolves the conflict
- * @param world The world
- * @param actors The actors
- * @param proposals The new actors proposal
- * @returns An array of actor with no conflicts
+ * Ensures all proposed actors are in a valid state and if they are not, resolves the conflict
+ * @param world The world where the actors are
+ * @param actors The state of the actors before the proposal of their new state was made
+ * @param proposals We want to know if these actors are valid
+ * @returns An array of actor with valid states and no conflicts
  */
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
@@ -135,7 +145,7 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
  */
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(10, 10);
-	let actors: Array<Actor> = initWayPointActors(world, 2);
+	let actors: Array<Actor> = initActors(world, 2);
 	const phases: Array<Phase> = initPhases();
 	let i = 0;
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
