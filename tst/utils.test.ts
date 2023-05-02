@@ -1,4 +1,4 @@
-import { getRandomArrayElement, isObject, stringReplaceAt, isDeepStrictEqual, sum } from "../src/util";
+import { getRandomArrayElement, isObject, stringReplaceAt, isDeepStrictEqual, sum, evenlySpacedNumbers } from "../src/util";
 
 test("sum test", () => {
     // Test on integers
@@ -100,3 +100,20 @@ test("isObject test", () => {
     expect(isObject({a: 0})).toBeTruthy();
 });
 
+describe("evenlySpacedNumbers test", () => {
+    test.each(Array.from({length: 5}, (_, i) => i))("evenlySpacedNumbers length of returned array", (x) => {
+        expect(evenlySpacedNumbers(x, 0, 10).length).toEqual(x);
+    });
+
+    test.each(Array.from({length: 5}, (_, i) => i))("evenlySpacedNumbers limits of returned values", (x) => {
+        evenlySpacedNumbers(x, x - 2, 2 - x).map((el) => el >= Math.min(x -2, 2 - x) && el <= Math.max(x -2, 2 - x)).forEach((el) => expect(el).toBeTruthy());
+    });
+
+    test.each(Array.from({length: 5}, (_, i) => i + 1))("evenlySpacedNumbers same step between returned values", (x) => {
+        const numbers = evenlySpacedNumbers(x, x - 2, 2 - x);
+        const firstStep = Math.abs((x - 2) - numbers[0]);
+        const lastStep = Math.abs(numbers[numbers.length - 1] - (2 - x));
+        expect(firstStep).toBeCloseTo(lastStep);
+        numbers.forEach((el, index) => {if (index) expect(Math.abs(el - numbers[index - 1])).toBeCloseTo(firstStep);});
+    });
+});

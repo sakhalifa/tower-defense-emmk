@@ -88,4 +88,4 @@ function almostEvenlySpacedIntegers(numberOfValues: number, fromValue: number, t
 
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers };
