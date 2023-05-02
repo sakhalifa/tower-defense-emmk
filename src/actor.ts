@@ -11,7 +11,8 @@ import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, se
 /**
  * Actors that can move by themselves on the board.
  */
-type Walker = "ignorant" | "ignoranceSpreader";
+const walkerKeys = ["ignorant", "ignoranceSpreader"] as const;
+type Walker = typeof walkerKeys[number];
 
 /**
  * All the different actor kinds.
@@ -98,7 +99,7 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
  */ 
 function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	const newPosition = translatePoint(movingActor.position, movementVector);
-	if (isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
+	if (walkerKeys.find((key) => movingActor.kind === key) && isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
 		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));
 		return setWaypointTargetNumber(
 			setWaypointTarget({ ...movingActor, position: newPosition }, nextWaypoint.waypointTarget),

@@ -2,6 +2,7 @@ import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Actor } from "./actor";
 import type { Axis } from "./util";
+import type { Vector2D } from "./geometry";
 
 import { createWorld, randomPositionAlongAxis } from "./world";
 import { createGround, createspaghettiMonster, createSpawner } from "./actor_creators";
@@ -9,6 +10,7 @@ import { isValidActorInEnvironment } from "./actor";
 import { createPhase } from "./phase";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
 import { almostEvenlySpacedIntegers } from "./util";
+import { linkingPath } from "./geometry";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -56,11 +58,11 @@ function initSpawners(world: World, maxSpawners: number, spawnersAxis : Axis, sp
  * @param numberOfGroundLines The number of lines of grounds (in groundsAxis direction) where grounds are created
  * @returns an array of numberOfGroundLines to maxGroundsPerLine * numberOfGroundLines grounds with unique positions
  */
-function initGroundWaypoints(world: World, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Actor> {
+function initGroundWaypoints(world: World, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Array<Actor>> {
 	return Array.from({ length: numberOfGroundLines },
 		(_, index) => (randomPositionAlongAxis(world, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
 		.map((groundPosition) => createGround(groundPosition, index + 1)))
-		).flat();
+		);
 }
 
 /**
@@ -83,26 +85,33 @@ function initspaghettiMonster(world: World, maxSpaghettiMonsters: number, spaghe
  * @param intermediateWaypointsNumber the number of waypoints that have to be reached by the moving actors (spawner and spaghettiMonster not included)
  * @returns the created waypoints of the world
  */
-function initWayPointActors(world: World, intermediateWaypointsNumber: number): Array<Actor> {
+function initWayPointActors(world: World, intermediateWaypointsNumber: number): Array<Array<Actor>> {
 	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
 	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
 	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
 	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
 	const intermediateWaypointsLineNumber: Array<number> =
 	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
-	return initSpawners(world, 3, spawnersAxis, spawnerLineNumber)
+	return [initSpawners(world, 3, spawnersAxis, spawnerLineNumber)]
 	.concat(initGroundWaypoints(world, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
-	.concat(initspaghettiMonster(world, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1));
+	.concat([initspaghettiMonster(world, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
 }
 
 function initActors(world: World, intermediateWaypointsNumber: number): Array<Actor> {
 	const waypoints = initWayPointActors(world, intermediateWaypointsNumber);
-	return waypoints.concat(positionsLinkingWaypoints(waypoints).map((position) => createGround(position)));
+	return waypoints.flat()
+	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)))
+	.map((position) => createGround(position)));
 }
 
-function positionsLinkingWaypoints(waypoints: Array<Actor>): Array<Vector2D> {
-	waypoints.reduce((acc: Array<Array<Actor>>, waypoint, index) => acc.concat([waypoint]), []);
-	return [];
+function positionsLinking(positions: Array<Array<Vector2D>>): Array<Vector2D> {
+	return positions.reduce((acc: Array<Vector2D>, currentPositions, index) => {
+		if (!index) {
+			return acc;
+		}
+		return acc.concat(currentPositions.map((currentPosition) => positions[index - 1]
+		.map((previousPosition) => linkingPath(previousPosition, currentPosition)).flat()).flat());
+	}, []);
 }
 
 /**
