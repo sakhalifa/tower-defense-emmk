@@ -41,7 +41,7 @@ test("movePhase test", () => {
 
 // update faithPoints
 
-// FaithPoints phase test => unclear
+// spreadIgnorance phase test => unclear
 
 // Convert enemies phase tests => Resolve faith_point issue first !
 

@@ -69,23 +69,23 @@ function drawLine(begin: Vector2D, end: Vector2D, color: string){
  * If the actor has undefined faithPoints, do nothing
  * 
  * @param actor the actor of which faithPoints is to be displayed
- * @param scale the scale of the canvas
+ * @param tailSize the x and y size of one tail on the canvas
  */
-function FaithPoints(actor: Actor, scale: Vector2D){
+function drawActorIgnorance(actor: Actor, tailSize: Vector2D){
     if (actor.faithPoints === undefined){
         return;
     }
 
-    const barSize = scale.x;
-    const barOffset = createVector(0, -scale.y / 10);
-    const ignoranceBarBegin = createVector(actor.position.x * scale.x + barOffset.x, actor.position.y * scale.y + barOffset.y);
+    const barSize = tailSize.x;
+    const barOffset = createVector(0, -tailSize.y / 10);
+    const ignoranceBarBegin = createVector(actor.position.x * tailSize.x + barOffset.x, actor.position.y * tailSize.y + barOffset.y);
 
     drawLine(ignoranceBarBegin,
-        createVector(actor.position.x * scale.x + barOffset.x + barSize, actor.position.y * scale.y + barOffset.y),
+        createVector(ignoranceBarBegin.x + barSize, ignoranceBarBegin.y),
         '#ff0000');
     
     drawLine(ignoranceBarBegin,
-        createVector((actor.position.x * scale.x + barOffset.x + barSize) * actor.faithPoints / 10, actor.position.y * scale.y + barOffset.y),
+        createVector((ignoranceBarBegin.x + barSize) * actor.faithPoints / 10, ignoranceBarBegin.y),
         '#00ff00');
 }
 
@@ -106,12 +106,12 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     // Update canvas
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
-    const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
+    const canvasTailSize: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
     // Draw actor sprite
-    kindDrawOrder.forEach((kind) => drawActors(filterByKinds(actors, [kind]), canvasScale));
+    kindDrawOrder.forEach((kind) => drawActors(filterByKinds(actors, [kind]), canvasTailSize));
     // Draw Actor faithPoints
     // Only draw faithPoints of ignorant
-    filterByKinds(actors, [...walkerKeys]).forEach((actor) => FaithPoints(actor, canvasScale));
+    filterByKinds(actors, [...walkerKeys]).forEach((actor) => drawActorIgnorance(actor, canvasTailSize));
 
     // wait
     await delay(500);

@@ -10,7 +10,7 @@ function move(_: Array<Actor>, __: Actor) {
     return createVector(0, 0);
 }
 
-function FaithPoints(_: Array<Actor>, __: Actor) {
+function spreadIgnorance(_: Array<Actor>, __: Actor) {
     return {actorIndices: [0], amount: [0]};
 }
 
@@ -21,7 +21,7 @@ function buildDummyActor(): Actor{
 test("Actor create test", () => {
     expect(createActor(createVector(0, 1), {}, "ignorant"))
         .toEqual(buildDummyActor());
-    expect(createActor(createVector(100, 100), { move, FaithPoints: FaithPoints }, "ignorant"))
+    expect(createActor(createVector(100, 100), { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
         .not.toEqual(buildDummyActor());
     expect(createActor(createVector(0, 1), { move }, "ignorant"))
         .not.toEqual(buildDummyActor());
