@@ -40,6 +40,7 @@ function initPhases(): Array<Phase> {
 /**
  * Randomly initializes spawners
  * @param world the world where the spawners are created
+ * @param minSpawners the minimum number of returned spawners
  * @param maxSpawners the maximum number of returned spawners
  * @param spawnersAxis the returned spawners can reach each other by a translation along this axis
  * @param spawnerLineNumber the coordinate of the returned position on the not-given axis
@@ -52,6 +53,7 @@ function initSpawners(world: World, minSpawners: number, maxSpawners: number, sp
 /**
  * Randomly initializes grounds
  * @param world the world where the grounds are created
+ * @param minGroundsPerLine the minimum number of created grounds per line along the groundsAxis
  * @param maxGroundsPerLine the maximum number of created grounds per line along the groundsAxis
  * @param groundsAxis the returned grounds can reach each other by a translation along this axis
  * @param groundLineNumbers the coordinates of the returned positions on the not-given axis (for each line where ground are created)
@@ -68,6 +70,7 @@ function initGroundWaypoints(world: World, minGroundsPerLine: number, maxGrounds
 /**
  * Randomly initializes spaghettiMonsters
  * @param world the world where the spaghettiMonsters are created
+ * @param minSpaghettiMonsters the minimum number of returned spaghettiMonsters
  * @param maxSpaghettiMonsters the maximum number of returned spaghettiMonsters
  * @param spaghettiMonstersAxis the returned spaghettiMonsters can reach each other by a translation along this axis
  * @param spaghettiMonstersLineNumber the coordinate of the returned position on the not-given axis
