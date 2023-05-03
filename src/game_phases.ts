@@ -24,7 +24,7 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<Actor
  */
 function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["temperatureRise"]>>): Array<Actor> {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	return oldActors.map((a) => a.kind !== "spaghettiMonster" ? a : { ...a, faith_point: a.ignorance! - sum(phaseResult) });
+	return oldActors.map((a) => a.kind !== "spaghettiMonster" ? a : { ...a, faith_point: a.faithPoints! - sum(phaseResult) });
 }
 
 function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
@@ -34,15 +34,15 @@ function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<Ac
 function updateIgnorance(actor: Actor, actorIndex: number, spreadIgnoranceResults: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Actor {
 	return {
 		...actor,
-		ignorance: spreadIgnoranceResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
+		faithPoints: spreadIgnoranceResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
 					(ignoranceAcc ?? 0) + ((spreadIgnoranceResult.amount[spreadIgnoranceResult.actorIndices.indexOf(actorIndex)] ?? 0)),
-					actor.ignorance)
+					actor.faithPoints)
 	};
 }
 
 /**
  * The executePhase function for the "spreadIgnorance" phase.
- * It ensures all enemies who receive the ignorance have actually more ignorance.
+ * It ensures all enemies who receive the faithPoints have actually more faithPoints.
  * @param oldActors The actors before the phase
  * @param phaseResult The results of the phase
  * @returns A proposal for the actors after executing the "spreadIgnorance" phase
@@ -62,7 +62,7 @@ function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnT
 	return oldActors.map((a, i) => phaseResult.reduce((actor, curResult) => {
 		const idx = curResult.actorIndices.indexOf(i);
 		if (idx !== -1) {
-			const fp = actor.ignorance ?? 0;
+			const fp = actor.faithPoints ?? 0;
 			return { ...actor, faith_point: fp - curResult.amount[idx] };
 		}
 		return actor;

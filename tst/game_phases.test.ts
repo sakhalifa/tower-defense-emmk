@@ -39,9 +39,9 @@ test("movePhase test", () => {
     expect(movePhase([actor, movedActor, actor], [createVector(0, 0), createVector(-10, -5), createVector(10, 5)])).toEqual([actor, actor, movedActor]);
 });
 
-// update ignorance
+// update faithPoints
 
-// spreadIgnorance phase test => unclear
+// FaithPoints phase test => unclear
 
 // Convert enemies phase tests => Resolve faith_point issue first !
 

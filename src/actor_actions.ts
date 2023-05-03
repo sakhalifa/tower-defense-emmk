@@ -65,11 +65,11 @@ function temperatureRise(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis)
 
 /**
  * The "spreadIgnorance" action.
- * It returns all the actors the actor will spread ignorance to, and the amount for which every actor will be impacted.
+ * It returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  * @param actors The actors in the world
- * @param ignoranceSpreader The current actor that spreads ignorance
+ * @param ignoranceSpreader The current actor that spreads faithPoints
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
- * @returns all the actors the actor will spread ignorance to, and the amount for which every actor will be impacted.
+ * @returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  */
 function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
 	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) => 
@@ -116,7 +116,7 @@ function convertEnemies(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis):
 function enemyFlee(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis): ReturnType<ActorActions["enemyFlee"]> {
 	if (actor.kind === "ground" || actor.kind === "goodGuy")
 		return false;
-	return (actor?.ignorance ?? 0) <= 0;
+	return (actor?.faithPoints ?? 0) <= 0;
 }
 
 export type {ActorActions};

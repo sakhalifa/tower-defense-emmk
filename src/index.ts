@@ -65,14 +65,14 @@ function drawLine(begin: Vector2D, end: Vector2D, color: string){
 }
 
 /**
- * Display a bar representing the ignorance remaining in an actor, assuming max ignorance is 10.
- * If the actor has undefined ignorance, do nothing
+ * Display a bar representing the faithPoints remaining in an actor, assuming max faithPoints is 10.
+ * If the actor has undefined faithPoints, do nothing
  * 
- * @param actor the actor of which ignorance is to be displayed
+ * @param actor the actor of which faithPoints is to be displayed
  * @param scale the scale of the canvas
  */
-function drawActorIgnorance(actor: Actor, scale: Vector2D){
-    if (actor.ignorance === undefined){
+function FaithPoints(actor: Actor, scale: Vector2D){
+    if (actor.faithPoints === undefined){
         return;
     }
 
@@ -85,7 +85,7 @@ function drawActorIgnorance(actor: Actor, scale: Vector2D){
         '#ff0000');
     
     drawLine(ignoranceBarBegin,
-        createVector((actor.position.x * scale.x + barOffset.x + barSize) * actor.ignorance / 10, actor.position.y * scale.y + barOffset.y),
+        createVector((actor.position.x * scale.x + barOffset.x + barSize) * actor.faithPoints / 10, actor.position.y * scale.y + barOffset.y),
         '#00ff00');
 }
 
@@ -109,9 +109,9 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
     // Draw actor sprite
     kindDrawOrder.forEach((kind) => drawActors(filterByKinds(actors, [kind]), canvasScale));
-    // Draw Actor ignorance
-    // Only draw ignorance of ignorant
-    filterByKinds(actors, [...walkerKeys]).forEach((actor) => drawActorIgnorance(actor, canvasScale));
+    // Draw Actor faithPoints
+    // Only draw faithPoints of ignorant
+    filterByKinds(actors, [...walkerKeys]).forEach((actor) => FaithPoints(actor, canvasScale));
 
     // wait
     await delay(500);

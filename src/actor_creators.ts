@@ -12,33 +12,33 @@ import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureR
  * @param actions The actions of the created Actor
  * @param kind The kind of the created Actor
  * @param externalProps The external properties of the created Actor
- * @param ignorance The ignorance points of the created Actor
+ * @param faithPoints The faithPoints points of the created Actor
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, externalProps?: any, ignorance?: number): Actor {
-	return { position: position, actions: { ...defaultActions, ...actions }, kind: kind, ignorance: ignorance, externalProps: externalProps };
+function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, externalProps?: any, faithPoints?: number): Actor {
+	return { position: position, actions: { ...defaultActions, ...actions }, kind: kind, faithPoints: faithPoints, externalProps: externalProps };
 }
 
 /**
  * Constructor for a default "ignorant" actor
  * @param position the position where the ignorant is in the world
  * @param waypointTarget the next position that the ignorant has to reach
- * @param ignorance the level of ignorance of the ignorant
+ * @param faithPoints the level of faithPoints of the ignorant
  * @returns the created Actor of kind "ignorant"
  */
-function createIgnorant(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 10): Actor {
-	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
+function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 10): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, faithPoints);
 }
 
 /**
  * Constructor for a default "ignoranceSpreader" actor
  * @param position the position where the ignoranceSpreader is in the world
  * @param waypointTarget the next position that the ignoranceSpreader has to reach
- * @param ignorance the level of ignorance of the ignoranceSpreader
+ * @param faithPoints the level of faithPoints of the ignoranceSpreader
  * @returns the created Actor of kind "ignoranceSpreader"
  */
-function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, ignorance: number = 7): Actor {
-	return createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance }, "ignoranceSpreader", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, ignorance);
+function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 7): Actor {
+	return createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance }, "ignoranceSpreader", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, faithPoints);
 }
 
 /**
@@ -46,7 +46,7 @@ function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, i
  * see {@link walkerCreator}
  */
 type WalkerCreator = {
-	[key in Walker]: (position: Vector2D, waypointTarget: Vector2D, ignorance?: number) => Actor
+	[key in Walker]: (position: Vector2D, waypointTarget: Vector2D, faithPoints?: number) => Actor
 };
 
 /**
@@ -64,12 +64,12 @@ const walkerCreator: WalkerCreator = {
  * @param kind the kind of the created Actor
  * @param path the waypoints constraining the path on which the Actor will move
  * @param position the position of the created Actor
- * @param ignorance the ignorance of the created Actor
+ * @param faithPoints the faithPoints of the created Actor
  * @returns the created Actor whose kind is listed in the type {@link Walker}
  */
-function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, ignorance?: number): Actor {
+function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, faithPoints?: number): Actor {
 	const firstWaypoint = findNextWaypointTarget(path, position, 0);
-	return walkerCreator[kind](position, firstWaypoint.waypointTarget, ignorance);
+	return walkerCreator[kind](position, firstWaypoint.waypointTarget, faithPoints);
 }
 
 /**
@@ -96,8 +96,8 @@ function createGround(position: Vector2D, waypointNumber?: number): Actor {
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
  * @returns the created Actor of kind "spaghettiMonster"
  */
-function createspaghettiMonster(position: Vector2D, waypointNumber: number, ignorance: number = 50): Actor {
-	return createActor(position, {}, "spaghettiMonster", { waypointNumber: waypointNumber }, ignorance);
+function createspaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 50): Actor {
+	return createActor(position, {}, "spaghettiMonster", { waypointNumber: waypointNumber }, faithPoints);
 }
 
 export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant };

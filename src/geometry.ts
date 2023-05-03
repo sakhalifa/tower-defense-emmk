@@ -91,7 +91,7 @@ function linkingPath(fromPosition: Vector2D, toPosition: Vector2D, firstAxis?: A
 		if (isDeepStrictEqual(fromPosition, toPosition)) {
 			return positionsAccumulator;
 		}
-		const positionToAdd = translatePoint(fromPosition, movingVector(fromPosition, toPosition));
+		const positionToAdd = translatePoint(fromPosition, movingVector(fromPosition, toPosition, firstAxis));
 		return linkingPathTailRecursive(positionToAdd, toPosition, positionsAccumulator.concat(fromPosition));
 	}
 	return linkingPathTailRecursive(fromPosition, toPosition, []);

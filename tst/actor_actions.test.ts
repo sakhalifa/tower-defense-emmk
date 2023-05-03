@@ -1,8 +1,8 @@
 import { createIgnoranceSpreader, createIgnorant, createspaghettiMonster } from "../src/actor_creators";
-import { temperatureRise, spreadIgnorance } from "../src/actor_actions";
+import { temperatureRise, FaithPoints } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
-import { setHunger, setSpreadIgnorancePower } from "../src/props";
+import { setHunger, FaithPoints } from "../src/props";
 
 test("TemperatureRise test", () => {
     const world = createWorld(5, 5, 0);
@@ -21,18 +21,18 @@ test("TemperatureRise test", () => {
 });
 
 
-test("spreadIgnorance test", () => {
+test("FaithPoints test", () => {
     
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
-    const ignoranceSpreader = setSpreadIgnorancePower(createIgnoranceSpreader(createVector(0, 0), createVector(0, 0)), 3);
+    const ignoranceSpreader = FaithPoints(createIgnoranceSpreader(createVector(0, 0), createVector(0, 0)), 3);
     // const actors = [ignorant, ignoranceSpreader];
 
     // Not enough specifications to make this tests, waiting fot the team to decide a correct behavior
-    // Spreading ignorance to a fully ignorant ignorant, should not increase its ignorance
-    // expect(spreadIgnorance(actors, ignoranceSpreader).amount[0]).toBe(0);
-    // IgnorantSpreader shouldn't increase its own ignorance
-    expect(spreadIgnorance([ignoranceSpreader], ignoranceSpreader).amount).toHaveLength(0);
+    // Spreading faithPoints to a fully ignorant ignorant, should not increase its faithPoints
+    // expect(FaithPoints(actors, ignoranceSpreader).amount[0]).toBe(0);
+    // IgnorantSpreader shouldn't increase its own faithPoints
+    expect(FaithPoints([ignoranceSpreader], ignoranceSpreader).amount).toHaveLength(0);
     
-    // ignorant shouldn't spread ignorance
-    // expect(spreadIgnorance([ignorant], ignorant).amount.length).toBe(0);
+    // ignorant shouldn't spread faithPoints
+    // expect(FaithPoints([ignorant], ignorant).amount.length).toBe(0);
 });

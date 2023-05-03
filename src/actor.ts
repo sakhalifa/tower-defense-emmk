@@ -20,7 +20,7 @@ type Walker = typeof walkerKeys[number];
 type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettiMonster";
 
 /**
- * An actor. It has a position in the world, a kind, ignorance points,
+ * An actor. It has a position in the world, a kind, faithPoints points,
  * different actions describing its behavior during the differents Phases of the game,
  * and additional properties that are not typed.
  * Additional properties should always check kind and/or tag before actually accessing them.
@@ -30,7 +30,7 @@ type Actor = {
 	actions: ActorActions;
 	kind: Kind;
 	externalProps?: any;
-	ignorance?: number;
+	faithPoints?: number;
 };
 
 /**
@@ -39,7 +39,7 @@ type Actor = {
  * @returns the string representation of the actor
  */
 function actorToString(actor: Actor): string {
-	return `{position: ${vector2DToString(actor.position)}${actor.ignorance !== undefined ? ', fp:' + actor.ignorance : ''}}`;
+	return `{position: ${vector2DToString(actor.position)}${actor.faithPoints !== undefined ? ', fp:' + actor.faithPoints : ''}}`;
 }
 
 /**

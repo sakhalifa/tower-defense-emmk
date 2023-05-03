@@ -34,6 +34,6 @@ test("initGroundWaypoints test", () => {
     expect(initGroundWaypoints(world, 2, 2, 'y', [1, 3], 2)).toHaveLength(2);
 });
 
-test.each(initActors(initWorld(5, 5), 5))("Init actor test", (actor) => {
+test.each(initActors(initWorld(5, 5), 5)[0])("Init actor test", (actor) => {
     expect(isPositionInWorld(initWorld(5, 5), actor.position)).toBeTruthy();
 });
