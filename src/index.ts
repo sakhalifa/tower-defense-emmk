@@ -111,7 +111,7 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
 
 async function main(){
     const world: World = initWorld(15, 15);
-	let actors: Array<Actor> = initActors(world, Math.random() < 0.6 ? 2 : 3);
+	let actors: Array<Actor> = initActors(world, Math.random() < 0.6 ? 2 : 3, 1);
 	const phases: Array<Phase> = initPhases();
 	let i = 0;
 	while (i < 50) {

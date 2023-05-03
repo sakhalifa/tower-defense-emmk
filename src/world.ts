@@ -2,7 +2,7 @@ import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
 
 import { randomUniqueIntegers } from "./util";
-import { createVector } from "./geometry";
+import { createVector, linkingPath } from "./geometry";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
@@ -44,18 +44,17 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
  * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
 function randomPositionsAlongAxis(world: World, minPositions: number, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
-	return createPositionsAlongAxis(world, axis, randomUniqueIntegers(minPositions, maxPositions, 0, axis === "x" ? world.width : world.height), lineNumber);
+	return createPositionsAlongAxis(axis, randomUniqueIntegers(minPositions, maxPositions, 0, axis === "x" ? world.width : world.height), lineNumber);
 }
 
 /**
  * Returns an array of positions corresponding to the given parameters
- * @param world the world on which the positions are computed
  * @param parallelToAxis the returned positions can reach each other by a translation along this axis
  * @param parallelAxisCoords the coordinates, on the parallel axis, of the returned positions
  * @param otherAxislineNumber the coordinate of the returned position on the not-given axis
  * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
-function createPositionsAlongAxis(world: World, parallelToAxis: Axis, parallelAxisCoords: Array<number>, otherAxislineNumber: number): Array<Vector2D>{
+function createPositionsAlongAxis(parallelToAxis: Axis, parallelAxisCoords: Array<number>, otherAxislineNumber: number): Array<Vector2D>{
 	return parallelAxisCoords.map((coord) => parallelToAxis === "x" ? createVector(coord, otherAxislineNumber) : createVector(otherAxislineNumber, coord));
 }
 
@@ -91,6 +90,16 @@ function worldStringVectorToIndex(world: World, vector: Vector2D): number {
 	return vector.y * (world.width * 2 + 1) + vector.x * 2;
 }
 
+function positionsLinking(positions: Array<Array<Vector2D>>): Array<Vector2D> {
+	return positions.reduce((acc: Array<Vector2D>, currentPositions, index) => {
+		if (!index) {
+			return acc;
+		}
+		return acc.concat(currentPositions.map((currentPosition) => positions[index - 1]
+		.map((previousPosition) => linkingPath(previousPosition, currentPosition)).flat()).flat());
+	}, []);
+}
+
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis as randomPositionAlongAxis };
+export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking };
