@@ -96,8 +96,8 @@ function createGround(position: Vector2D, waypointNumber?: number): Actor {
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
  * @returns the created Actor of kind "spaghettiMonster"
  */
-function createspaghettiMonster(position: Vector2D, waypointNumber: number): Actor {
-	return createActor(position, {spawn: spawn}, "spaghettiMonster", { waypointNumber: waypointNumber });
+function createspaghettiMonster(position: Vector2D, waypointNumber: number, ignorance: number = 50): Actor {
+	return createActor(position, {spawn: spawn}, "spaghettiMonster", { waypointNumber: waypointNumber }, ignorance);
 }
 
 export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant };
