@@ -43,11 +43,11 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
  * @param lineNumber the coordinate of the returned position on the not-given axis
  * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
-function randomPositionsAlongAxis(world: World, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
+function randomPositionsAlongAxis(world: World, minPositions: number, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
 	if (maxPositions < 1) {
 		throw new Error("At least one position must be returned");
 	}
-	return randomUniqueIntegers(1, maxPositions, 0, axis === "x" ? world.width : world.height)
+	return randomUniqueIntegers(minPositions, maxPositions, 0, axis === "x" ? world.width : world.height)
 	.map((coord) => axis === "x" ? createVector(coord, lineNumber) : createVector(lineNumber, coord));
 }
 

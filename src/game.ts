@@ -45,8 +45,8 @@ function initPhases(): Array<Phase> {
  * @param spawnerLineNumber the coordinate of the returned position on the not-given axis
  * @returns an array of 1 to maxSpawners spawners with unique positions, that all have the same coordinate value on the axis that was not given
  */
-function initSpawners(world: World, maxSpawners: number, spawnersAxis : Axis, spawnerLineNumber: number): Array<Actor> {
-	return randomPositionAlongAxis(world, maxSpawners, spawnersAxis, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition));
+function initSpawners(world: World, minSpawners: number, maxSpawners: number, spawnersAxis : Axis, spawnerLineNumber: number): Array<Actor> {
+	return randomPositionAlongAxis(world, minSpawners, maxSpawners, spawnersAxis, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition));
 }
 
 /**
@@ -58,9 +58,9 @@ function initSpawners(world: World, maxSpawners: number, spawnersAxis : Axis, sp
  * @param numberOfGroundLines The number of lines of grounds (in groundsAxis direction) where grounds are created
  * @returns an array of numberOfGroundLines to maxGroundsPerLine * numberOfGroundLines grounds with unique positions
  */
-function initGroundWaypoints(world: World, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Array<Actor>> {
+function initGroundWaypoints(world: World, minGroundsPerLine: number, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Array<Actor>> {
 	return Array.from({ length: numberOfGroundLines },
-		(_, index) => (randomPositionAlongAxis(world, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
+		(_, index) => (randomPositionAlongAxis(world, minGroundsPerLine, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
 		.map((groundPosition) => createGround(groundPosition, index + 1)))
 		);
 }
@@ -74,8 +74,8 @@ function initGroundWaypoints(world: World, maxGroundsPerLine: number, groundsAxi
  * @param waypointNumber the waypointNumber of the spaghettiMonsters
  * @returns an array of 1 to maxSpaghettiMonsters spaghettiMonsters with unique positions, that all have the same coordinate value on the axis that was not given
  */
-function initspaghettiMonster(world: World, maxSpaghettiMonsters: number, spaghettiMonstersAxis : Axis, spaghettiMonstersLineNumber: number, waypointNumber: number): Array<Actor> {
-	return randomPositionAlongAxis(world, maxSpaghettiMonsters, spaghettiMonstersAxis, spaghettiMonstersLineNumber)
+function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSpaghettiMonsters: number, spaghettiMonstersAxis : Axis, spaghettiMonstersLineNumber: number, waypointNumber: number): Array<Actor> {
+	return randomPositionAlongAxis(world, minSpaghettiMonsters,  maxSpaghettiMonsters, spaghettiMonstersAxis, spaghettiMonstersLineNumber)
 	.map((spaghettiMonsterPosition) => createspaghettiMonster(spaghettiMonsterPosition, waypointNumber));
 }
 
@@ -92,9 +92,9 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number): 
 	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
 	const intermediateWaypointsLineNumber: Array<number> =
 	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
-	return [initSpawners(world, 3, spawnersAxis, spawnerLineNumber)]
-	.concat(initGroundWaypoints(world, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
-	.concat([initspaghettiMonster(world, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
+	return [initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber)]
+	.concat(initGroundWaypoints(world, 1, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
+	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
 }
 
 function initActors(world: World, intermediateWaypointsNumber: number): Array<Actor> {
