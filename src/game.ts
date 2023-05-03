@@ -112,16 +112,16 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number, a
 /**
  * Initializes the actors. Should be used at the beginning of the game
  * @param world the world where the actors are created
- * @param intermediateWaypointsNumber the number of waypoints that the actors need to cross between the spawners and the spaghettiMonsters
+ * @param intermediateWaypointLinesNumber the number of waypoints that the actors need to cross between the spawners and the spaghettiMonsters
  * @param averageSpawnsPerPhase number representing the average of the sum of spawns during the spawn phase, for the returned spawners.
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the first actors of the game.
  */
-function initActors(world: World, intermediateWaypointsNumber: number, averageSpawnsPerPhase?: number): Array<Actor> {
-	const [waypoints, spawnersAxis]: [Array<Array<Actor>>, Axis] = initWayPointActors(world, intermediateWaypointsNumber, averageSpawnsPerPhase);
-	return waypoints.flat()
+function initActors(world: World, intermediateWaypointLinesNumber: number, averageSpawnsPerPhase?: number): [Array<Actor>, Axis] {
+	const [waypoints, spawnersAxis]: [Array<Array<Actor>>, Axis] = initWayPointActors(world, intermediateWaypointLinesNumber, averageSpawnsPerPhase);
+	return [waypoints.flat()
 	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)), otherAxis(spawnersAxis))
-	.map((position) => createGround(position)));
+	.map((position) => createGround(position))), spawnersAxis];
 }
 
 /**
@@ -146,13 +146,14 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
  * @param phases The phases
  * @param world The world
  * @param actors The actors
+ * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns A new array of actors
  */
-function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Array<Actor> {
+function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>, spawnersAxis: Axis): Array<Actor> {
 	return phases.reduce((someActors, aPhase) => {
 		const proposals: Actor[]
 			= aPhase.executePhase(someActors,
-				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
+				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor, spawnersAxis) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
 			);
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
@@ -164,14 +165,16 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
  */
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(10, 10);
-	let actors: Array<Actor> = initActors(world, 2, 1);
+	const initActorsResult: [Array<Actor>, Axis] = initActors(world, 2, 1);
+	let actors = initActorsResult[0];
+	const spawnersAxis = initActorsResult[1];
 	const phases: Array<Phase> = initPhases();
 	let i = 0;
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
 	while (i < 10) {
 		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 		display(world, actors);
-		actors = nextTurn(phases, world, actors);
+		actors = nextTurn(phases, world, actors, spawnersAxis);
 		++i;
 	}
 	console.log(`turn : \x1b[33m ${i} \x1b[0m`);

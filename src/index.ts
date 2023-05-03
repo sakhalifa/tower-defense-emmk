@@ -1,6 +1,7 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
 import type { Kind, Actor } from "./actor";
+import type { Axis } from "./util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
 import { Vector2D, createVector } from "./geometry";
@@ -118,11 +119,14 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
 
 async function main(){
     const world: World = initWorld(15, 15);
-	let actors: Array<Actor> = initActors(world, Math.random() < 0.6 ? 2 : 3, 1);
+    const intermediateWaypointsLineNumber = Math.random() < 0.6 ? 2 : 3;
+	const initActorsResult: [Array<Actor>, Axis] = initActors(world, intermediateWaypointsLineNumber, 1);
+	let actors = initActorsResult[0];
+	const spawnersAxis = initActorsResult[1];
 	const phases: Array<Phase> = initPhases();
 	let i = 0;
 	while (i < 50) {
-		actors = nextTurn(phases, world, actors);
+		actors = nextTurn(phases, world, actors, spawnersAxis);
 		await displayWorldToCanvas(world, actors);
         ++i;
 	}
