@@ -59,6 +59,21 @@ function isObject(object: any) {
 type Axis = "x" | "y";
 
 /**
+ * Returns an axis that is not the given axis
+ * @param axis the axis that isn't returned
+ */
+function otherAxis(axis: Axis): Axis {
+	switch (axis) {
+		case "x":
+			return "y";
+		case "y":
+			return "x";
+		default:
+			throw new Error("Unknown axis");
+	}
+}
+
+/**
  * Return numberOfValues evenly-spaced numbers between fromValue and toValue (evenly-spaced to the bounds as well).
  * For example, 2 evenly-spaced numbers between 0 and 10 would be 3.333 and 6.666 because the steps are the same between 0, 3.333, 6.666, and 10.
  * @param numberOfValues the number of evenly spaced values to return
@@ -143,4 +158,4 @@ function randomUniqueIntegers(minNumberOfValues: number, maxNumberOfValues: numb
 
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers, otherAxis };

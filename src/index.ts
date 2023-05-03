@@ -4,6 +4,7 @@ import type { Kind, Actor } from "./actor";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
 import { Vector2D, createVector } from "./geometry";
+import { filterByKinds, walkerKeys } from "./actor";
 
 const canvas: HTMLCanvasElement = document.getElementById("myCanvas") as HTMLCanvasElement;
 
@@ -87,6 +88,14 @@ function drawActorIgnorance(actor: Actor, scale: Vector2D){
         '#00ff00');
 }
 
+function drawActors(actorsToDraw: Array<Actor>, canvasScale: Vector2D) {
+    actorsToDraw.forEach((actor) => 
+        ctx?.drawImage(getActorSprite(actor.kind), 
+            actor.position.x * canvasScale.x, actor.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
+}
+
+const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMonster", ...walkerKeys];
+
 /**
  * Draws the content of the world to the canvas
  * @param world The world
@@ -98,12 +107,10 @@ async function displayWorldToCanvas(world: World, actors: Array<Actor>){
 
     const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
     // Draw actor sprite
-    actors.forEach((actor) => 
-        ctx?.drawImage(getActorSprite(actor.kind), 
-            actor.position.x * canvasScale.x, actor.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
+    kindDrawOrder.forEach((kind) => drawActors(filterByKinds(actors, [kind]), canvasScale));
     // Draw Actor ignorance
     // Only draw ignorance of ignorant
-    actors.filter((actor) => actor.kind === "ignorant").forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
+    filterByKinds(actors, [...walkerKeys]).forEach((actor) => drawActorIgnorance(actor, canvasScale));
 
     // wait
     await delay(500);

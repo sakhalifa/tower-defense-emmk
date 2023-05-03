@@ -90,13 +90,13 @@ function worldStringVectorToIndex(world: World, vector: Vector2D): number {
 	return vector.y * (world.width * 2 + 1) + vector.x * 2;
 }
 
-function positionsLinking(positions: Array<Array<Vector2D>>): Array<Vector2D> {
+function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): Array<Vector2D> {
 	return positions.reduce((acc: Array<Vector2D>, currentPositions, index) => {
 		if (!index) {
 			return acc;
 		}
 		return acc.concat(currentPositions.map((currentPosition) => positions[index - 1]
-		.map((previousPosition) => linkingPath(previousPosition, currentPosition)).flat()).flat());
+		.map((previousPosition) => linkingPath(previousPosition, currentPosition, firstAxis)).flat()).flat());
 	}, []);
 }
 

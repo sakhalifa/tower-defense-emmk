@@ -2,7 +2,7 @@ import type { Vector2D } from "./geometry";
 import type { ActorActions } from "./actor_actions";
 import type { Kind, Actor, Walker } from "./actor";
 
-import { filterByKind, findNextWaypointTarget } from "./actor";
+import { filterByKinds, findNextWaypointTarget } from "./actor";
 import { getRandomArrayElement } from "./util";
 import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn } from "./actor_actions";
 

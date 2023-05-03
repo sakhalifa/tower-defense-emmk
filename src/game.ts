@@ -8,7 +8,7 @@ import { createGround, createspaghettiMonster, createSpawner } from "./actor_cre
 import { isValidActorInEnvironment } from "./actor";
 import { createPhase } from "./phase";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { almostEvenlySpacedIntegers, randomUniqueIntegers } from "./util";
+import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -53,6 +53,7 @@ function initSpawners(world: World, minSpawners: number, maxSpawners: number, sp
 	}
 	const spawnersPerpendicularAxisCoord = randomUniqueIntegers(minSpawners, maxSpawners, 0, spawnersParallelAxis === "x" ? world.width : world.height);
 	const spawnProba = averageSpawnsPerPhase / spawnersPerpendicularAxisCoord.length;
+	console.log(spawnProba);
 	return createPositionsAlongAxis(spawnersParallelAxis, spawnersPerpendicularAxisCoord, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition, spawnProba));
 }
 
@@ -96,16 +97,16 @@ function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSp
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the created waypoints of the world
  */
-function initWayPointActors(world: World, intermediateWaypointsNumber: number, averageSpawnsPerPhase?: number): Array<Array<Actor>> {
+function initWayPointActors(world: World, intermediateWaypointsNumber: number, averageSpawnsPerPhase?: number): [Array<Array<Actor>>, Axis] {
 	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
 	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
 	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
 	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
 	const intermediateWaypointsLineNumber: Array<number> =
 	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
-	return [initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
+	return [[initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
 	.concat(initGroundWaypoints(world, 1, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
-	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
+	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]), spawnersAxis];
 }
 
 /**
@@ -117,9 +118,9 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number, a
  * @returns the first actors of the game.
  */
 function initActors(world: World, intermediateWaypointsNumber: number, averageSpawnsPerPhase?: number): Array<Actor> {
-	const waypoints = initWayPointActors(world, intermediateWaypointsNumber, averageSpawnsPerPhase);
+	const [waypoints, spawnersAxis]: [Array<Array<Actor>>, Axis] = initWayPointActors(world, intermediateWaypointsNumber, averageSpawnsPerPhase);
 	return waypoints.flat()
-	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)))
+	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)), otherAxis(spawnersAxis))
 	.map((position) => createGround(position)));
 }
 

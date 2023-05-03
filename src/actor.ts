@@ -57,11 +57,11 @@ function actorToStringInWorld(world: World, worldString: string, actor: Actor): 
  * Return a new array containing actors with the specified kind.
  * 
  * @param actors The array to filter from 
- * @param kind The kind to keep
+ * @param kinds The kinds to keep
  * @returns A new array with actor from the given array, of the given kind
  */
-function filterByKind(actors: Array<Actor>, kind : Kind): Array<Actor> {
-	return actors.filter((actor) => actor.kind === kind);
+function filterByKinds(actors: Array<Actor>, kinds : Array<Kind>): Array<Actor> {
+	return actors.filter((actor) => kinds.find((key) => actor.kind === key));
 }
 
 /**
@@ -118,5 +118,5 @@ function isValidActorInEnvironment(world: World, actor: Actor): boolean {
 	return isPositionInWorld(world, actor.position);
 }
 
-export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKind, findNextWaypointTarget, isValidActorInEnvironment };
+export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment, walkerKeys };
 export type { Actor, Kind, Walker };
