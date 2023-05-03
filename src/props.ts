@@ -49,8 +49,16 @@ function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Ac
 	return { ...actor, externalProps: { ...actor.externalProps, waypointTargetNumber: waypointTargetNumber } };
 }
 
+function getSpawnProba(actor: Actor): number {
+	return actor.externalProps.spawnProba!;
+}
+
+function setSpawnProba(actor: Actor, spawnProba: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, spawnProba: spawnProba } };
+}
+
 export {
 	setHunger, getHunger, setSpreadIgnorancePower, getSpreadIgnorancePower, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
-	getWaypointTargetNumber, setWaypointTargetNumber
+	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba
 };

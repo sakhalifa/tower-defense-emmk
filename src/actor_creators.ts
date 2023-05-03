@@ -67,19 +67,19 @@ const walkerCreator: WalkerCreator = {
  * @param ignorance the ignorance of the created Actor
  * @returns the created Actor whose kind is listed in the type {@link Walker}
  */
-function createWalker(kind: Walker, path: Array<Actor>, ignorance?: number): Actor {
-	const spawnPosition = getRandomArrayElement(filterByKind(path, "spawner")).position;
-	const firstWaypoint = findNextWaypointTarget(path, spawnPosition, 0);
-	return walkerCreator[kind](spawnPosition, firstWaypoint.waypointTarget, ignorance);
+function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, ignorance?: number): Actor {
+	const firstWaypoint = findNextWaypointTarget(path, position, 0);
+	return walkerCreator[kind](position, firstWaypoint.waypointTarget, ignorance);
 }
 
 /**
  * Constructor for a default "spawner" actor
  * @param position the position where the spawner is in the world
+ * @param spawnProba number in [0, 1] representing the probability during each spawn phase to create a new Actor
  * @returns the created Actor of kind "spawner"
  */
-function createSpawner(position: Vector2D): Actor {
-	return createActor(position, {}, "spawner", { waypointNumber: 0 });
+function createSpawner(position: Vector2D, spawnProba: number = 0.3): Actor {
+	return createActor(position, {spawn: spawn}, "spawner", { waypointNumber: 0, spawnProba: spawnProba });
 }
 
 /**
@@ -97,7 +97,7 @@ function createGround(position: Vector2D, waypointNumber?: number): Actor {
  * @returns the created Actor of kind "spaghettiMonster"
  */
 function createspaghettiMonster(position: Vector2D, waypointNumber: number, ignorance: number = 50): Actor {
-	return createActor(position, {spawn: spawn}, "spaghettiMonster", { waypointNumber: waypointNumber }, ignorance);
+	return createActor(position, {}, "spaghettiMonster", { waypointNumber: waypointNumber }, ignorance);
 }
 
 export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant };

@@ -4,7 +4,7 @@ import type { Vector2D } from "./geometry";
 import { isDeepStrictEqual } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
-import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange } from "./props";
+import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange, getSpawnProba } from "./props";
 
 /**
  * All the possibles actions for an actor. These actions are called during the phases of the game.
@@ -38,14 +38,13 @@ const defaultActions: Required<ActorActions> = {
  * @returns A new actor to be spawned
  */
 function spawn(actors: Array<Actor>, actor: Actor): ReturnType<ActorActions["spawn"]> {
-	if (Math.random() < 0.5)
-		return undefined;
-	else {
+	if (Math.random() < getSpawnProba(actor)) {
 		if (Math.random() < 0.7)
-			return createWalker("ignorant", actors);
+			return createWalker("ignorant", actors, actor.position);
 		else
-			return createWalker("ignoranceSpreader", actors);
+			return createWalker("ignoranceSpreader", actors, actor.position);
 	}
+	return undefined;
 }
 
 /**
