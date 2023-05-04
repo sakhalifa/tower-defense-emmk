@@ -2,7 +2,7 @@ import type { Vector2D } from "./geometry";
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
 
-import { vector2DToString, translatePoint } from "./geometry";
+import { vector2DToString, translatePoint, vectorHasCoords } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
 import { worldStringVectorToIndex, isPositionInWorld } from "./world";
 import { stringReplaceAt } from "./util";
@@ -17,7 +17,7 @@ type Walker = typeof walkerKeys[number];
 /**
  * All the different actor kinds.
  */
-type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettiMonster";
+type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettiMonster" | "player";
 
 /**
  * An actor. It has a position in the world, a kind, faithPoints points,
@@ -118,5 +118,18 @@ function isValidActorInEnvironment(world: World, actor: Actor): boolean {
 	return isPositionInWorld(world, actor.position);
 }
 
-export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment, walkerKeys };
+/**
+ * Returns the actors from the given actor array whose position respect the given position constraints
+ * @param actors the actors potentially returned and againt which the coordinate constraints are tested
+ * @param xPosition the x coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @param yPosition the y coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @returns the actors from the given actor array whose position respect the given position constraints
+ */
+function filterActorsByPosition(actors: Array<Actor>, xPosition?: number, yPosition?: number): Array<Actor> {
+	return actors.filter((currentActor) => vectorHasCoords(currentActor.position, xPosition, yPosition));
+}
+
+export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, 
+	stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment, walkerKeys,
+	filterActorsByPosition };
 export type { Actor, Kind, Walker };

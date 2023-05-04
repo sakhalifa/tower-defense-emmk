@@ -1,8 +1,9 @@
 import type { Vector2D } from "./geometry";
-import type { Axis } from "./util";
+import { Axis, otherAxis } from "./util";
 
 import { randomUniqueIntegers } from "./util";
 import { createVector, linkingPath } from "./geometry";
+import { Actor } from "./actor";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
@@ -35,6 +36,17 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
 	};
 }
 
+function maxAxisValue(world: World, axis: Axis) {
+	switch (axis) {
+		case "x":
+			return world.width;
+		case "y":
+			return world.height;
+		default:
+			throw new Error("Unknown axis");
+	}
+}
+
 /**
  * Returns an array of 1 to maxPositions random unique aligned positions
  * @param world the world on which the positions are computed
@@ -44,7 +56,7 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
  * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
 function randomPositionsAlongAxis(world: World, minPositions: number, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
-	return createPositionsAlongAxis(axis, randomUniqueIntegers(minPositions, maxPositions, 0, axis === "x" ? world.width : world.height), lineNumber);
+	return createPositionsAlongAxis(axis, randomUniqueIntegers(minPositions, maxPositions, 0, maxAxisValue(world, axis)), lineNumber);
 }
 
 /**
@@ -102,4 +114,4 @@ function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): 
 
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking };
+export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking, maxAxisValue };

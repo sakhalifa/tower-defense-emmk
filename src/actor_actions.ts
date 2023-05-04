@@ -1,34 +1,39 @@
 import type { Actor } from "./actor";
 import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
+import type { World } from "./world";
 
-import { isDeepStrictEqual, otherAxis } from "./util";
+import { isDeepStrictEqual, otherAxis, randomUniqueIntegers } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange, getSpawnProba } from "./props";
+import { filterActorsByPosition, filterByKinds } from "./actor";
+import { maxAxisValue } from "./world";
 
 /**
  * All the possibles actions for an actor. These actions are called during the phases of the game.
  */
 type ActorActions = {
-	spawn: (actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis) => Actor | undefined;
-    temperatureRise: (actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis) => number;
-    convertEnemies: (actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis) => {actorIndices: Array<number>, amount: Array<number>};
-    spreadIgnorance: (actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis) => {actorIndices: number[], amount: number[]};
-    enemyFlee: (actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis) => boolean;
-    move: (actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis) => Vector2D;
+	spawn: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Actor | undefined;
+    temperatureRise: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => number;
+    convertEnemies: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => {actorIndices: Array<number>, amount: Array<number>};
+    spreadIgnorance: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => {actorIndices: number[], amount: number[]};
+    enemyFlee: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => boolean;
+    move: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D;
+    play: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D |undefined;
 };
 
 /**
  * All the default actions, so that each Phase can be called on each actor, even if the actor hasn't its specific phase function
  */
 const defaultActions: Required<ActorActions> = {
-	spawn: (allActors, oneActor, spawnerAxis) => undefined,
-	temperatureRise: (allActors, oneActor, spawnerAxis) => 0,
-	spreadIgnorance: (allActors, oneActor, spawnerAxis) => { return { actorIndices: [], amount: [] }; },
-	convertEnemies: (allActors, oneActor, spawnerAxis) => { return { actorIndices: [], amount: [] }; },
-	enemyFlee: (allActors, oneActor, spawnerAxis) => false,
-	move: (allActors, oneActor, spawnerAxis) => { return createVector(0, 0); }
+	spawn: (allActors, oneActor, world, spawnerAxis) => undefined,
+	temperatureRise: (allActors, oneActor, world, spawnerAxis) => 0,
+	spreadIgnorance: (allActors, oneActor, world, spawnerAxis) => { return { actorIndices: [], amount: [] }; },
+	convertEnemies: (allActors, oneActor, world, spawnerAxis) => { return { actorIndices: [], amount: [] }; },
+	enemyFlee: (allActors, oneActor, world, spawnerAxis) => false,
+	move: (allActors, oneActor, world, spawnerAxis) => { return createVector(0, 0); },
+	play: (allActors, oneActor, world, spawnerAxis) => undefined
 };
 
 /**
@@ -39,7 +44,7 @@ const defaultActions: Required<ActorActions> = {
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns A new actor to be spawned
  */
-function spawn(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis): ReturnType<ActorActions["spawn"]> {
+function spawn(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spawn"]> {
 	if (Math.random() < getSpawnProba(actor)) {
 		if (Math.random() < 0.7)
 			return createWalker("ignorant", actors, actor.position);
@@ -58,7 +63,7 @@ function spawn(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis): ReturnTy
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns The amount of damage to do to the spaghetti monster
  */
-function temperatureRise(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis): ReturnType<ActorActions["temperatureRise"]> {
+function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["temperatureRise"]> {
 	return actors.find((a) => a.kind === "spaghettiMonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
 		? 0 : (getHunger(actor) ?? 1);
 }
@@ -71,7 +76,7 @@ function temperatureRise(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis)
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  */
-function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
+function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
 	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) => 
 	currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
 	[]);
@@ -86,7 +91,7 @@ function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, spawner
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
  */
-function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, spawnersAxis: Axis): ReturnType<ActorActions["move"]> {
+function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, world: World, spawnersAxis: Axis): ReturnType<ActorActions["move"]> {
 	return movingVector(movingActor.position, getWaypointTarget(movingActor), otherAxis(spawnersAxis));
 }
 
@@ -98,7 +103,7 @@ function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, spaw
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
  */
-function convertEnemies(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
+function convertEnemies(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
 	const range = getRange(actor) ?? 3;
 	const actorIndices = actors.filter((currentActor) => currentActor !== actor && currentActor.kind !== "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
 	const amount = actorIndices.map((_) => getHunger(actor) ?? 1);
@@ -113,10 +118,32 @@ function convertEnemies(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis):
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns true iif the current actor decides to not exist anymore
  */
-function enemyFlee(actors: Array<Actor>, actor: Actor, spawnerAxis?: Axis): ReturnType<ActorActions["enemyFlee"]> {
+function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["enemyFlee"]> {
 	if (actor.kind === "ground" || actor.kind === "goodGuy")
 		return false;
 	return (actor?.faithPoints ?? 0) <= 0;
+}
+
+function playAroundGround(actors: Array<Actor>, ground: Actor): Vector2D | undefined {
+	return undefined; // wip
+}
+
+function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
+	const numberOfLines = maxAxisValue(world, otherAxis(spawnerAxis));
+	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines - 1);
+	const groundsPerLine: Array<Array<Actor>> = consideredLineOrder.map(
+		(consideredLine) => filterByKinds(
+			spawnerAxis === "x" ? filterActorsByPosition(actors, undefined, consideredLine) : filterActorsByPosition(actors, consideredLine, undefined),
+			["ground"]
+		));
+	Array.from({length: maxAxisValue(world, spawnerAxis) - 1}, (_, i) => i + 1).reduce((acc, groundsPerLineConstraint) => groundsPerLine.forEach((currentGrounds) => {
+		if (currentGrounds.length === groundsPerLineConstraint) {
+			const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(actors, currentGround));
+		}
+		return undefined;
+	}
+	), undefined);
+	return undefined;
 }
 
 export type {ActorActions};

@@ -97,6 +97,18 @@ function linkingPath(fromPosition: Vector2D, toPosition: Vector2D, firstAxis?: A
 	return linkingPathTailRecursive(fromPosition, toPosition, []);
 }
 
-export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath };
+/**
+ * Returns true iff the given vector respects the coordinate constraints given as parameter
+ * @param vector the vector that is tested
+ * @param xCoord the x coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @param yCoord the x coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @returns true iff the given vector respects the coordinate constraints given as parameter
+ */
+function vectorHasCoords(vector: Vector2D, xCoord?: number, yCoord?: number): boolean {
+	return (xCoord === undefined || (vector.x === xCoord)) &&
+	(yCoord === undefined || (vector.y === yCoord));
+}
+
+export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath, vectorHasCoords };
 
 export type { Vector2D };

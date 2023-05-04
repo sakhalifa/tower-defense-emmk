@@ -153,7 +153,7 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>, spaw
 	return phases.reduce((someActors, aPhase) => {
 		const proposals: Actor[]
 			= aPhase.executePhase(someActors,
-				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor, spawnersAxis) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
+				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor, world, spawnersAxis) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
 			);
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
