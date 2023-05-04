@@ -1,23 +1,79 @@
 \documentclass{article}
 
+\usepackage[T1]{fontenc} 
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{{./img/}}
+\usepackage{amsmath, amssymb}
+\usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{url}
+\usepackage[linktocpage=true]{hyperref}
+
 \title{Rapport de Projet : Tower Defense}
-\authors{Youri Chancrin, Théo Descomps, Samuel Khalifa, Jean-Baptiste Martinez}
+\author{Youri CHANCRIN, Théo DESCOMPS, Samuel KHALIFA, Jean-Baptiste MARTINEZ}
+\date{\today}
+
+\makeatletter
+\let\mytitle\@title
+\let\myauthor\@author
+\makeatother
 
 \begin{document}
 
-\maketitle
+\begin{flushleft}
+
+\thispagestyle{empty}
+\includegraphics[width=0.2\textwidth]{enseirb-matmeca}
+\graphicspath{{./img/}}
+
+\vspace{\stretch{0.4}}
+
+\hrulefill \\[2em]
+\hspace*{\stretch{1}}\textbf{\Huge \mytitle}\\[0.8em]
+\hrulefill
+
+\vspace{\stretch{0.6}}
+
+{\large \textbf{Auteurs :} \myauthor}\\
+\vspace{\stretch{0.2}}
+{\large \textbf{Responsable de projet :} David Renault}\\
+\vspace{\stretch{0.2}}
+{\large \textbf{Enseignant référent :} Frédéric Herbreteau}
+
+\vspace{\stretch{1}}
+
+\begin{center}
+  Première année, filière informatique\\
+  Date : \today
+\end{center}
+
+\vspace{\stretch{1}}
+
+\hfill Version actuelle du document : draft
+
+\end{flushleft}
+
+\newpage
 
 \section{Sujet}
-Quel est le sujet
-- attentes
- => Faire un jeu de type tower défense
- => Utiliser la programmation fonctionnelle
-    - pureté, modularité, généralisation et spécialisation, fermetures, décorateurs, chaînage
- => contraintes :
-    Éviter la programmation orientée objet.
-    Type commun des entitées du jeu "Actor".
-    Système de phases de jeu.
-    Programmation en TypeScript, tests avec Jest, utilisation de ESLint, client web avec parcel
+\begin{enumerate}
+   \item Attentes:
+   \begin{itemize}
+      \item Faire un jeu de type tower défense
+      \item Utiliser la programmation fonctionnelle
+      \begin{itemize}
+         \item pureté, modularité, généralisation et spécialisation, fermetures, décorateurs, chaînage
+      \end{itemize}
+   \end{itemize}
+   \item Contraintes :
+   \begin{itemize}
+      \item Éviter la programmation orientée objet.
+      \item Type commun des entités du jeu "Actor".
+      \item Système de phases de jeu.
+      \item Programmation en TypeScript, tests avec Jest, utilisation de ESLint, client web avec parcel
+   \end{itemize}
+\end{enumerate}
 
 \section{Elements du jeu}
 - Monde
@@ -45,7 +101,7 @@ Inconvénient : pas dynamique, mais pas un besoin pour nous donc pas important
 
 - Actions par défaut.
 
-\section{Monde et acteur lié ?}
+\section{Structure du monde et des acteurs}
 Choix : Les acteurs sont séparés du monde
 A cause de l'habitude de la programmation object, on aurait envie d'établir le plus de liens possible entre nos structures
 Parce qu'on est dans la programmation fonctionnelle, on ne peut modifier l'attribut d'un 'object' dans le recréer, 
