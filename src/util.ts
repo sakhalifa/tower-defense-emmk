@@ -160,6 +160,31 @@ function randomUniqueIntegers(minNumberOfValues: number, maxNumberOfValues: numb
 	return randomUniqueIntegersTailRecursive(minNumberOfValues, maxNumberOfValues, []);
 }
 
+function arrayWithoutElementAtIndex<T>(arr: Array<T>, index: number): Array<T> {
+	return arr.slice(0, index).concat(arr.slice(index + 1));
+}
+
+function fisherYatesShuffle<T>(arrayToShuffle: Array<T>): Array<T> {
+	function fisherYatesShuffleTailRecursive(alreadyShuffled: Array<T>, restToShuffle: Array<T>): Array<T> {
+		if (restToShuffle.length === 0) return alreadyShuffled;
+		const randomIndex = Math.random() * restToShuffle.length;
+		return fisherYatesShuffleTailRecursive(alreadyShuffled.concat(restToShuffle[randomIndex]), arrayWithoutElementAtIndex(restToShuffle, randomIndex));
+	}
+	return fisherYatesShuffleTailRecursive([], arrayToShuffle);
+}
+
+//not really random, but shuffled minvalues
+function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: number, minValue: number, maxValue: number): Array<number> {
+	if (maxValue - minValue < maxNumberOfValues) {
+		throw new Error("It is impossible to return more than n unique values among among n values.");
+	}
+	if (minNumberOfValues > maxNumberOfValues || minValue > maxValue) {
+		throw new Error("Params starting with 'min' must be inferior to their counterpart starting with 'max'");
+	}
+
+	return fisherYatesShuffle(Array.from({length: Math.random() * (maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues}, (_, i) => (i + minValue)));
+}
+
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers, otherAxis };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers, otherAxis, fisherYatesShuffle };

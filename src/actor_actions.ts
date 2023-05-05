@@ -3,7 +3,7 @@ import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
 import type { World } from "./world";
 
-import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement } from "./util";
+import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement, fisherYatesShuffle } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
 import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower } from "./props";
@@ -127,6 +127,11 @@ function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis
 	return (actor?.faithPoints ?? 0) <= 0;
 }
 
+function getEmptyCell(world: World, actors: Array<Actor>): Vector2D | undefined {
+	return fisherYatesShuffle(world.allPositionsInWorld).find((currentWorldPosition) => 
+	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
+}
+
 function getEmptyCellsInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number): Array<Vector2D> {
 	return world.allPositionsInWorld.filter((currentWorldPosition) => 
 	distance(currentWorldPosition, position) <= range &&
@@ -160,8 +165,7 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 		}
 		, undefined);
 	}, undefined);
-	if (!returnedGroundAroundWhichToPlay) return returnedGroundAroundWhichToPlay;
-	return getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range);
+	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range) : getEmptyCell(world, actors);
 }
 
 export type { ActorActions };

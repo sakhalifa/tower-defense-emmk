@@ -4,7 +4,7 @@ import type { ActorActions } from "./actor_actions";
 
 import { vector2DToString, translatePoint, vectorHasCoords } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
-import { worldStringVectorToIndex, isPositionInWorld } from "./world";
+import { vectorToIndexInWorldString, isPositionInWorld } from "./world";
 import { stringReplaceAt } from "./util";
 import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget } from "./props";
 
@@ -54,7 +54,7 @@ function actorToString(actor: Actor): string {
  * @returns The string representation of the world with the given actor in it
  */
 function actorToStringInWorld(world: World, worldString: string, actor: Actor): string {
-	return stringReplaceAt(worldString, worldStringVectorToIndex(world, actor.position), actor.kind.charAt(0));
+	return stringReplaceAt(worldString, vectorToIndexInWorldString(world, actor.position), actor.kind.charAt(0));
 }
 
 /**

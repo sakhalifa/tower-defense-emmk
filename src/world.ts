@@ -51,6 +51,7 @@ function AxisLength(world: World, axis: Axis) {
 /**
  * Returns an array of 1 to maxPositions random unique aligned positions
  * @param world the world on which the positions are computed
+ * @param minPositions the minimum number of positions inside the returned array
  * @param maxPositions the maximum number of positions inside the returned array
  * @param axis the returned positions can reach each other by a translation along this axis
  * @param lineNumber the coordinate of the returned position on the not-given axis
@@ -96,7 +97,7 @@ function worldToString(world: World): string {
  * @param vector the vector representing the position, represented as a character in the world string representation
  * @returns the position of the character representing the content of what is at the position described by the given vector, in the given world
  */
-function worldStringVectorToIndex(world: World, vector: Vector2D): number {
+function vectorToIndexInWorldString(world: World, vector: Vector2D): number {
 	if (!isPositionInWorld(world, vector)){
 		throw new Error("Position is not in world");
 	}
@@ -115,4 +116,4 @@ function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): 
 
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking, AxisLength };
+export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking, AxisLength };
