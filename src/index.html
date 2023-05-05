@@ -4,6 +4,11 @@
 <head>
   <link rel="stylesheet" href="index.css">
   <script type="module" src="index.ts"></script>
+
+  <audio id="myAudio" loop>
+    <source src="resources/Chinese Rap Full.mp3" type="audio/mpeg">
+    Votre navigateur ne supporte pas l'audio HTML5.
+  </audio>  
 </head>
 
 <body class="warm-bg">
@@ -31,7 +36,7 @@
     <div class="menu">
       <h1>Menu</h1>
       <div class="controls">
-        <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot">
+        <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot" onclick="playMusic()">
           <i class="fa-solid fa-fire-flame-curved fa-xl"></i>
         </button>
       </div>
@@ -69,6 +74,15 @@
     i--;
   }
 
+</script>
+
+
+<script>
+  var audio = document.getElementById("myAudio");
+
+  function playMusic() {
+    audio.play();
+  }
 </script>
 
 </html>
