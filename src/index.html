@@ -4,15 +4,23 @@
 <head>
   <link rel="stylesheet" href="index.css">
   <script type="module" src="index.ts"></script>
+
+  <audio id="myAudio" loop>
+    <source src="resources/Chinese Rap Full.mp3" type="audio/mpeg">
+    Votre navigateur ne supporte pas l'audio HTML5.
+  </audio>  
 </head>
 
 <body class="warm-bg">
 
   <img src="resources/sprites/ignorant.png" class="hide" id="ignorantSprite">
   <img src="resources/sprites/pirate.png" class="hide" id="goodGuySprite">
-  <img src="resources/sprites/pirate.png" class="hide" id="groundSprite">
+  <img src="resources/sprites/FlyingSpaghettiMonster.png" class="hide" id="spaghettiMonsterSprite">
+  <img src="resources/sprites/pope.png" class="hide" id="ignoranceSpreaderSprite">
+  <img src="resources/sprites/ground.png" class="hide" id="groundSprite">
+  <img src="resources/sprites/spawner.png" class="hide" id="spawnerSprite">
   <img src="resources/sprites/waypoint.png" class="hide" id="waypointSprite">
-    <img src="resources/sprites/undefined.png" class="hide" id="undefinedSprite">
+  <img src="resources/sprites/undefined.png" class="hide" id="undefinedSprite">
   <header>
     <h1>Pastafarist</h1>
   </header>
@@ -31,7 +39,7 @@
     <div class="menu">
       <h1>Menu</h1>
       <div class="controls">
-        <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot">
+        <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot" onclick="playMusic()">
           <i class="fa-solid fa-fire-flame-curved fa-xl"></i>
         </button>
       </div>
@@ -69,6 +77,15 @@
     i--;
   }
 
+</script>
+
+
+<script>
+  var audio = document.getElementById("myAudio");
+
+  function playMusic() {
+    audio.play();
+  }
 </script>
 
 </html>

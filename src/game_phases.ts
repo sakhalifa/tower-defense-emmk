@@ -37,7 +37,7 @@ function playPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorA
  */
 function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["temperatureRise"]>>): Array<Actor> {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	return oldActors.map((a) => a.kind !== "spaghettiMonster" ? a : { ...a, faith_point: a.faithPoints! - sum(phaseResult) });
+	return oldActors.map((a) => a.kind !== "spaghettiMonster" ? a : { ...a, faithPoints: a.faithPoints! - sum(phaseResult) });
 }
 
 function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
@@ -76,7 +76,7 @@ function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnT
 		const idx = curResult.actorIndices.indexOf(i);
 		if (idx !== -1) {
 			const fp = actor.faithPoints ?? 0;
-			return { ...actor, faith_point: fp - curResult.amount[idx] };
+			return { ...actor, faithPoints: fp - curResult.amount[idx] };
 		}
 		return actor;
 	}, a));
