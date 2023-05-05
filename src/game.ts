@@ -4,7 +4,7 @@ import type { Actor } from "./actor";
 import type { Axis } from "./util";
 
 import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
-import { createGround, createspaghettiMonster, createSpawner } from "./actor_creators";
+import { createGround, createspaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
 import { isValidActorInEnvironment } from "./actor";
 import { createPhase } from "./phase";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
@@ -121,7 +121,7 @@ function initActors(world: World, intermediateWaypointLinesNumber: number, avera
 	const [waypoints, spawnersAxis]: [Array<Array<Actor>>, Axis] = initWayPointActors(world, intermediateWaypointLinesNumber, averageSpawnsPerPhase);
 	return [waypoints.flat()
 	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)), otherAxis(spawnersAxis))
-	.map((position) => createGround(position))), spawnersAxis];
+	.map((position) => createGround(position))).concat(createPlayer()), spawnersAxis];
 }
 
 /**

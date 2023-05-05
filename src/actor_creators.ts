@@ -1,10 +1,10 @@
-import type { Vector2D } from "./geometry";
+import { Vector2D, createVector } from "./geometry";
 import type { ActorActions } from "./actor_actions";
 import type { Kind, Actor, Walker } from "./actor";
 
 import { filterByKinds, findNextWaypointTarget } from "./actor";
 import { getRandomArrayElement } from "./util";
-import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn } from "./actor_actions";
+import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play } from "./actor_actions";
 
 /**
  * Actor constructor
@@ -100,4 +100,8 @@ function createspaghettiMonster(position: Vector2D, waypointNumber: number, fait
 	return createActor(position, {}, "spaghettiMonster", { waypointNumber: waypointNumber }, faithPoints);
 }
 
-export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant };
+function createPlayer(): Actor {
+	return createActor(createVector(0, 0), {play: play}, "player");
+}
+
+export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, createPlayer };

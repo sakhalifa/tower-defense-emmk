@@ -148,4 +148,4 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 
 export type {ActorActions};
 
-export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions };
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play };
