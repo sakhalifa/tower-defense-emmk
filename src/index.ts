@@ -93,17 +93,15 @@ function drawActor(actor: Actor): HTMLDivElement {
 }
 
 async function main() {
-    const world: World = initWorld(15, 15);
-    const intermediateWaypointsLineNumber = Math.random() < 0.6 ? 2 : 3;
-    const initActorsResult: [Array<Actor>, Axis] = initActors(world, intermediateWaypointsLineNumber, 1);
-    let actors = initActorsResult[0];
-    const spawnersAxis = initActorsResult[1];
+    const world: World = initWorld(10, 10);
+	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);
     const phases: Array<Phase> = initPhases();
 
     const grid = document.getElementById("display-grid") as HTMLDivElement;
     grid.style.gridTemplate = `repeat(${world.height}, 1fr) / repeat(${world.width}, 1fr)`;
 
-    while (actors.find((a) => a.kind === "spaghettiMonster")!.faithPoints! > 0) {
+    while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => spaghettiMonster.faithPoints! > 0)) {
         actors = nextTurn(phases, world, actors, spawnersAxis);
         await displayWorldToGrid(world, actors, grid);
         // wait
