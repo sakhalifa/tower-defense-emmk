@@ -4,8 +4,7 @@ import type { Kind, Actor } from "./actor";
 import type { Axis } from "./util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
-import { Vector2D, createVector } from "./geometry";
-import { filterByKinds, walkerKeys } from "./actor";
+import { filterByKinds } from "./actor";
 
 const sprites = [
     document.getElementById("undefinedSprite"),
@@ -51,7 +50,7 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
     }
 }
 
-const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMonster", ...walkerKeys];
+const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMonster", "ignoranceSpreader", "ignorant"];
 
 /**
  * Draws the content of the world to the grid

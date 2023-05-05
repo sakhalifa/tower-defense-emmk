@@ -5,7 +5,7 @@ import type { Axis } from "./util";
 
 import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
 import { createGround, createspaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
-import { isValidActorInEnvironment, walkerKeys } from "./actor";
+import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
 import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./util";
@@ -135,13 +135,15 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
 		if (currentProposal === undefined) throw new Error("undefined actor");
 		if (isValidActorInEnvironment(world, currentProposal)) {
-			if(!(walkerKeys.find((key) => currentProposal.kind === key) && !filterByKinds(actors, ["ground"])
-			.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position)))) {
-				return acc.concat(actors[actorIndex]);
+			if(isWalker(currentProposal) &&
+			!(filterByKinds(actors, ["ground", "spawner", "spaghettiMonster"])
+			.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position))
+			)) {
+				return acc;
 			}
 			return acc.concat(currentProposal);
 		}
-		return acc.concat(actors[actorIndex]); // doesn't check old Actor validity
+		return acc; // doesn't check old Actor validity
 	}, []);
 }
 
@@ -174,6 +176,7 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const phases: Array<Phase> = initPhases();
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
 	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => spaghettiMonster.faithPoints! > 0)) {
+		//console.log(`hp : ${filterByKinds(actors, ["spaghettiMonster"])[0].faithPoints}`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors, spawnersAxis);
 	}
