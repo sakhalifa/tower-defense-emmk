@@ -40,16 +40,16 @@ const defaultActions: Required<ActorActions> = {
  * The "spawner" action.
  * It has a 50% chance to spawn a new actor, which has 70% chance to be an ignorant, or 30% chance to be an ignoranceSpreader.
  * @param actors The actors in the world
- * @param actor The current actor that does the action
+ * @param spawner The current actor that does the action
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns A new actor to be spawned
  */
-function spawn(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spawn"]> {
-	if (Math.random() < getSpawnProba(actor)) {
+function spawn(actors: Array<Actor>, spawner: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spawn"]> {
+	if (Math.random() < getSpawnProba(spawner)) {
 		if (Math.random() < 0.7)
-			return createWalker("ignorant", actors, actor.position);
+			return createWalker("ignorant", actors, spawner.position);
 		else
-			return createWalker("ignoranceSpreader", actors, actor.position);
+			return createWalker("ignoranceSpreader", actors, spawner.position);
 	}
 	return undefined;
 }
@@ -127,11 +127,15 @@ function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis
 	return (actor?.faithPoints ?? 0) <= 0;
 }
 
-function playAroundGround(world: World, actors: Array<Actor>, ground: Actor | undefined, range: number): Vector2D | undefined {
-	if (ground) {
-		return getRandomArrayElement(world.allPositionsInWorld.filter((currentWorldPosition) => distance(currentWorldPosition, ground.position) <= range));
-	}
-	return undefined;
+function getEmptyCellsInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number): Array<Vector2D> {
+	return world.allPositionsInWorld.filter((currentWorldPosition) => 
+	distance(currentWorldPosition, position) <= range &&
+	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
+}
+
+function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number): Vector2D | undefined {
+	const possibleMoves = getEmptyCellsInRange(world, actors, position, range);
+	return possibleMoves.length > 0 ? getRandomArrayElement(possibleMoves) : undefined;
 }
 
 function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
@@ -149,14 +153,15 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 		return groundListPerLine.reduce((acc2, currentGrounds) => {
 			if (acc2) return acc2;
 			if (currentGrounds.length === groundListPerLineConstraint) {
-				const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(world, actors, currentGround, range));
+				const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => getEmptyCellInRange(world, actors, currentGround.position, range));
 				return groundAroundWhichToPlay;
 			}
 			return acc2;
 		}
 		, undefined);
 	}, undefined);
-	return playAroundGround(world, actors, returnedGroundAroundWhichToPlay, range);
+	if (!returnedGroundAroundWhichToPlay) return returnedGroundAroundWhichToPlay;
+	return getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range);
 }
 
 export type { ActorActions };

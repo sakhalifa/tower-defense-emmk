@@ -143,7 +143,7 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
 			}
 			return acc.concat(currentProposal);
 		}
-		return acc; // doesn't check old Actor validity
+		return acc;
 	}, []);
 }
 

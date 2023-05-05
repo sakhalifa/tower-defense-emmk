@@ -7,7 +7,11 @@ function sum(array: Array<number>) {
 	return array.reduce((p, c) => p + c, 0);
 }
 
-//not pure
+/**
+ * Returns a random element from the given array
+ * @param fromArray the array from where the random element is returned
+ * @returns a random element from the given array
+ */
 function getRandomArrayElement<T>(fromArray: Array<T>): T {
 	if (!fromArray.length) {
 		throw new Error('Cannot get a random element from an empty array');
