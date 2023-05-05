@@ -33,6 +33,10 @@ type Actor = {
 	faithPoints?: number;
 };
 
+function isWalker(actor: Actor): boolean {
+	return walkerKeys.some((key) => actor.kind === key);
+}
+
 /**
  * Returns the string representation of the given actor
  * @param actor The actor that is described by the returned string
@@ -99,7 +103,7 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
  */ 
 function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	const newPosition = translatePoint(movingActor.position, movementVector);
-	if (walkerKeys.find((key) => movingActor.kind === key) && isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
+	if ((isWalker(movingActor)) && isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
 		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));
 		return setWaypointTargetNumber(
 			setWaypointTarget({ ...movingActor, position: newPosition }, nextWaypoint.waypointTarget),
@@ -130,6 +134,6 @@ function filterActorsByPosition(actors: Array<Actor>, xPosition?: number, yPosit
 }
 
 export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, 
-	stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment, walkerKeys,
-	filterActorsByPosition };
+	stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment,
+	filterActorsByPosition, isWalker };
 export type { Actor, Kind, Walker };
