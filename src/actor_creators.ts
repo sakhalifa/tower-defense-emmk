@@ -36,7 +36,7 @@ function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, wayp
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 10): Actor {
 	//{ waypointTargetNumber: 1, waypointTarget: waypointTarget }
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise, enemyFlee: enemyFlee }, "ignorant", faithPoints),
+		createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant", faithPoints),
 		waypointTarget,
 		1);
 }
@@ -51,7 +51,7 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
 function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 7): Actor {
 	//
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance, enemyFlee: enemyFlee }, "ignoranceSpreader", faithPoints),
+		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee }, "ignoranceSpreader", faithPoints),
 		waypointTarget,
 		1);
 }
@@ -96,7 +96,7 @@ function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, fait
 function createSpawner(position: Vector2D, spawnProba: number = 0.3): Actor {
 	//{ waypointNumber: 0, spawnProba: spawnProba }
 	return setSpawnProba(
-		setWaypointNumber(createActor(position, { spawn: spawn }, "spawner"), 0),
+		setWaypointNumber(createActor(position, { spawn }, "spawner"), 0),
 		spawnProba);
 }
 
