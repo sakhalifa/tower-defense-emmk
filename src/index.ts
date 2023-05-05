@@ -124,11 +124,10 @@ async function main(){
 	let actors = initActorsResult[0];
 	const spawnersAxis = initActorsResult[1];
 	const phases: Array<Phase> = initPhases();
-	let i = 0;
-	while (i < 50) {
+
+	while (actors.find((a) => a.kind === "spaghettiMonster")!.faithPoints! > 0) {
 		actors = nextTurn(phases, world, actors, spawnersAxis);
 		await displayWorldToCanvas(world, actors);
-        ++i;
 	}
 }
 

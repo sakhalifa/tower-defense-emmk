@@ -1,5 +1,5 @@
 import { Vector2D, createVector } from "./geometry";
-import type { ActorActions } from "./actor_actions";
+import { ActorActions, enemyFlee } from "./actor_actions";
 import type { Kind, Actor, Walker } from "./actor";
 
 import { filterByKinds, findNextWaypointTarget } from "./actor";
@@ -27,7 +27,7 @@ function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: K
  * @returns the created Actor of kind "ignorant"
  */
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 10): Actor {
-	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, faithPoints);
+	return createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise, enemyFlee: enemyFlee }, "ignorant", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, faithPoints);
 }
 
 /**
@@ -38,7 +38,7 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
  * @returns the created Actor of kind "ignoranceSpreader"
  */
 function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 7): Actor {
-	return createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance }, "ignoranceSpreader", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, faithPoints);
+	return createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance, enemyFlee: enemyFlee  }, "ignoranceSpreader", { waypointTargetNumber: 1, waypointTarget: waypointTarget }, faithPoints);
 }
 
 /**

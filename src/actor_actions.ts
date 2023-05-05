@@ -15,12 +15,12 @@ import { maxAxisValue } from "./world";
  */
 type ActorActions = {
 	spawn: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Actor | undefined;
-    temperatureRise: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => number;
-    convertEnemies: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => {actorIndices: Array<number>, amount: Array<number>};
-    spreadIgnorance: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => {actorIndices: number[], amount: number[]};
-    enemyFlee: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => boolean;
-    move: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D;
-    play: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D |undefined;
+	temperatureRise: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => number;
+	convertEnemies: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => { actorIndices: Array<number>, amount: Array<number>; };
+	spreadIgnorance: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => { actorIndices: number[], amount: number[]; };
+	enemyFlee: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => boolean;
+	move: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D;
+	play: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D | undefined;
 };
 
 /**
@@ -77,9 +77,9 @@ function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawn
  * @returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  */
 function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
-	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) => 
-	currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
-	[]);
+	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) =>
+		currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
+		[]);
 	const amount = actorsToSpreadIgnoranceIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
 	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
 }
@@ -136,7 +136,7 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 			spawnerAxis === "x" ? filterActorsByPosition(actors, undefined, consideredLine) : filterActorsByPosition(actors, consideredLine, undefined),
 			["ground"]
 		));
-	Array.from({length: maxAxisValue(world, spawnerAxis) - 1}, (_, i) => i + 1).reduce((acc, groundsPerLineConstraint) => groundsPerLine.forEach((currentGrounds) => {
+	Array.from({ length: maxAxisValue(world, spawnerAxis) - 1 }, (_, i) => i + 1).reduce((acc, groundsPerLineConstraint) => groundsPerLine.forEach((currentGrounds) => {
 		if (currentGrounds.length === groundsPerLineConstraint) {
 			const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(actors, currentGround));
 		}
@@ -146,6 +146,6 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 	return undefined;
 }
 
-export type {ActorActions};
+export type { ActorActions };
 
 export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play };
