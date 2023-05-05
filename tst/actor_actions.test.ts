@@ -1,8 +1,17 @@
-import { createIgnoranceSpreader, createIgnorant, createspaghettiMonster } from "../src/actor_creators";
-import { temperatureRise, spreadIgnorance } from "../src/actor_actions";
+import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createspaghettiMonster } from "../src/actor_creators";
+import { temperatureRise, spreadIgnorance, spawn, moveTowardWaypointTarget, convertEnemies } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
 import { setHunger, setSpreadIgnorancePower } from "../src/props";
+import { setSpawnProba } from "../src/props";
+
+test("Spawn test", () => {
+    const world = createWorld(5, 5, 0);
+    const always_spawn = createSpawner(createVector(0, 0), 1);
+    const never_spawn = createSpawner(createVector(0, 0), 0);
+    expect(spawn([], always_spawn, world, 'y')).not.toBeUndefined();
+    expect(spawn([], never_spawn, world, 'y')).toBeUndefined();
+});
 
 test("TemperatureRise test", () => {
     const world = createWorld(5, 5, 0);
@@ -36,3 +45,20 @@ test("spreadIgnorance test", () => {
     // ignorant shouldn't spread faithPoints
     // expect(spreadIgnorance([ignorant], ignorant).amount.length).toBe(0);
 });
+
+test("moveTowardWaypointTarget test", () => {
+    const world = createWorld(5, 5, 0);
+    const ignorant = createIgnorant(createVector(0, 0), createVector(0, 1), 0);
+    expect(moveTowardWaypointTarget([], ignorant, world, 'y')).toEqual(createVector(0, 1));
+});
+
+
+// Skip for now, wait for props to be correctly named
+xtest("convertEnemies test", () => {
+    const world = createWorld(5, 5, 0);
+    const ignorant = createIgnorant(createVector(0, 0), createVector(0, 1), 10);
+    const ignorant_away = createIgnorant(createVector(5, 5), createVector(0, 1), 10);
+    const good_guy = createGoodGuy(createVector(0, 2));
+    expect(convertEnemies([ignorant, ignorant_away, ignorant_away, good_guy], good_guy, world, 'y' )).toHaveLength(4);
+});
+
