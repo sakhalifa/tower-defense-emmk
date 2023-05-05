@@ -18,6 +18,10 @@ const sprites = [
     document.getElementById("ignorantSprite"),
     document.getElementById("goodGuySprite"),
     document.getElementById("waypointSprite"),
+    document.getElementById("spaghettiMonsterSprite"),
+    document.getElementById("ignoranceSpreaderSprite"),
+    document.getElementById("groundSprite"),
+    document.getElementById("spawnerSprite")
 ].map((element) => element as HTMLImageElement);
 
 /**
@@ -41,9 +45,13 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
         case "goodGuy":
             return sprites[2];
         case "ground":
-            return sprites[3];
+            return sprites[6];
         case "ignoranceSpreader":
-            return sprites[2];
+            return sprites[5];
+        case "spaghettiMonster":
+            return sprites[4];
+        case "spawner":
+            return sprites[7];
         default:
             return sprites[0];
     }
