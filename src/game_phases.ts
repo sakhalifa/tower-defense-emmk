@@ -3,6 +3,8 @@ import type { Actor } from "./actor";
 
 import { translateAndUpdateWaypoint} from "./actor";
 import { sum } from "./util";
+import { createGoodGuy } from "./actor_creators";
+import { Vector2D } from "./geometry";
 
 /**
  * The executePhase function for the "spawn" phase.
@@ -12,7 +14,7 @@ import { sum } from "./util";
  * @returns A proposal for the actors after executing the "spawn" phase
  */
 function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["spawn"]>>): Array<Actor> {
-	return oldActors.concat(phaseResult.filter((v) => v !== undefined) as Array<Actor>);
+	return oldActors.concat((phaseResult.filter((returnedActor) => returnedActor !== undefined)) as Array<Actor>);
 }
 
 /**
@@ -22,9 +24,9 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<Actor
  * @param phaseResult The results of the phase
  * @returns A proposal for the actors after executing the "spawn" phase
  */
-//function playPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["play"]>>): Array<Actor> {
-//	return oldActors.concat(phaseResult.filter((v) => v !== undefined) as Array<Actor>);
-//}
+function playPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["play"]>>): Array<Actor> {
+	return oldActors.concat(phaseResult.filter((returnedVector) => returnedVector !== undefined).map((vector: Vector2D) => createGoodGuy(vector))) as Array<Actor>;
+}
 
 /**
  * The executePhase function for the "temperatureRise" phase.
@@ -91,4 +93,4 @@ function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<A
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
 
-export { spawnPhase, temperatureRisePhase, spreadIgnorancePhase, convertEnemiesPhase, enemyFleePhase, movePhase };
+export { spawnPhase, temperatureRisePhase, spreadIgnorancePhase, convertEnemiesPhase, enemyFleePhase, movePhase, playPhase };

@@ -5,9 +5,9 @@ import type { Axis } from "./util";
 
 import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
 import { createGround, createspaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
-import { isValidActorInEnvironment } from "./actor";
+import { isValidActorInEnvironment, walkerKeys } from "./actor";
 import { createPhase } from "./phase";
-import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
+import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
 import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis } from "./util";
 
 /**
@@ -31,7 +31,8 @@ function initPhases(): Array<Phase> {
 		createPhase("convertEnemies", convertEnemiesPhase),
 		createPhase("move", movePhase),
 		createPhase("spreadIgnorance", spreadIgnorancePhase),
-		createPhase("enemyFlee", enemyFleePhase),
+		createPhase("play", playPhase),
+		createPhase("enemyFlee", enemyFleePhase)
 	];
 }
 
@@ -134,10 +135,11 @@ function initActors(world: World, intermediateWaypointLinesNumber: number, avera
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
 		if (isValidActorInEnvironment(world, currentProposal)) {
-			return acc.concat(currentProposal);
-		} else {
-			return acc.concat(actors[actorIndex]); // doesn't check old position new state -> possible collisions etc
+			if(walkerKeys.find((key) => currentProposal.kind === key)) {
+				return acc.concat(currentProposal);
+			}
 		}
+		return acc.concat(actors[actorIndex]); // doesn't check old Actor validity
 	}, []);
 }
 

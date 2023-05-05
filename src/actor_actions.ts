@@ -130,7 +130,7 @@ function playAroundGround(actors: Array<Actor>, ground: Actor): Vector2D | undef
 
 function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
 	const numberOfLines = maxAxisValue(world, otherAxis(spawnerAxis));
-	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines - 1);
+	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines - 1, numberOfLines - 1, 0, numberOfLines - 1);
 	const groundsPerLine: Array<Array<Actor>> = consideredLineOrder.map(
 		(consideredLine) => filterByKinds(
 			spawnerAxis === "x" ? filterActorsByPosition(actors, undefined, consideredLine) : filterActorsByPosition(actors, consideredLine, undefined),

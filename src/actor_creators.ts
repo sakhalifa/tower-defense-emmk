@@ -91,6 +91,10 @@ function createGround(position: Vector2D, waypointNumber?: number): Actor {
 	return createActor(position, {}, "ground", waypointNumber ? { waypointNumber: waypointNumber } : undefined);
 }
 
+function createGoodGuy(position: Vector2D): Actor {
+	return createActor(position, {}, "goodGuy");
+}
+
 /**
  * Constructor for a default "spaghettiMonster" actor
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
@@ -104,4 +108,4 @@ function createPlayer(): Actor {
 	return createActor(createVector(0, 0), {play: play}, "player");
 }
 
-export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, createPlayer };
+export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, createPlayer, createGoodGuy };
