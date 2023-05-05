@@ -190,15 +190,31 @@ i {
 	);
 }
 
-.grid {
+#display-grid {
     width: 55vw;
     height: 70vh;
     border: 1px solid black;
     background-color: #FDF0D5;
+	display: grid;
 }
-.grid > canvas {
-    width: 100%;
-    height: 100%;
+
+.actorCard {
+	position: relative;
+}
+
+.actorImage {
+	width: 100%;
+	height: 100%;
+	background-size: 100% 100%;
+}
+
+.hpBar{
+	position: absolute;
+	width: 100%;
+	height: 10%;
+	top: -10%;
+	background-color: red;
+	margin: 0;
 }
 
 .menu {
