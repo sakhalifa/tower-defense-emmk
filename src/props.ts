@@ -49,8 +49,17 @@ function setSpawnProba(actor: Actor, spawnProba: number): Actor {
 	return { ...actor, externalProps: { ...actor.externalProps, spawnProba } };
 }
 
+function setSpreadIgnorancePower(actor: Actor, spreadIgnorancePower: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, spreadIgnorancePower: spreadIgnorancePower } };
+}
+
+function getSpreadIgnorancePower(actor: Actor): number {
+	return actor.externalProps.spreadIgnorancePower;
+}
+
 export {
 	setConviction, getConviction, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
-	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba
+	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba,
+	setSpreadIgnorancePower, getSpreadIgnorancePower
 };

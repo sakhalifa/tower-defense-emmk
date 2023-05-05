@@ -6,7 +6,7 @@ import type { World } from "./world";
 import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
-import { getConviction, getWaypointTarget, getRange, getSpawnProba } from "./props";
+import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower } from "./props";
 import { filterActorsByPosition, filterByKinds } from "./actor";
 import { AxisLength } from "./world";
 
@@ -80,7 +80,7 @@ function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, world: 
 	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) =>
 		currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
 		[]);
-	const amount = actorsToSpreadIgnoranceIndices.map((_) => setSpreadIgnorancePower(ignoranceSpreader));
+	const amount = actorsToSpreadIgnoranceIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
 	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 

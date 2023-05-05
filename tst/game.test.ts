@@ -9,7 +9,7 @@ test("initWorld test", () => {
     expect(() => initWorld(61, -4)).toThrow();
 
     // test with valid world dimension
-    expect(initWorld(10, 10)).toEqual(createWorld(10, 10, 0));
+    expect(initWorld(10, 10)).toEqual(createWorld(10, 10));
 
 });
 
