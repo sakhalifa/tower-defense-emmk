@@ -36,7 +36,7 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
 	};
 }
 
-function maxAxisValue(world: World, axis: Axis) {
+function AxisLength(world: World, axis: Axis) {
 	switch (axis) {
 		case "x":
 			return world.width;
@@ -56,7 +56,7 @@ function maxAxisValue(world: World, axis: Axis) {
  * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
 function randomPositionsAlongAxis(world: World, minPositions: number, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
-	return createPositionsAlongAxis(axis, randomUniqueIntegers(minPositions, maxPositions, 0, maxAxisValue(world, axis)), lineNumber);
+	return createPositionsAlongAxis(axis, randomUniqueIntegers(minPositions, maxPositions, 0, AxisLength(world, axis)), lineNumber);
 }
 
 /**
@@ -114,4 +114,4 @@ function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): 
 
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking, maxAxisValue };
+export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking, AxisLength };
