@@ -133,15 +133,15 @@ function initActors(world: World, intermediateWaypointLinesNumber: number, spawn
  */
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
-		if (isValidActorInEnvironment(world, currentProposal)) {
-			if(!(walkerKeys.find((key) => currentProposal.kind === key) && !filterByKinds(actors, ["ground"])
-			.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position)))) {
-				return acc.concat(actors[actorIndex]);
-			}
-			return acc.concat(currentProposal);
-		}
-		return acc.concat(actors[actorIndex]); // doesn't check old Actor validity
-	}, []);
+		//if (isValidActorInEnvironment(world, currentProposal)) {
+		//	if(!(walkerKeys.find((key) => currentProposal.kind === key) && !filterByKinds(actors, ["ground"])
+		//	.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position)))) {
+		//		return acc.concat(actors[actorIndex]);
+		//	}
+		//	return acc.concat(currentProposal);
+		//}
+		//return acc.concat(actors[actorIndex]); // doesn't check old Actor validity
+		return acc.concat(currentProposal);}, []);
 }
 
 /**
