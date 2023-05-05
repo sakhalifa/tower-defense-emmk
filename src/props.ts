@@ -1,20 +1,12 @@
 import { Actor } from "./actor";
 import { Vector2D } from "./geometry";
 
-function setHunger(actor: Actor, hunger: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, hunger } };
+function setConviction(actor: Actor, conviction: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, conviction } };
 }
 
-function getHunger(actor: Actor): number {
-	return actor.externalProps.hunger;
-}
-
-function setSpreadIgnorancePower(actor: Actor, spreadIgnorancePower: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, spreadIgnorancePower: spreadIgnorancePower } };
-}
-
-function getSpreadIgnorancePower(actor: Actor): number {
-	return actor.externalProps.spreadIgnorancePower;
+function getConviction(actor: Actor): number {
+	return actor.externalProps.conviction;
 }
 
 function setRange(actor: Actor, range: number): Actor {
@@ -54,11 +46,11 @@ function getSpawnProba(actor: Actor): number {
 }
 
 function setSpawnProba(actor: Actor, spawnProba: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, spawnProba: spawnProba } };
+	return { ...actor, externalProps: { ...actor.externalProps, spawnProba } };
 }
 
 export {
-	setHunger, getHunger, setSpreadIgnorancePower, getSpreadIgnorancePower, setRange, getRange,
+	setConviction, getConviction, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba
 };

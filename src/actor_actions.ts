@@ -6,7 +6,7 @@ import type { World } from "./world";
 import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
-import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange, getSpawnProba } from "./props";
+import { getConviction, getWaypointTarget, getRange, getSpawnProba } from "./props";
 import { filterActorsByPosition, filterByKinds } from "./actor";
 import { AxisLength } from "./world";
 
@@ -65,7 +65,7 @@ function spawn(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: A
  */
 function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["temperatureRise"]> {
 	return actors.find((a) => a.kind === "spaghettiMonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
-		? 0 : (getHunger(actor) ?? 1);
+		? 0 : (getConviction(actor) ?? 1);
 }
 
 /**
@@ -80,7 +80,7 @@ function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, world: 
 	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) =>
 		currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
 		[]);
-	const amount = actorsToSpreadIgnoranceIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
+	const amount = actorsToSpreadIgnoranceIndices.map((_) => getConviction(ignoranceSpreader));
 	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 
@@ -109,7 +109,7 @@ function convertEnemies(actors: Array<Actor>, actor: Actor, world: World, spawne
 	currentActor.kind !== "ignorant" &&
 	distance(currentActor.position, actor.position) <= range)
 	.map((a, i) => i);
-	const amount = actorIndices.map((_) => getHunger(actor) ?? 1);
+	const amount = actorIndices.map((_) => getConviction(actor) ?? 1);
 	return { actorIndices, amount };
 }
 
