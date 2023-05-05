@@ -105,7 +105,10 @@ function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, worl
  */
 function convertEnemies(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
 	const range = getRange(actor) ?? 3;
-	const actorIndices = actors.filter((currentActor) => currentActor !== actor && currentActor.kind !== "ignorant" && distance(currentActor.position, actor.position) <= range).map((a, i) => i);
+	const actorIndices = actors.filter((currentActor) => currentActor !== actor && 
+	currentActor.kind !== "ignorant" &&
+	distance(currentActor.position, actor.position) <= range)
+	.map((a, i) => i);
 	const amount = actorIndices.map((_) => getHunger(actor) ?? 1);
 	return { actorIndices, amount };
 }
@@ -124,26 +127,33 @@ function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis
 	return (actor?.faithPoints ?? 0) <= 0;
 }
 
-function playAroundGround(actors: Array<Actor>, ground: Actor): Vector2D | undefined {
-	return undefined; // wip
+function playAroundGround(actors: Array<Actor>, ground: Actor | undefined): Vector2D | undefined {
+	if (!ground) return ground;
+	return undefined;
 }
 
 function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
 	const numberOfLines = AxisLength(world, otherAxis(spawnerAxis));
 	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
-	const groundsPerLine: Array<Array<Actor>> = consideredLineOrder.map(
+	const groundListPerLine: Array<Array<Actor>> = consideredLineOrder.map(
 		(consideredLine) => filterByKinds(
 			spawnerAxis === "x" ? filterActorsByPosition(actors, undefined, consideredLine) : filterActorsByPosition(actors, consideredLine, undefined),
 			["ground"]
 		));
-	Array.from({ length: AxisLength(world, spawnerAxis) - 1 }, (_, i) => i + 1).reduce((acc, groundsPerLineConstraint) => groundsPerLine.forEach((currentGrounds) => {
-		if (currentGrounds.length === groundsPerLineConstraint) {
-			const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(actors, currentGround));
+	const returnedGroundAroundWhichToPlay: Actor | undefined = Array.from({ length: AxisLength(world, spawnerAxis) - 1 }, (_, i) => i + 1)
+	.reduce((acc, groundListPerLineConstraint) => {
+		if (acc) return acc;
+		return groundListPerLine.reduce((acc2, currentGrounds) => {
+			if (acc2) return acc2;
+			if (currentGrounds.length === groundListPerLineConstraint) {
+				const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(actors, currentGround));
+				return groundAroundWhichToPlay;
+			}
+			return acc2;
 		}
-		return undefined;
-	}
-	), undefined);
-	return undefined;
+		, undefined);
+	}, undefined);
+	return playAroundGround(actors, returnedGroundAroundWhichToPlay);
 }
 
 export type { ActorActions };
