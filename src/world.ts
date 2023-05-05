@@ -12,7 +12,6 @@ import { Actor } from "./actor";
 type World = {
 	readonly width: number;
 	readonly height: number;
-	turnsElapsed: number;
 };
 
 /**
@@ -22,7 +21,7 @@ type World = {
  * @param turnsElapsed the turns elapsed
  * @returns A world with the given width and height and turns elapsed.
  */
-function createWorld(width: number, height: number, turnsElapsed: number): World {
+function createWorld(width: number, height: number): World {
 	if (width <= 0 || height <= 0){
 		throw new Error("World size values must be positive");
 	}
@@ -32,7 +31,6 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
 	return {
 		width: width,
 		height: height,
-		turnsElapsed
 	};
 }
 

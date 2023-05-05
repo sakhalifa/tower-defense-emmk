@@ -18,7 +18,7 @@ import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStri
  * @returns A brand new world where 0 turns have elapsed
  */
 function initWorld(width: number, height: number): World {
-	return createWorld(width, height, 0);
+	return createWorld(width, height);
 }
 
 /**
