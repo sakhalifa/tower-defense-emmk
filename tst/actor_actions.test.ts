@@ -6,7 +6,7 @@ import { setHunger, setSpreadIgnorancePower, setRange } from "../src/props";
 import { setSpawnProba } from "../src/props";
 
 test("Spawn test", () => {
-    const world = createWorld(5, 5, 0);
+    const world = createWorld(5, 5);
     const always_spawn = createSpawner(createVector(0, 0), 1);
     const never_spawn = createSpawner(createVector(0, 0), 0);
     expect(spawn([], always_spawn, world, 'y')).not.toBeUndefined();
@@ -14,7 +14,7 @@ test("Spawn test", () => {
 });
 
 test("TemperatureRise test", () => {
-    const world = createWorld(5, 5, 0);
+    const world = createWorld(5, 5);
 
     const monster = createspaghettiMonster(createVector(2, 2), 1);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);

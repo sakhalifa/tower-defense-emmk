@@ -1,6 +1,6 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import type { Actor } from "./actor";
+import { Actor, filterByKinds } from "./actor";
 import type { Axis } from "./util";
 
 import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
@@ -8,7 +8,7 @@ import { createGround, createspaghettiMonster, createSpawner, createPlayer } fro
 import { isValidActorInEnvironment, walkerKeys } from "./actor";
 import { createPhase } from "./phase";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
-import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis } from "./util";
+import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./util";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -135,9 +135,11 @@ function initActors(world: World, intermediateWaypointLinesNumber: number, avera
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
 		if (isValidActorInEnvironment(world, currentProposal)) {
-			if(walkerKeys.find((key) => currentProposal.kind === key)) {
-				return acc.concat(currentProposal);
+			if(!(walkerKeys.find((key) => currentProposal.kind === key) && !filterByKinds(actors, ["ground"])
+			.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position)))) {
+				return acc.concat(actors[actorIndex]);
 			}
+			return acc.concat(currentProposal);
 		}
 		return acc.concat(actors[actorIndex]); // doesn't check old Actor validity
 	}, []);

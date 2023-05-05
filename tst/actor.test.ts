@@ -42,13 +42,13 @@ test("Actor translate test", () => {
 });
 
 test("actorToStringInWorld test", () => {
-    const world = createWorld(3, 3, 0);
+    const world = createWorld(3, 3);
     expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
         .toEqual("      \ni     \n      ");
 });
 
 test("actorToStringInWorld test", () => {
-    const world = createWorld(3, 3, 0);
+    const world = createWorld(3, 3);
     expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
         .toEqual("      \ni     \n      ");
 });
