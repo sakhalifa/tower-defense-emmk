@@ -1,9 +1,8 @@
 import type { Vector2D } from "./geometry";
-import { Axis, otherAxis } from "./util";
+import { Axis } from "./util";
 
 import { randomUniqueIntegers } from "./util";
 import { createVector, linkingPath } from "./geometry";
-import { Actor } from "./actor";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
