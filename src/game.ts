@@ -98,16 +98,15 @@ function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSp
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the created waypoints of the world
  */
-function initWayPointActors(world: World, intermediateWaypointsNumber: number, averageSpawnsPerPhase?: number): [Array<Array<Actor>>, Axis] {
-	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+function initWayPointActors(world: World, intermediateWaypointsNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number): Array<Array<Actor>>{
 	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
 	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
 	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
 	const intermediateWaypointsLineNumber: Array<number> =
 	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
-	return [[initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
+	return [initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
 	.concat(initGroundWaypoints(world, 1, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
-	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]), spawnersAxis];
+	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
 }
 
 /**
@@ -118,11 +117,11 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number, a
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the first actors of the game.
  */
-function initActors(world: World, intermediateWaypointLinesNumber: number, averageSpawnsPerPhase?: number): [Array<Actor>, Axis] {
-	const [waypoints, spawnersAxis]: [Array<Array<Actor>>, Axis] = initWayPointActors(world, intermediateWaypointLinesNumber, averageSpawnsPerPhase);
-	return [waypoints.flat()
+function initActors(world: World, intermediateWaypointLinesNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number): Array<Actor> {
+	const waypoints: Array<Array<Actor>> = initWayPointActors(world, intermediateWaypointLinesNumber, spawnersAxis, averageSpawnsPerPhase);
+	return waypoints.flat()
 	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)), otherAxis(spawnersAxis))
-	.map((position) => createGround(position))).concat(createPlayer()), spawnersAxis];
+	.map((position) => createGround(position))).concat(createPlayer());
 }
 
 /**
@@ -170,9 +169,8 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>, spaw
  */
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(10, 10);
-	const initActorsResult: [Array<Actor>, Axis] = initActors(world, 2, 1);
-	let actors = initActorsResult[0];
-	const spawnersAxis = initActorsResult[1];
+	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);
 	const phases: Array<Phase> = initPhases();
 	let i = 0;
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
