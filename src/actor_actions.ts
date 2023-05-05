@@ -8,7 +8,7 @@ import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange, getSpawnProba } from "./props";
 import { filterActorsByPosition, filterByKinds } from "./actor";
-import { maxAxisValue } from "./world";
+import { AxisLength } from "./world";
 
 /**
  * All the possibles actions for an actor. These actions are called during the phases of the game.
@@ -129,14 +129,14 @@ function playAroundGround(actors: Array<Actor>, ground: Actor): Vector2D | undef
 }
 
 function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
-	const numberOfLines = maxAxisValue(world, otherAxis(spawnerAxis));
-	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines - 1, numberOfLines - 1, 0, numberOfLines - 1);
+	const numberOfLines = AxisLength(world, otherAxis(spawnerAxis));
+	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
 	const groundsPerLine: Array<Array<Actor>> = consideredLineOrder.map(
 		(consideredLine) => filterByKinds(
 			spawnerAxis === "x" ? filterActorsByPosition(actors, undefined, consideredLine) : filterActorsByPosition(actors, consideredLine, undefined),
 			["ground"]
 		));
-	Array.from({ length: maxAxisValue(world, spawnerAxis) - 1 }, (_, i) => i + 1).reduce((acc, groundsPerLineConstraint) => groundsPerLine.forEach((currentGrounds) => {
+	Array.from({ length: AxisLength(world, spawnerAxis) - 1 }, (_, i) => i + 1).reduce((acc, groundsPerLineConstraint) => groundsPerLine.forEach((currentGrounds) => {
 		if (currentGrounds.length === groundsPerLineConstraint) {
 			const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(actors, currentGround));
 		}
