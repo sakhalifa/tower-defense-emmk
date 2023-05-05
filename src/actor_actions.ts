@@ -3,7 +3,7 @@ import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
 import type { World } from "./world";
 
-import { isDeepStrictEqual, otherAxis, randomUniqueIntegers } from "./util";
+import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
 import { getHunger, getSpreadIgnorancePower, getWaypointTarget, getRange, getSpawnProba } from "./props";
@@ -127,8 +127,10 @@ function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis
 	return (actor?.faithPoints ?? 0) <= 0;
 }
 
-function playAroundGround(actors: Array<Actor>, ground: Actor | undefined): Vector2D | undefined {
-	if (!ground) return ground;
+function playAroundGround(world: World, actors: Array<Actor>, ground: Actor | undefined, range: number): Vector2D | undefined {
+	if (ground) {
+		return getRandomArrayElement(world.allPositionsInWorld.filter((currentWorldPosition) => distance(currentWorldPosition, ground.position) <= range));
+	}
 	return undefined;
 }
 
@@ -140,20 +142,21 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 			spawnerAxis === "x" ? filterActorsByPosition(actors, undefined, consideredLine) : filterActorsByPosition(actors, consideredLine, undefined),
 			["ground"]
 		));
+	const range: number = 2;
 	const returnedGroundAroundWhichToPlay: Actor | undefined = Array.from({ length: AxisLength(world, spawnerAxis) - 1 }, (_, i) => i + 1)
 	.reduce((acc, groundListPerLineConstraint) => {
 		if (acc) return acc;
 		return groundListPerLine.reduce((acc2, currentGrounds) => {
 			if (acc2) return acc2;
 			if (currentGrounds.length === groundListPerLineConstraint) {
-				const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(actors, currentGround));
+				const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => playAroundGround(world, actors, currentGround, range));
 				return groundAroundWhichToPlay;
 			}
 			return acc2;
 		}
 		, undefined);
 	}, undefined);
-	return playAroundGround(actors, returnedGroundAroundWhichToPlay);
+	return playAroundGround(world, actors, returnedGroundAroundWhichToPlay, range);
 }
 
 export type { ActorActions };

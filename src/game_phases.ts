@@ -14,7 +14,7 @@ import { Vector2D } from "./geometry";
  * @returns A proposal for the actors after executing the "spawn" phase
  */
 function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["spawn"]>>): Array<Actor> {
-	return oldActors.concat((phaseResult.filter((returnedActor) => returnedActor !== undefined)) as Array<Actor>);
+	return oldActors.concat(phaseResult.filter((returnedActor: Actor | undefined) => returnedActor !== undefined) as Array<Actor>);
 }
 
 /**
@@ -25,7 +25,7 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<Actor
  * @returns A proposal for the actors after executing the "spawn" phase
  */
 function playPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["play"]>>): Array<Actor> {
-	return oldActors.concat(phaseResult.filter((returnedVector) => returnedVector !== undefined).map((vector: Vector2D) => createGoodGuy(vector))) as Array<Actor>;
+	return oldActors.concat(phaseResult.filter((returnedVector) => returnedVector !== undefined).map((vector: Vector2D) => createGoodGuy(vector)));
 }
 
 /**

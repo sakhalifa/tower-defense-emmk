@@ -12,27 +12,29 @@ import { Actor } from "./actor";
 type World = {
 	readonly width: number;
 	readonly height: number;
-	turnsElapsed: number;
+	allPositionsInWorld: Array<Vector2D>
 };
 
 /**
  * A world constructor
  * @param width the width of the world
  * @param height The height of the world
- * @param turnsElapsed the turns elapsed
  * @returns A world with the given width and height and turns elapsed.
  */
-function createWorld(width: number, height: number, turnsElapsed: number): World {
+function createWorld(width: number, height: number): World {
 	if (width <= 0 || height <= 0){
 		throw new Error("World size values must be positive");
 	}
 	if (!Number.isInteger(width) || !Number.isInteger(height)){
 		throw new Error("World size values must be integers");
 	}
+	const allPositionsInWorld: Array<Vector2D> = Array.from({length: width}, (_, currentWidth) => {
+		return Array.from({length: height}, (_, currentHeight) => createVector(currentWidth, currentHeight));
+	}).flat();
 	return {
-		width: width,
-		height: height,
-		turnsElapsed
+		width,
+		height,
+		allPositionsInWorld
 	};
 }
 
