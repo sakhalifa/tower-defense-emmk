@@ -80,7 +80,7 @@ function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, world: 
 	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) =>
 		currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
 		[]);
-	const amount = actorsToSpreadIgnoranceIndices.map((_) => getConviction(ignoranceSpreader));
+	const amount = actorsToSpreadIgnoranceIndices.map((_) => setSpreadIgnorancePower(ignoranceSpreader));
 	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
 }
 

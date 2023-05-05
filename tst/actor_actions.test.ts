@@ -2,7 +2,7 @@ import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, 
 import { temperatureRise, spreadIgnorance, spawn, moveTowardWaypointTarget, convertEnemies, play } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
-import { setHunger, setSpreadIgnorancePower, setRange } from "../src/props";
+import { setConviction, setSpreadIgnorancePower, setRange } from "../src/props";
 import { setSpawnProba } from "../src/props";
 
 test("Spawn test", () => {
@@ -18,7 +18,7 @@ test("TemperatureRise test", () => {
 
     const monster = createspaghettiMonster(createVector(2, 2), 1);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
-    const onPoint = setHunger(createIgnorant(createVector(2, 2), createVector(0, 0)), 3);
+    const onPoint = setConviction(createIgnorant(createVector(2, 2), createVector(0, 0)), 3);
     
     const actors = [monster, ignorant, onPoint];
 
@@ -31,7 +31,7 @@ test("TemperatureRise test", () => {
 
 
 test("spreadIgnorance test", () => {
-    const world = createWorld(5, 5, 0);
+    const world = createWorld(5, 5);
     // const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
     const ignoranceSpreader = setSpreadIgnorancePower(createIgnoranceSpreader(createVector(0, 0), createVector(0, 0)), 3);
     // const actors = [ignorant, ignoranceSpreader];
@@ -47,7 +47,7 @@ test("spreadIgnorance test", () => {
 });
 
 test("moveTowardWaypointTarget test", () => {
-    const world = createWorld(5, 5, 0);
+    const world = createWorld(5, 5);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 1), 0);
     expect(moveTowardWaypointTarget([], ignorant, world, 'y')).toEqual(createVector(0, 1));
 });
@@ -55,7 +55,7 @@ test("moveTowardWaypointTarget test", () => {
 
 // Skip for now, wait for props to be correctly named
 xtest("convertEnemies test", () => {
-    const world = createWorld(5, 5, 0);
+    const world = createWorld(5, 5);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 1), 10);
     const ignorant_away = createIgnorant(createVector(5, 5), createVector(0, 1), 10);
     const good_guy = setRange(createGoodGuy(createVector(0, 0)), 2);
@@ -67,7 +67,7 @@ xtest("convertEnemies test", () => {
 });
 
 test("play test", () => {
-    const world = createWorld(5, 5, 0);
+    const world = createWorld(5, 5);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), 0);
     expect(play([], ignorant, world, 'y')).toBeUndefined();
 });
