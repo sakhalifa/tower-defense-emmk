@@ -134,6 +134,7 @@ function initActors(world: World, intermediateWaypointLinesNumber: number, avera
  */
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
+		if (currentProposal === undefined) throw new Error("undefined actor");
 		if (isValidActorInEnvironment(world, currentProposal)) {
 			if(!(walkerKeys.find((key) => currentProposal.kind === key) && !filterByKinds(actors, ["ground"])
 			.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position)))) {
