@@ -171,15 +171,11 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
 	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);
 	const phases: Array<Phase> = initPhases();
-	let i = 0;
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
-	while (i < 10) {
-		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
+	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => spaghettiMonster.faithPoints! > 0)) {
 		display(world, actors);
 		actors = nextTurn(phases, world, actors, spawnersAxis);
-		++i;
 	}
-	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);
 }
 
