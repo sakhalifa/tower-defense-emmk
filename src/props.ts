@@ -6,7 +6,7 @@ function setConviction(actor: Actor, conviction: number): Actor {
 }
 
 function getConviction(actor: Actor): number {
-	return actor.externalProps.conviction;
+	return actor.externalProps!.conviction;
 }
 
 function setRange(actor: Actor, range: number): Actor {
@@ -14,11 +14,11 @@ function setRange(actor: Actor, range: number): Actor {
 }
 
 function getRange(actor: Actor): number {
-	return actor.externalProps.range;
+	return actor.externalProps!.range;
 }
 
 function getWaypointTarget(actor: Actor): Vector2D {
-	return actor.externalProps.waypointTarget!;
+	return actor.externalProps!.waypointTarget!;
 }
 
 function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
@@ -26,7 +26,7 @@ function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
 }
 
 function getWaypointNumber(actor: Actor): number {
-	return actor.externalProps.waypointNumber!;
+	return actor.externalProps!.waypointNumber!;
 }
 
 function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
@@ -34,7 +34,7 @@ function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
 }
 
 function getWaypointTargetNumber(actor: Actor): number {
-	return actor.externalProps.waypointTargetNumber!;
+	return actor.externalProps!.waypointTargetNumber!;
 }
 
 function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Actor {
@@ -42,7 +42,7 @@ function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Ac
 }
 
 function getSpawnProba(actor: Actor): number {
-	return actor.externalProps.spawnProba!;
+	return actor.externalProps!.spawnProba!;
 }
 
 function setSpawnProba(actor: Actor, spawnProba: number): Actor {
@@ -54,7 +54,7 @@ function setSpreadIgnorancePower(actor: Actor, spreadIgnorancePower: number): Ac
 }
 
 function getSpreadIgnorancePower(actor: Actor): number {
-	return actor.externalProps.spreadIgnorancePower;
+	return actor.externalProps!.spreadIgnorancePower;
 }
 
 function setFaithPoints(actor: Actor, faithPoints: number): Actor {
@@ -62,7 +62,7 @@ function setFaithPoints(actor: Actor, faithPoints: number): Actor {
 }
 
 function getFaithPoints(actor: Actor): number {
-	return actor.externalProps.faithPoints;
+	return actor.externalProps!.faithPoints;
 }
 
 export {

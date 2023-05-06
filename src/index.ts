@@ -80,7 +80,7 @@ function drawActor(actor: Actor): HTMLDivElement {
 
         const health = document.createElement('div') as HTMLDivElement;
         health.classList.add('health');
-        health.style.width = `${(actor.externalProps.faithPoints).toString()}%`;
+        health.style.width = `${(getFaithPoints(actor)).toString()}%`;
         hp.appendChild(health);
     }
 

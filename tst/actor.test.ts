@@ -17,7 +17,7 @@ function spreadIgnorance(_: Array<Actor>, __: Actor, ___: World, ____?: Axis) {
 }
 
 function buildDummyActor(): Actor{
-    return { position: createVector(0, 1), actions: defaultActions, kind: "ignorant", externalProps: {}};
+    return { position: createVector(0, 1), actions: defaultActions, kind: "ignorant"};
 }
 
 test("Actor create test", () => {

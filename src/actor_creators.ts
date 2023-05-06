@@ -15,8 +15,8 @@ import { setSpawnProba, setWaypointNumber, setWaypointTarget, setWaypointTargetN
  * @param faithPoints The faithPoints points of the created Actor
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, faithPoints?: number): Actor {
-	return { position, actions: { ...defaultActions, ...actions }, kind, externalProps: {faithPoints} };
+function createActor(position: Actor["position"], actions: Partial<Actor["actions"]>, kind: Actor["kind"], externalProps?: Actor["externalProps"] ): Actor {
+	return { position, actions: { ...defaultActions, ...actions }, kind, externalProps };
 }
 
 function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, waypointTargetNumber: number) {
@@ -35,7 +35,7 @@ function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, wayp
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
 	//{ waypointTargetNumber: 1, waypointTarget: waypointTarget }
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant", faithPoints),
+		createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant", {faithPoints}),
 		waypointTarget,
 		1);
 }
@@ -50,7 +50,7 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
 function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
 	//
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee }, "ignoranceSpreader", faithPoints),
+		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee }, "ignoranceSpreader", {faithPoints}),
 		waypointTarget,
 		1);
 }
@@ -118,7 +118,7 @@ function createGoodGuy(position: Vector2D): Actor {
  * @returns the created Actor of kind "spaghettiMonster"
  */
 function createspaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 100): Actor {
-	return setWaypointNumber(createActor(position, {}, "spaghettiMonster", faithPoints), waypointNumber);
+	return setWaypointNumber(createActor(position, {}, "spaghettiMonster", {faithPoints}), waypointNumber);
 }
 
 function createPlayer(): Actor {

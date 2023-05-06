@@ -6,7 +6,7 @@ import { vector2DToString, translatePoint, vectorHasCoords } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
 import { vectorToIndexInWorldString, isPositionInWorld } from "./world";
 import { stringReplaceAt } from "./util";
-import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget } from "./props";
+import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget, getWaypointNumber } from "./props";
 
 /**
  * Actors that can move by themselves on the board.
@@ -30,7 +30,7 @@ type Actor = {
 	position: Vector2D;
 	actions: ActorActions;
 	kind: Kind;
-	externalProps?: any;
+	externalProps?: Record<any, any>;
 };
 
 function hasOneOfKinds(actor: Actor, kinds: Array<Kind>) {
@@ -89,13 +89,13 @@ function translateActor(actor: Actor, movementVector: ReturnType<ActorActions["m
  * @param waypointTargetNumber the number of the current waypoint target
  * @returns a dictionnary containing the informations about the waypoint that should be the target once the given waypoint is reached
  */
-function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, waypointTargetNumber: number): Actor["externalProps"] {
+function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, waypointTargetNumber: number): { waypointTargetNumber: number, waypointTarget: Actor["position"] } {
 	const possibilities = actors.filter((currentActor) => currentActor?.externalProps?.waypointNumber === waypointTargetNumber + 1);
 	if (!possibilities.length) {
 		return { waypointTargetNumber: waypointTargetNumber, waypointTarget: waypointTarget };
 	}
 	const nextWaypointTarget = getRandomArrayElement(possibilities);
-	return { waypointTargetNumber: nextWaypointTarget.externalProps.waypointNumber, waypointTarget: nextWaypointTarget.position };
+	return { waypointTargetNumber: getWaypointNumber(nextWaypointTarget), waypointTarget: nextWaypointTarget.position };
 }
 
 /**
