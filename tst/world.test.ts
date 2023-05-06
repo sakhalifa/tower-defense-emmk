@@ -1,5 +1,5 @@
 import { createVector } from "../src/geometry";
-import { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex } from "../src/world";
+import { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString } from "../src/world";
 
 test("createWorld test", () => {
     expect(createWorld(50, 20)).toEqual({width: 50, height: 20, turnsElapsed: 0});
@@ -47,6 +47,6 @@ test("worldToString test", () => {
 });
 
 test("worldStringVectorToIndex test", () => {
-    expect(() => worldStringVectorToIndex(createWorld(1, 2), createVector(2, 3))).toThrowError();
-    expect(worldStringVectorToIndex(createWorld(2, 2), createVector(1, 1))).toBe(7);
+    expect(() => vectorToIndexInWorldString(createWorld(1, 2), createVector(2, 3))).toThrowError();
+    expect(vectorToIndexInWorldString(createWorld(2, 2), createVector(1, 1))).toBe(7);
 });
