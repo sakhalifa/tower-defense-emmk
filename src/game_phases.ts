@@ -5,7 +5,7 @@ import { translateAndUpdateWaypoint} from "./actor";
 import { sum } from "./util";
 import { createGoodGuy } from "./actor_creators";
 import { Vector2D } from "./geometry";
-import { getFaithPoints, setFaithPoints } from "./props";
+import { getFaithPoints, getMaxFaith, setFaithPoints } from "./props";
 import { impactActorsConviction } from "./actor_actions";
 
 /**
@@ -57,9 +57,9 @@ function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<Ac
 
 function updateIgnorance(actor: Actor, actorIndex: number, spreadConvictionResults: Array<ReturnType<typeof impactActorsConviction>>): Actor {
 	return setFaithPoints(actor, 
-		spreadConvictionResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
+		Math.max(spreadConvictionResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
 					ignoranceAcc + (spreadIgnoranceResult.impactAmounts[spreadIgnoranceResult.impactedActorsIndices.indexOf(actorIndex)] ?? 0),
-					getFaithPoints(actor))
+					getFaithPoints(actor)), getMaxFaith(actor))
 	);
 }
 

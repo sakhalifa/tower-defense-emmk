@@ -33,9 +33,8 @@ function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, wayp
  * @returns the created Actor of kind "ignorant"
  */
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
-	//{ waypointTargetNumber: 1, waypointTarget: waypointTarget }
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant", {faithPoints}),
+		createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant", {faithPoints, maxFaith: 100}),
 		waypointTarget,
 		1);
 }
@@ -50,7 +49,7 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
 function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
 	//
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee }, "ignoranceSpreader", {faithPoints}),
+		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee }, "ignoranceSpreader", {faithPoints, maxFaith: 100}),
 		waypointTarget,
 		1);
 }
@@ -93,7 +92,6 @@ function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, fait
  * @returns the created Actor of kind "spawner"
  */
 function createSpawner(position: Vector2D, spawnProba: number = 0.3): Actor {
-	//{ waypointNumber: 0, spawnProba: spawnProba }
 	return setSpawnProba(
 		setWaypointNumber(createActor(position, { spawn }, "spawner"), 0),
 		spawnProba);
@@ -118,7 +116,7 @@ function createGoodGuy(position: Vector2D): Actor {
  * @returns the created Actor of kind "spaghettiMonster"
  */
 function createspaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 100): Actor {
-	return setWaypointNumber(createActor(position, {}, "spaghettiMonster", {faithPoints}), waypointNumber);
+	return setWaypointNumber(createActor(position, {}, "spaghettiMonster", {faithPoints, maxFaith: 100}), waypointNumber);
 }
 
 function createPlayer(): Actor {

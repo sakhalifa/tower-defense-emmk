@@ -5,7 +5,7 @@ import type { Axis } from "./util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
 import { filterByKinds, hasOneOfKinds } from "./actor";
-import { getFaithPoints } from "./props";
+import { getFaithPoints, getMaxFaith } from "./props";
 
 const sprites = [
     document.getElementById("undefinedSprite"),
@@ -80,7 +80,7 @@ function drawActor(actor: Actor): HTMLDivElement {
 
         const health = document.createElement('div') as HTMLDivElement;
         health.classList.add('health');
-        health.style.width = `${(getFaithPoints(actor)).toString()}%`;
+        health.style.width = `${(100 * getFaithPoints(actor) / getMaxFaith(actor)).toString()}%`;
         hp.appendChild(health);
     }
 
