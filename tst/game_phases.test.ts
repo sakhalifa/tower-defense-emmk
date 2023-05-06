@@ -1,5 +1,5 @@
 import { createActor, createGround, createIgnorant, createspaghettiMonster } from "../src/actor_creators";
-import { enemyFleePhase, movePhase, spawnPhase, temperatureRisePhase, convertEnemiesPhase } from "../src/game_phases";
+import { enemyFleePhase, movePhase, spawnPhase, temperatureRisePhase, spreadConvictionPhase } from "../src/game_phases";
 import { createVector } from "../src/geometry";
 import { defaultActions, enemyFlee } from "../src/actor_actions";
 import { setWaypointTarget, setWaypointTargetNumber } from "../src/props";
@@ -41,14 +41,15 @@ test("movePhase test", () => {
 
 // update faithPoints
 
-// spreadIgnorance phase test => unclear
-
-// Convert enemies phase tests => Resolve faith_point issue first !
-test("convertEnemiesPhase test", () => {
+// spreadIgnorance phase tests
+// Convert enemies phase tests
+//spreadConvictionPhase tests
+test("spreadConvictionPhase test", () => {
     const ignorant1 = createIgnorant(createVector(0, 0), createVector(1, 1), 5);
-    expect(convertEnemiesPhase([ignorant1], [{actorIndices: [0], amount: [0]}])).toEqual([ignorant1]);
-    expect(convertEnemiesPhase([ignorant1], [{actorIndices: [0], amount: [5]}])).toEqual([createIgnorant(createVector(0, 0), createVector(1, 1), 0)]);
-    expect(convertEnemiesPhase([ignorant1], [{actorIndices: [0], amount: [2]}, {actorIndices: [0], amount: [1]}])).toEqual([createIgnorant(createVector(0, 0), createVector(1, 1), 2)]);
+    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [0]}])).toEqual([ignorant1]);
+    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-5]}])).toEqual([createIgnorant(createVector(0, 0), createVector(1, 1), 0)]);
+    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-2]}, {impactedActorsIndices: [0], impactAmounts: [-1]}])).toEqual([createIgnorant(createVector(0, 0), createVector(1, 1), 2)]);
+    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-2]}, {impactedActorsIndices: [0], impactAmounts: [2]}])).toEqual([ignorant1]);
 });
 
 // Enemy flee phase tests

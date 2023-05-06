@@ -1,4 +1,4 @@
-import type { Actor } from "./actor";
+import type { Actor, Kind } from "./actor";
 import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
 import type { World } from "./world";
@@ -16,8 +16,8 @@ import { AxisLength } from "./world";
 type ActorActions = {
 	spawn: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Actor | undefined;
 	temperatureRise: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => number;
-	convertEnemies: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => { actorIndices: Array<number>, amount: Array<number>; };
-	spreadIgnorance: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => { actorIndices: number[], amount: number[]; };
+	convertEnemies: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => ReturnType<typeof impactActorsConviction>;
+	spreadIgnorance: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => ReturnType<typeof impactActorsConviction>;
 	enemyFlee: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => boolean;
 	move: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D;
 	play: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D | undefined;
@@ -29,8 +29,8 @@ type ActorActions = {
 const defaultActions: Required<ActorActions> = {
 	spawn: (allActors, oneActor, world, spawnerAxis) => undefined,
 	temperatureRise: (allActors, oneActor, world, spawnerAxis) => 0,
-	spreadIgnorance: (allActors, oneActor, world, spawnerAxis) => { return { actorIndices: [], amount: [] }; },
-	convertEnemies: (allActors, oneActor, world, spawnerAxis) => { return { actorIndices: [], amount: [] }; },
+	spreadIgnorance: (allActors, oneActor, world, spawnerAxis) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
+	convertEnemies: (allActors, oneActor, world, spawnerAxis) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
 	enemyFlee: (allActors, oneActor, world, spawnerAxis) => false,
 	move: (allActors, oneActor, world, spawnerAxis) => { return createVector(0, 0); },
 	play: (allActors, oneActor, world, spawnerAxis) => undefined
@@ -68,20 +68,43 @@ function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawn
 		? 0 : (getConviction(actor) ?? 1);
 }
 
+function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impactedKinds: Array<Kind>,
+								impactFunction: (impactingActor: Actor, actorsToImpact: Array<Actor>) => Array<number>,
+								): { impactedActorsIndices: Array<number>, impactAmounts: Array<number>; }
+{
+	const impactedActorsIndices: Array<number> = actors.reduce((acc: Array<number>, currentActor: Actor, actorIndex: number) =>
+		hasOneOfKinds(currentActor, impactedKinds) && distance(currentActor.position, actingActor.position) <= getRange(actingActor) ?
+		acc.concat(actorIndex) :
+		acc,
+		[]);
+	const impactAmounts = impactFunction(actingActor, impactedActorsIndices.map((i) => actors[i]));
+	return { impactedActorsIndices, impactAmounts };
+}
+
 /**
  * The "spreadIgnorance" action.
  * It returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  * @param actors The actors in the world
- * @param ignoranceSpreader The current actor that spreads faithPoints
+ * @param actingActor The current actor that spreads faithPoints
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  */
-function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
-	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) =>
-		hasOneOfKinds(currentActor, ["ignorant"]) && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
-		[]);
-	const amount = actorsToSpreadIgnoranceIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
-	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
+function spreadIgnorance(actors: Array<Actor>, actingActor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
+	return impactActorsConviction(actors, actingActor, ["ignorant"],
+	(impactingActor, actorsToImpact) => actorsToImpact.map((a) => getSpreadIgnorancePower(impactingActor)));
+}
+
+/**
+ * The "convertEnemies" action.
+ * It returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
+ * @param actors The actors in the world
+ * @param actingActor The current actor that does the action
+ * @param spawnersAxis The axis that is parallel to the line that links the spawners
+ * @returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
+ */
+function convertEnemies(actors: Array<Actor>, actingActor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
+	return impactActorsConviction(actors, actingActor, [...walkerKeys],
+	(impactingActor, actorsToImpact) => actorsToImpact.map((a) => -getConviction(impactingActor)));
 }
 
 /**
@@ -96,24 +119,6 @@ function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, worl
 }
 
 /**
- * The "convertEnemies" action.
- * It returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
- * @param actors The actors in the world
- * @param actor The current actor that does the action
- * @param spawnersAxis The axis that is parallel to the line that links the spawners
- * @returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
- */
-function convertEnemies(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
-	const range = getRange(actor) ?? 3;
-	const actorIndices = actors.filter((currentActor) => currentActor !== actor && 
-	!hasOneOfKinds(currentActor, ["ignorant"]) &&
-	distance(currentActor.position, actor.position) <= range)
-	.map((a, i) => i);
-	const amount = actorIndices.map((_) => getConviction(actor) ?? 1);
-	return { actorIndices, amount };
-}
-
-/**
  * The "enemyFlee" action.
  * It returns whether the actor will decide to not exist or not.
  * @param actors The actors in the world
@@ -122,9 +127,6 @@ function convertEnemies(actors: Array<Actor>, actor: Actor, world: World, spawne
  * @returns true iif the current actor decides to not exist anymore
  */
 function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["enemyFlee"]> {
-	// if (actor.kind === "ground" || actor.kind === "goodGuy")
-	// 	return false;
-	// return (actor?.faithPoints ?? 0) <= 0;
 	return hasOneOfKinds(actor, [...walkerKeys, "spaghettiMonster"]) ? getFaithPoints(actor) <= 0 : false;
 }
 
@@ -171,4 +173,4 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 
 export type { ActorActions };
 
-export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play };
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play, impactActorsConviction };

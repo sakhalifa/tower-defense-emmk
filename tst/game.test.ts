@@ -1,5 +1,5 @@
 import { initWorld, initPhases, initSpawners, initGroundWaypoints, initActors } from "../src/game";
-import { convertEnemiesPhase, enemyFleePhase, movePhase, spawnPhase } from "../src/game_phases";
+import { spreadConvictionPhase, enemyFleePhase, movePhase, spawnPhase } from "../src/game_phases";
 import { createWorld, isPositionInWorld } from "../src/world";
 import { createPhase } from "../src/phase";
 
@@ -18,7 +18,7 @@ test("initPhases test", () => {
     expect(initPhases()).toContainEqual(createPhase("spawn", spawnPhase));
     expect(initPhases()).toContainEqual(createPhase("move", movePhase));
     expect(initPhases()).toContainEqual(createPhase("enemyFlee", enemyFleePhase));
-    expect(initPhases()).toContainEqual(createPhase("convertEnemies", convertEnemiesPhase));
+    expect(initPhases()).toContainEqual(createPhase("convertEnemies", spreadConvictionPhase));
 });
 
 test("init Spawner test", () => {

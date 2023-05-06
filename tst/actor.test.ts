@@ -1,4 +1,6 @@
 import type { Actor } from "../src/actor";
+import type { Axis } from "../src/util";
+import type { World } from "../src/world";
 
 import { createActor, createGround } from "../src/actor_creators";
 import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
@@ -10,12 +12,12 @@ function move(_: Array<Actor>, __: Actor) {
     return createVector(0, 0);
 }
 
-function spreadIgnorance(_: Array<Actor>, __: Actor) {
-    return {actorIndices: [0], amount: [0]};
+function spreadIgnorance(_: Array<Actor>, __: Actor, ___: World, ____?: Axis) {
+    return {impactedActorsIndices: [0], impactAmounts: [0]};
 }
 
 function buildDummyActor(): Actor{
-    return { position: createVector(0, 1), actions: defaultActions, kind: "ignorant", externalProps: undefined };
+    return { position: createVector(0, 1), actions: defaultActions, kind: "ignorant", externalProps: {}};
 }
 
 test("Actor create test", () => {
@@ -32,7 +34,7 @@ test("Actor to string test", () => {
         position: createVector(0, 1),
         actions: defaultActions,
         kind: "ignorant"
-    })).toEqual("{position: (0, 1)}");
+    })).toEqual("{position: (0, 1), kind: ignorant}");
 });
 
 test("Actor translate test", () => {

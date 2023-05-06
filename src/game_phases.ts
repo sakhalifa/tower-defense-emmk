@@ -6,6 +6,7 @@ import { sum } from "./util";
 import { createGoodGuy } from "./actor_creators";
 import { Vector2D } from "./geometry";
 import { getFaithPoints, setFaithPoints } from "./props";
+import { impactActorsConviction } from "./actor_actions";
 
 /**
  * The executePhase function for the "spawn" phase.
@@ -54,40 +55,25 @@ function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<Ac
 	return movementVectors.map((movementVector, actorIndex) => translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], movementVector));
 }
 
-function updateIgnorance(actor: Actor, actorIndex: number, spreadIgnoranceResults: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Actor {
+function updateIgnorance(actor: Actor, actorIndex: number, spreadConvictionResults: Array<ReturnType<typeof impactActorsConviction>>): Actor {
 	return setFaithPoints(actor, 
-		spreadIgnoranceResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
-					ignoranceAcc + (spreadIgnoranceResult.amount[spreadIgnoranceResult.actorIndices.indexOf(actorIndex)] ?? 0),
+		spreadConvictionResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
+					ignoranceAcc + (spreadIgnoranceResult.impactAmounts[spreadIgnoranceResult.impactedActorsIndices.indexOf(actorIndex)] ?? 0),
 					getFaithPoints(actor))
 	);
 }
 
 /**
- * The executePhase function for the "spreadIgnorance" phase.
- * It ensures all enemies who receive the faithPoints have actually more faithPoints.
+ * The executePhase function for the phase about converting people to a religion.
+ * Ignorants can get slowly converted to our holy faith; pastafarism, or they could be comforted in their ignorance...
  * @param oldActors The actors before the phase
- * @param phaseResult The results of the phase
- * @returns A proposal for the actors after executing the "spreadIgnorance" phase
- */
-function spreadIgnorancePhase(oldActors: Array<Actor>, spreadIgnoranceVectors: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Array<Actor> {
-	return oldActors.map((currentActor, actorIndex) => 
-		hasOneOfKinds(currentActor, [...walkerKeys, "spaghettiMonster"]) ?
-		updateIgnorance(currentActor, actorIndex, spreadIgnoranceVectors) :
-		currentActor
-	);
-}
-
-/**
- * The executePhase function for the "convertEnemies" phase.
- * It ensures all ignorants get slowly converted to our holy faith; pastafarism.
- * @param oldActors The actors before the phase
- * @param convertIgnorantsVectors The results of the phase
+ * @param spreadConvictionVectors The results of the phase
  * @returns A proposal for the actors after executing the "convertEnemies" phase
  */
-function convertIgnorantsPhase(oldActors: Array<Actor>, convertIgnorantsVectors: Array<ReturnType<ActorActions["convertEnemies"]>>): Array<Actor> {
+function spreadConvictionPhase(oldActors: Array<Actor>, spreadConvictionVectors: Array<ReturnType<typeof impactActorsConviction>>): Array<Actor> {
 	return oldActors.map((currentActor, actorIndex) => 
-		hasOneOfKinds(currentActor, [...walkerKeys]) ?
-		updateIgnorance(currentActor, actorIndex, convertIgnorantsVectors.map((v) => ({actorIndices: v.actorIndices, amount: v.amount.map((a) => -a)}))) :
+		hasOneOfKinds(currentActor, [...walkerKeys, "spaghettiMonster"]) ?
+		updateIgnorance(currentActor, actorIndex, spreadConvictionVectors) :
 		currentActor
 	);
 }
@@ -103,4 +89,4 @@ function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<A
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
 
-export { spawnPhase, temperatureRisePhase, spreadIgnorancePhase, convertIgnorantsPhase as convertEnemiesPhase, enemyFleePhase, movePhase, playPhase };
+export { spawnPhase, temperatureRisePhase, spreadConvictionPhase, enemyFleePhase, movePhase, playPhase };

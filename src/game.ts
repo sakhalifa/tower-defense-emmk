@@ -7,7 +7,7 @@ import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positi
 import { createGround, createspaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
 import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
-import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
+import { spreadConvictionPhase, enemyFleePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
 import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./util";
 import { getFaithPoints } from "./props";
 
@@ -29,9 +29,9 @@ function initPhases(): Array<Phase> {
 	return [
 		createPhase("spawn", spawnPhase),
 		createPhase("temperatureRise", temperatureRisePhase),
-		createPhase("convertEnemies", convertEnemiesPhase),
+		createPhase("convertEnemies", spreadConvictionPhase),
+		createPhase("spreadIgnorance", spreadConvictionPhase),
 		createPhase("move", movePhase),
-		createPhase("spreadIgnorance", spreadIgnorancePhase),
 		createPhase("play", playPhase),
 		createPhase("enemyFlee", enemyFleePhase)
 	];
