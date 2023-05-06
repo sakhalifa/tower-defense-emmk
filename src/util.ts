@@ -4,7 +4,7 @@
  * @returns the sum of all the elements of the array
  */
 function sum(array: Array<number>) {
-	return array.reduce((p, c) => p + c, 0);
+	return array.reduce((acc, current) => acc + current, 0);
 }
 
 /**

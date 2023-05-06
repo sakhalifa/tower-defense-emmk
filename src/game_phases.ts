@@ -1,10 +1,11 @@
 import type { ActorActions } from "./actor_actions";
-import type { Actor } from "./actor";
+import { Actor, hasOneOfKinds, walkerKeys } from "./actor";
 
 import { translateAndUpdateWaypoint} from "./actor";
 import { sum } from "./util";
 import { createGoodGuy } from "./actor_creators";
 import { Vector2D } from "./geometry";
+import { getFaithPoints, setFaithPoints } from "./props";
 
 /**
  * The executePhase function for the "spawn" phase.
@@ -14,7 +15,10 @@ import { Vector2D } from "./geometry";
  * @returns A proposal for the actors after executing the "spawn" phase
  */
 function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["spawn"]>>): Array<Actor> {
-	return oldActors.concat(phaseResult.filter((returnedActor: Actor | undefined) => returnedActor !== undefined) as Array<Actor>);
+	return oldActors.concat(
+		phaseResult
+		.filter((returnedActor): returnedActor is Actor => returnedActor !== undefined)
+	);
 }
 
 /**
@@ -25,7 +29,11 @@ function spawnPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<Actor
  * @returns A proposal for the actors after executing the "spawn" phase
  */
 function playPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["play"]>>): Array<Actor> {
-	return oldActors.concat(phaseResult.filter((returnedVector) => returnedVector !== undefined).map((vector: Vector2D) => createGoodGuy(vector)));
+	return oldActors.concat(
+		phaseResult
+		.filter((returnedVector) => returnedVector !== undefined)
+		.map((vector: Vector2D) => createGoodGuy(vector))
+	);
 }
 
 /**
@@ -37,7 +45,9 @@ function playPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorA
  */
 function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["temperatureRise"]>>): Array<Actor> {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	return oldActors.map((a) => a.kind !== "spaghettiMonster" ? a : { ...a, faithPoints: a.faithPoints! - sum(phaseResult) });
+	return oldActors.map((currentActor) => hasOneOfKinds(currentActor, ["spaghettiMonster"]) ?
+	setFaithPoints(currentActor, getFaithPoints(currentActor) - sum(phaseResult)):
+	currentActor);
 }
 
 function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
@@ -45,12 +55,11 @@ function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<Ac
 }
 
 function updateIgnorance(actor: Actor, actorIndex: number, spreadIgnoranceResults: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Actor {
-	return {
-		...actor,
-		faithPoints: spreadIgnoranceResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
-					(ignoranceAcc ?? 0) + ((spreadIgnoranceResult.amount[spreadIgnoranceResult.actorIndices.indexOf(actorIndex)] ?? 0)),
-					actor.faithPoints)
-	};
+	return setFaithPoints(actor, 
+		spreadIgnoranceResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
+					ignoranceAcc + (spreadIgnoranceResult.amount[spreadIgnoranceResult.actorIndices.indexOf(actorIndex)] ?? 0),
+					getFaithPoints(actor))
+	);
 }
 
 /**
@@ -61,25 +70,26 @@ function updateIgnorance(actor: Actor, actorIndex: number, spreadIgnoranceResult
  * @returns A proposal for the actors after executing the "spreadIgnorance" phase
  */
 function spreadIgnorancePhase(oldActors: Array<Actor>, spreadIgnoranceVectors: Array<ReturnType<ActorActions["spreadIgnorance"]>>): Array<Actor> {
-	return oldActors.map((currentActor, actorIndex) => updateIgnorance(currentActor, actorIndex, spreadIgnoranceVectors));
+	return oldActors.map((currentActor, actorIndex) => 
+		hasOneOfKinds(currentActor, [...walkerKeys, "spaghettiMonster"]) ?
+		updateIgnorance(currentActor, actorIndex, spreadIgnoranceVectors) :
+		currentActor
+	);
 }
 
 /**
  * The executePhase function for the "convertEnemies" phase.
  * It ensures all ignorants get slowly converted to our holy faith; pastafarism.
  * @param oldActors The actors before the phase
- * @param phaseResult The results of the pase
+ * @param convertIgnorantsVectors The results of the phase
  * @returns A proposal for the actors after executing the "convertEnemies" phase
  */
-function convertEnemiesPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorActions["convertEnemies"]>>): Array<Actor> {
-	return oldActors.map((a, i) => phaseResult.reduce((actor, curResult) => {
-		const idx = curResult.actorIndices.indexOf(i);
-		if (idx !== -1) {
-			const fp = actor.faithPoints ?? 0;
-			return { ...actor, faithPoints: fp - curResult.amount[idx] };
-		}
-		return actor;
-	}, a));
+function convertIgnorantsPhase(oldActors: Array<Actor>, convertIgnorantsVectors: Array<ReturnType<ActorActions["convertEnemies"]>>): Array<Actor> {
+	return oldActors.map((currentActor, actorIndex) => 
+		hasOneOfKinds(currentActor, [...walkerKeys]) ?
+		updateIgnorance(currentActor, actorIndex, convertIgnorantsVectors.map((v) => ({actorIndices: v.actorIndices, amount: v.amount.map((a) => -a)}))) :
+		currentActor
+	);
 }
 
 /**
@@ -93,4 +103,4 @@ function enemyFleePhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<A
 	return oldActors.filter((a, i) => !phaseResult[i]);
 }
 
-export { spawnPhase, temperatureRisePhase, spreadIgnorancePhase, convertEnemiesPhase, enemyFleePhase, movePhase, playPhase };
+export { spawnPhase, temperatureRisePhase, spreadIgnorancePhase, convertIgnorantsPhase as convertEnemiesPhase, enemyFleePhase, movePhase, playPhase };

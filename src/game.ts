@@ -9,6 +9,7 @@ import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
 import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
 import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./util";
+import { getFaithPoints } from "./props";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -175,7 +176,7 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);
 	const phases: Array<Phase> = initPhases();
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
-	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => spaghettiMonster.faithPoints! > 0)) {
+	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
 		//console.log(`hp : ${filterByKinds(actors, ["spaghettiMonster"])[0].faithPoints}`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors, spawnersAxis);

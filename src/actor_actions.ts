@@ -6,8 +6,8 @@ import type { World } from "./world";
 import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement, fisherYatesShuffle } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
-import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower } from "./props";
-import { filterActorsByPosition, filterByKinds } from "./actor";
+import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower, getFaithPoints } from "./props";
+import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys } from "./actor";
 import { AxisLength } from "./world";
 
 /**
@@ -78,7 +78,7 @@ function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawn
  */
 function spreadIgnorance(actors: Array<Actor>, ignoranceSpreader: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
 	const actorsToSpreadIgnoranceIndices: Array<number> = actors.reduce((actorsToSpreadIgnorance: Array<number>, currentActor: Actor, actorIndex: number) =>
-		currentActor.kind === "ignorant" && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
+		hasOneOfKinds(currentActor, ["ignorant"]) && distance(currentActor.position, ignoranceSpreader.position) <= getRange(ignoranceSpreader) ? actorsToSpreadIgnorance.concat(actorIndex) : actorsToSpreadIgnorance,
 		[]);
 	const amount = actorsToSpreadIgnoranceIndices.map((_) => getSpreadIgnorancePower(ignoranceSpreader));
 	return { actorIndices: actorsToSpreadIgnoranceIndices, amount }; // amount is an array of the same number, but this could be changed
@@ -106,7 +106,7 @@ function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, worl
 function convertEnemies(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
 	const range = getRange(actor) ?? 3;
 	const actorIndices = actors.filter((currentActor) => currentActor !== actor && 
-	currentActor.kind !== "ignorant" &&
+	!hasOneOfKinds(currentActor, ["ignorant"]) &&
 	distance(currentActor.position, actor.position) <= range)
 	.map((a, i) => i);
 	const amount = actorIndices.map((_) => getConviction(actor) ?? 1);
@@ -122,9 +122,10 @@ function convertEnemies(actors: Array<Actor>, actor: Actor, world: World, spawne
  * @returns true iif the current actor decides to not exist anymore
  */
 function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["enemyFlee"]> {
-	if (actor.kind === "ground" || actor.kind === "goodGuy")
-		return false;
-	return (actor?.faithPoints ?? 0) <= 0;
+	// if (actor.kind === "ground" || actor.kind === "goodGuy")
+	// 	return false;
+	// return (actor?.faithPoints ?? 0) <= 0;
+	return hasOneOfKinds(actor, [...walkerKeys, "spaghettiMonster"]) ? getFaithPoints(actor) <= 0 : false;
 }
 
 function getEmptyCell(world: World, actors: Array<Actor>): Vector2D | undefined {

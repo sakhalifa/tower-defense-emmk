@@ -12,12 +12,11 @@ import { setSpawnProba, setWaypointNumber, setWaypointTarget, setWaypointTargetN
  * @param position The position of the created Actor
  * @param actions The actions of the created Actor
  * @param kind The kind of the created Actor
- * @param externalProps The external properties of the created Actor
  * @param faithPoints The faithPoints points of the created Actor
  * @returns A new actor
  */
 function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, faithPoints?: number): Actor {
-	return { position, actions: { ...defaultActions, ...actions }, kind, faithPoints };
+	return { position, actions: { ...defaultActions, ...actions }, kind, externalProps: {faithPoints} };
 }
 
 function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, waypointTargetNumber: number) {

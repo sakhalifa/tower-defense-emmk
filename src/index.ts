@@ -4,7 +4,8 @@ import type { Kind, Actor } from "./actor";
 import type { Axis } from "./util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
-import { filterByKinds } from "./actor";
+import { filterByKinds, hasOneOfKinds } from "./actor";
+import { getFaithPoints } from "./props";
 
 const sprites = [
     document.getElementById("undefinedSprite"),
@@ -70,7 +71,7 @@ function drawActor(actor: Actor): HTMLDivElement {
     child.style.gridColumnStart = (actor.position.x + 1).toString();
     child.style.gridRowStart = (actor.position.y + 1).toString();
 
-    if (!["ground", "spaghettiMonster"].includes(actor.kind)) {
+    if (!hasOneOfKinds(actor, ["ground", "spaghettiMonster"])) {
         const hp = document.createElement('div') as HTMLDivElement;
         hp.classList.add('hpBar');
         child.appendChild(hp);
@@ -100,7 +101,7 @@ async function main() {
     const grid = document.getElementById("display-grid") as HTMLDivElement;
     grid.style.gridTemplate = `repeat(${world.height}, 1fr) / repeat(${world.width}, 1fr)`;
 
-    while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => spaghettiMonster.faithPoints! > 0)) {
+    while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
         actors = nextTurn(phases, world, actors, spawnersAxis);
         await displayWorldToGrid(world, actors, grid);
         // wait

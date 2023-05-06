@@ -57,9 +57,17 @@ function getSpreadIgnorancePower(actor: Actor): number {
 	return actor.externalProps.spreadIgnorancePower;
 }
 
+function setFaithPoints(actor: Actor, faithPoints: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, faithPoints: faithPoints } };
+}
+
+function getFaithPoints(actor: Actor): number {
+	return actor.externalProps.faithPoints;
+}
+
 export {
 	setConviction, getConviction, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba,
-	setSpreadIgnorancePower, getSpreadIgnorancePower
+	setSpreadIgnorancePower, getSpreadIgnorancePower, setFaithPoints, getFaithPoints
 };

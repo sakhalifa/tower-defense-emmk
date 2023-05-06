@@ -17,7 +17,8 @@ type Walker = typeof walkerKeys[number];
 /**
  * All the different actor kinds.
  */
-type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettiMonster" | "player";
+const kindKeys = [...walkerKeys, "goodGuy", "ground", "spawner", "spaghettiMonster", "player"] as const;
+type Kind = typeof kindKeys[number];
 
 /**
  * An actor. It has a position in the world, a kind, faithPoints points,
@@ -30,20 +31,23 @@ type Actor = {
 	actions: ActorActions;
 	kind: Kind;
 	externalProps?: any;
-	faithPoints?: number;
 };
 
+function hasOneOfKinds(actor: Actor, kinds: Array<Kind>) {
+	return kinds.includes(actor.kind);
+}
+
 function isWalker(actor: Actor): boolean {
-	return walkerKeys.some((key) => actor.kind === key);
+	return hasOneOfKinds(actor, [...walkerKeys]);
 }
 
 /**
- * Returns the string representation of the given actor
+ * Returns a string representation of the given actor
  * @param actor The actor that is described by the returned string
- * @returns the string representation of the actor
+ * @returns a string representation of the actor
  */
 function actorToString(actor: Actor): string {
-	return `{position: ${vector2DToString(actor.position)}${actor.faithPoints !== undefined ? ', fp:' + actor.faithPoints : ''}}`;
+	return `{position: ${vector2DToString(actor.position)}, kind: ${actor.kind}}`;
 }
 
 /**
@@ -135,5 +139,5 @@ function filterActorsByPosition(actors: Array<Actor>, xPosition?: number, yPosit
 
 export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, 
 	stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment,
-	filterActorsByPosition, isWalker };
+	filterActorsByPosition, isWalker, hasOneOfKinds, walkerKeys };
 export type { Actor, Kind, Walker };
