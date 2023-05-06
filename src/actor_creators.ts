@@ -32,7 +32,7 @@ function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, wayp
  * @param faithPoints the level of faithPoints of the ignorant
  * @returns the created Actor of kind "ignorant"
  */
-function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 10): Actor {
+function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
 	//{ waypointTargetNumber: 1, waypointTarget: waypointTarget }
 	return setWaypointTargetAndNumber(
 		createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant", faithPoints),
@@ -47,7 +47,7 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
  * @param faithPoints the level of faithPoints of the ignoranceSpreader
  * @returns the created Actor of kind "ignoranceSpreader"
  */
-function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 7): Actor {
+function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
 	//
 	return setWaypointTargetAndNumber(
 		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee }, "ignoranceSpreader", faithPoints),
@@ -117,7 +117,7 @@ function createGoodGuy(position: Vector2D): Actor {
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
  * @returns the created Actor of kind "spaghettiMonster"
  */
-function createspaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 50): Actor {
+function createspaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 100): Actor {
 	return setWaypointNumber(createActor(position, {}, "spaghettiMonster", faithPoints), waypointNumber);
 }
 

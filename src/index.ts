@@ -1,6 +1,6 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import type { Kind, Actor } from "./actor";
+import { Kind, Actor, walkerKeys } from "./actor";
 import type { Axis } from "./util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
@@ -58,11 +58,13 @@ const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMo
  * @param world The world
  * @param actors The actors
  */
-function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement) {
+function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement): void {
     // generate actorCards
     // remplace enfants display-grid par les nouveaux actorCard
-
-    grid.replaceChildren(...actors.map(drawActor));
+    const actorsInDrawOrder = kindDrawOrder.reduce(
+        (acc: Array<Actor>, kind) => acc.concat(actors.filter((a) => hasOneOfKinds(a, [kind])))
+    , []);
+    grid.replaceChildren(...actorsInDrawOrder.map(drawActor));
 }
 
 function drawActor(actor: Actor): HTMLDivElement {
@@ -71,16 +73,14 @@ function drawActor(actor: Actor): HTMLDivElement {
     child.style.gridColumnStart = (actor.position.x + 1).toString();
     child.style.gridRowStart = (actor.position.y + 1).toString();
 
-    if (!hasOneOfKinds(actor, ["ground", "spaghettiMonster"])) {
+    if (hasOneOfKinds(actor, [...walkerKeys])) {
         const hp = document.createElement('div') as HTMLDivElement;
         hp.classList.add('hpBar');
         child.appendChild(hp);
 
         const health = document.createElement('div') as HTMLDivElement;
         health.classList.add('health');
-        health.style.width = "20%";
-        health.style.height = "100%";
-        health.style.backgroundColor = "green";
+        health.style.width = `${(actor.externalProps.faithPoints).toString()}%`;
         hp.appendChild(health);
     }
 
@@ -92,7 +92,7 @@ function drawActor(actor: Actor): HTMLDivElement {
     return child;
 }
 
-async function main() {
+async function main(): Promise<void> {
     const world: World = initWorld(10, 10);
 	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
 	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);

@@ -217,6 +217,11 @@ i {
 	margin: 0;
 }
 
+.health{
+	height: 100%;
+	background-color: green;
+}
+
 .menu {
     width: 20vw;
     height: 70vh;
