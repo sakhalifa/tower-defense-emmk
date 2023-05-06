@@ -57,7 +57,7 @@ function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<Ac
 
 function updateIgnorance(actor: Actor, actorIndex: number, spreadConvictionResults: Array<ReturnType<typeof impactActorsConviction>>): Actor {
 	return setFaithPoints(actor, 
-		Math.max(spreadConvictionResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
+		Math.min(spreadConvictionResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
 					ignoranceAcc + (spreadIgnoranceResult.impactAmounts[spreadIgnoranceResult.impactedActorsIndices.indexOf(actorIndex)] ?? 0),
 					getFaithPoints(actor)), getMaxFaith(actor))
 	);
