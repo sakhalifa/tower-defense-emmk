@@ -6,7 +6,7 @@ import type { World } from "./world";
 import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement, fisherYatesShuffle } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
-import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower, getFaithPoints } from "./props";
+import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower, getFaithPoints, getPlayProba } from "./props";
 import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys } from "./actor";
 import { AxisLength } from "./world";
 
@@ -65,7 +65,7 @@ function spawn(actors: Array<Actor>, spawner: Actor, world: World, spawnerAxis?:
  */
 function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["temperatureRise"]> {
 	return actors.find((a) => a.kind === "spaghettiMonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
-		? 0 : (getConviction(actor) ?? 1);
+		? 0 : getConviction(actor);
 }
 
 function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impactedKinds: Array<Kind>,
@@ -91,7 +91,7 @@ function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impact
  */
 function spreadIgnorance(actors: Array<Actor>, actingActor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
 	return impactActorsConviction(actors, actingActor, ["ignorant"],
-	(impactingActor, actorsToImpact) => actorsToImpact.map((a) => getSpreadIgnorancePower(impactingActor)));
+	(impactingActor, actorsToImpact) => Array.from({length: actorsToImpact.length}, (_) => getSpreadIgnorancePower(impactingActor)));
 }
 
 /**
@@ -104,7 +104,7 @@ function spreadIgnorance(actors: Array<Actor>, actingActor: Actor, world: World,
  */
 function convertEnemies(actors: Array<Actor>, actingActor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
 	return impactActorsConviction(actors, actingActor, [...walkerKeys],
-	(impactingActor, actorsToImpact) => actorsToImpact.map((a) => -getConviction(impactingActor)));
+	(impactingActor, actorsToImpact) => Array.from({length: actorsToImpact.length}, (_) => -1 * getConviction(impactingActor)));
 }
 
 /**
@@ -146,7 +146,7 @@ function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vecto
 	return possibleMoves.length > 0 ? getRandomArrayElement(possibleMoves) : undefined;
 }
 
-function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
+function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawnerAxis: Axis): Vector2D | undefined {
 	const numberOfLines = AxisLength(world, otherAxis(spawnerAxis));
 	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
 	const groundListPerLine: Array<Array<Actor>> = consideredLineOrder.map(
@@ -168,7 +168,12 @@ function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axi
 		}
 		, undefined);
 	}, undefined);
-	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range) : getEmptyCell(world, actors);
+	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range) : undefined;
+}
+
+function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
+	if (Math.random() > getPlayProba(actor)) return undefined;
+	return playPriorityAroundLoneGrounds(actors, world, spawnerAxis) ?? getEmptyCell(world, actors);
 }
 
 export type { ActorActions };

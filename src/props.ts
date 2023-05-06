@@ -69,9 +69,14 @@ function getMaxFaith(actor: Actor): number {
 	return actor.externalProps!.maxFaith;
 }
 
+function getPlayProba(actor: Actor): number {
+	return actor.externalProps!.playProba;
+}
+
 export {
 	setConviction, getConviction, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba,
-	setSpreadIgnorancePower, getSpreadIgnorancePower, setFaithPoints, getFaithPoints, getMaxFaith
+	setSpreadIgnorancePower, getSpreadIgnorancePower, setFaithPoints, getFaithPoints, getMaxFaith,
+	getPlayProba
 };
