@@ -46,6 +46,12 @@ function distance(a: Vector2D, b: Vector2D): number {
 	return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
+function getMovementVectorsInRange(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D>  {
+	return Array.from({ length: 2 * range + 1 }, (_, i) =>
+	Array.from({ length: 2 * range + 1 }, (_, j) => createVector(i - range, j - range))
+	).flat().filter((vector) => distanceFunction(createVector(0, 0) , vector) <= range);
+}
+
 /**
  * Returns a Vector2D containing the information of the movement that has to be done in order to move by one step from fromPosition towards the given toPosition.
  * First, the movement is done along the given "firstAxis" parameter.
@@ -109,6 +115,6 @@ function vectorHasCoords(vector: Vector2D, xCoord?: number, yCoord?: number): bo
 	(yCoord === undefined || (vector.y === yCoord));
 }
 
-export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath, vectorHasCoords };
+export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath, vectorHasCoords, getMovementVectorsInRange };
 
 export type { Vector2D };

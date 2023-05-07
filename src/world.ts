@@ -1,8 +1,8 @@
-import type { Vector2D } from "./geometry";
+import { Vector2D, translatePoint } from "./geometry";
 import { Axis } from "./util";
 
 import { randomUniqueIntegers } from "./util";
-import { createVector, linkingPath } from "./geometry";
+import { createVector, linkingPath, getMovementVectorsInRange } from "./geometry";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
@@ -11,7 +11,6 @@ import { createVector, linkingPath } from "./geometry";
 type World = {
 	readonly width: number;
 	readonly height: number;
-	allPositionsInWorld: Array<Vector2D>
 };
 
 /**
@@ -27,13 +26,9 @@ function createWorld(width: number, height: number): World {
 	if (!Number.isInteger(width) || !Number.isInteger(height)){
 		throw new Error("World size values must be integers");
 	}
-	const allPositionsInWorld: Array<Vector2D> = Array.from({length: width}, (_, currentWidth) => {
-		return Array.from({length: height}, (_, currentHeight) => createVector(currentWidth, currentHeight));
-	}).flat();
 	return {
 		width,
-		height,
-		allPositionsInWorld
+		height
 	};
 }
 
@@ -114,6 +109,19 @@ function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): 
 	}, []);
 }
 
+function getVectorsInRangeInWorld(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number, world: World, fromPosition: Vector2D): Array<Vector2D> {
+	return getMovementVectorsInRange(range, distanceFunction).map((movementVector) => translatePoint(fromPosition, movementVector))
+	.filter((translatedPosition) => isPositionInWorld(world, translatedPosition));
+}
+
+function allPositionsInWorld(world: World): Array<Vector2D> {
+	return Array.from({length: world.width}, (_, currentWidth) => {
+		return Array.from({length: world.height}, (_, currentHeight) => createVector(currentWidth, currentHeight));
+	}).flat();
+}
+
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking, AxisLength };
+export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
+	createPositionsAlongAxis, positionsLinking, AxisLength, getVectorsInRangeInWorld,
+	allPositionsInWorld};

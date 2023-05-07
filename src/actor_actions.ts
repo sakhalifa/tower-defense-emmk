@@ -1,7 +1,7 @@
 import type { Actor, Kind } from "./actor";
 import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
-import type { World } from "./world";
+import { World, getVectorsInRangeInWorld, allPositionsInWorld } from "./world";
 
 import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement, fisherYatesShuffle } from "./util";
 import { createWalker } from "./actor_creators";
@@ -131,18 +131,18 @@ function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis
 }
 
 function getEmptyCell(world: World, actors: Array<Actor>): Vector2D | undefined {
-	return fisherYatesShuffle(world.allPositionsInWorld).find((currentWorldPosition) => 
+	return fisherYatesShuffle(allPositionsInWorld(world)).find((currentWorldPosition) => 
 	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
 }
 
-function getEmptyCellsInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number): Array<Vector2D> {
-	return world.allPositionsInWorld.filter((currentWorldPosition) => 
-	distance(currentWorldPosition, position) <= range &&
+function getEmptyCellsInRange(world: World, actors: Array<Actor>, fromPosition: Vector2D, range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D> {
+	return getVectorsInRangeInWorld(range, distanceFunction, world, fromPosition).filter((currentWorldPosition) => 
+	distance(currentWorldPosition, fromPosition) <= range &&
 	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
 }
 
-function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number): Vector2D | undefined {
-	const possibleMoves = getEmptyCellsInRange(world, actors, position, range);
+function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Vector2D | undefined {
+	const possibleMoves = getEmptyCellsInRange(world, actors, position, range, distanceFunction);
 	return possibleMoves.length > 0 ? getRandomArrayElement(possibleMoves) : undefined;
 }
 
@@ -161,14 +161,15 @@ function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawn
 		return groundListPerLine.reduce((acc2, currentGrounds) => {
 			if (acc2) return acc2;
 			if (currentGrounds.length === groundListPerLineConstraint) {
-				const groundAroundWhichToPlay: Actor | undefined = currentGrounds.find((currentGround) => getEmptyCellInRange(world, actors, currentGround.position, range));
+				const groundAroundWhichToPlay: Actor | undefined = currentGrounds
+				.find((currentGround) => getEmptyCellInRange(world, actors, currentGround.position, range, distance));
 				return groundAroundWhichToPlay;
 			}
 			return acc2;
 		}
 		, undefined);
 	}, undefined);
-	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range) : undefined;
+	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range, distance) : undefined;
 }
 
 function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
