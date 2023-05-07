@@ -3,6 +3,7 @@ import { enemyFleePhase, movePhase, spawnPhase, temperatureRisePhase, spreadConv
 import { createVector } from "../src/geometry";
 import { defaultActions, enemyFlee } from "../src/actor_actions";
 import { setWaypointTarget, setWaypointTargetNumber } from "../src/props";
+import { move } from "./actor.test";
 
 
 test("SpawnPhase test", () => {
@@ -33,10 +34,10 @@ test("movePhase test", () => {
     const actor = setWaypointTargetNumber(createActor(createVector(0, 0), defaultActions, "ignorant"), 0);
     const movedActor = setWaypointTargetNumber(createActor(createVector(10, 5), defaultActions, "ignorant"), 0);
     expect(movePhase([], [])).toEqual([]);
-    expect(movePhase([waypoint1, actor], [createVector(0, 0), createVector(10, 5)])).toEqual([waypoint1, movedActor]);
-    expect(movePhase([movedActor], [createVector(-10, -5)])).toEqual([actor]);
-    expect(movePhase([movedActor, waypoint1], [createVector(-10, -5), createVector(0, 0)])).toEqual([actor, waypoint1]);
-    expect(movePhase([actor, movedActor, actor], [createVector(0, 0), createVector(-10, -5), createVector(10, 5)])).toEqual([actor, actor, movedActor]);
+    expect(movePhase([waypoint1, actor], [[move, createVector(0, 0)], [move, createVector(10, 5)]])).toEqual([waypoint1, movedActor]);
+    expect(movePhase([movedActor], [[move, createVector(-10, -5)]])).toEqual([actor]);
+    expect(movePhase([movedActor, waypoint1], [[move, createVector(-10, -5)], [move, createVector(0, 0)]])).toEqual([actor, waypoint1]);
+    expect(movePhase([actor, movedActor, actor], [[move, createVector(0, 0)], [move, createVector(-10, -5)], [move, createVector(10, 5)]])).toEqual([actor, actor, movedActor]);
 });
 
 // update faithPoints

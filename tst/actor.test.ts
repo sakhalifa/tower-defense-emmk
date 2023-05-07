@@ -1,6 +1,7 @@
 import type { Actor } from "../src/actor";
 import type { Axis } from "../src/util";
 import type { World } from "../src/world";
+import { ActorActions } from "../src/actor_actions";
 
 import { createActor, createGround } from "../src/actor_creators";
 import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
@@ -8,9 +9,9 @@ import { defaultActions } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld, worldToString } from "../src/world";
 
-function move(_: Array<Actor>, __: Actor) {
-    return createVector(0, 0);
-}
+const move = (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["move"]> => {
+	return [move, createVector(0, 0)];
+};
 
 function spreadIgnorance(_: Array<Actor>, __: Actor, ___: World, ____?: Axis) {
     return {impactedActorsIndices: [0], impactAmounts: [0]};
@@ -72,3 +73,4 @@ function findNextWaypoint(actors: Array<Actor>, currentwaypointTargetNumber: num
 	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentwaypointTargetNumber + 1);
 }
 
+export {move};
