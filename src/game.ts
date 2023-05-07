@@ -1,12 +1,15 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import type { Actor } from "./actor";
-import { isPositionInWorld, createWorld } from "./world";
-import { createGround, createSpaghettimonster, createSpawner, createWalker, findKind } from "./actor";
+import { Actor, filterByKinds } from "./actor";
+import type { Axis } from "./util";
+
+import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
+import { createGround, createspaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
+import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
-import { createVector } from "./geometry";
-import { convertEnemiesPhase, enemyFleePhase, healPhase, spawnPhase, temperatureRisePhase, movePhase } from "./game_phases";
-import { getRandomArrayElement } from "./util";
+import { spreadConvictionPhase, enemyFleePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
+import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./util";
+import { getFaithPoints } from "./props";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -16,74 +19,132 @@ import { getRandomArrayElement } from "./util";
  * @returns A brand new world where 0 turns have elapsed
  */
 function initWorld(width: number, height: number): World {
-	return createWorld(width, height, 0);
+	return createWorld(width, height);
 }
 
 /**
- * 
  * @returns The array of phases
  */
 function initPhases(): Array<Phase> {
 	return [
 		createPhase("spawn", spawnPhase),
 		createPhase("temperatureRise", temperatureRisePhase),
-		createPhase("convertEnemies", convertEnemiesPhase),
+		createPhase("convertEnemies", spreadConvictionPhase),
+		createPhase("spreadIgnorance", spreadConvictionPhase),
 		createPhase("move", movePhase),
-		createPhase("heal", healPhase),
-		createPhase("enemyFlee", enemyFleePhase),
+		createPhase("play", playPhase),
+		createPhase("enemyFlee", enemyFleePhase)
 	];
-}
-
-// not pure
-function initWayPoints(world: World): Array<Actor> {
-	return [
-		createSpawner(createVector(0, 0)),
-		createSpawner(createVector(0, 1)),
-		createGround(createVector(Math.floor((world.width - 1) / 3), Math.floor((world.height - 1) / 3)), 1),
-		createGround(createVector(2 * Math.floor((world.width - 1) / 3), 2 * Math.floor((world.height - 1) / 3)), 2),
-		createSpaghettimonster(createVector(world.width - 1, world.height - 1), 3)
-	];
-}
-
-//not pure
-function initOtherActors(path: Array<Actor>): Array<Actor> {
-	const entries = findKind(path, "spawner");
-	return [
-		createWalker("ignorant", path, getRandomArrayElement(entries).position, undefined, 4),
-		createWalker("healer", path, getRandomArrayElement(entries).position, undefined, 4)
-	];
-}
-
-//not pure
-function initActors(world: World): Array<Actor> {
-	const path: Array<Actor> = initWayPoints(world);
-	return path.concat(initOtherActors(path));
 }
 
 /**
- * Returns whether an actor is in a valid state or not
- * @param world The world
- * @param actor The actor
- * @returns true iif the actor is in the world's bounds
+ * Randomly initializes spawners
+ * @param world the world where the spawners are created
+ * @param minSpawners the minimum number of returned spawners
+ * @param maxSpawners the maximum number of returned spawners
+ * @param spawnersParallelAxis the returned spawners can reach each other by a translation along this axis
+ * @param spawnerLineNumber the coordinate of the returned position on the not-given axis
+ * @param averageSpawnsPerPhase number representing the average of the sum of spawns during the spawn phase, for the returned spawners.
+ * Note that this number is inferior to the actual number of returned spawners.
+ * @returns an array of 1 to maxSpawners spawners with unique positions, that all have the same coordinate value on the axis that was not given
+ * and that have the same probability of making someone spawn per spawn phase.
  */
-function validNewActor(world: World, actor: Actor): boolean {
-	return isPositionInWorld(world, actor.position);
+function initSpawners(world: World, minSpawners: number, maxSpawners: number, spawnersParallelAxis : Axis, spawnerLineNumber: number, averageSpawnsPerPhase: number = 0.6): Array<Actor> {
+	if (minSpawners < 1) {
+		throw new Error("There should be at least one spawner in the game.");
+	}
+	const spawnersPerpendicularAxisCoord = randomUniqueIntegers(minSpawners, maxSpawners, 0, spawnersParallelAxis === "x" ? world.width : world.height);
+	const spawnProba = averageSpawnsPerPhase / spawnersPerpendicularAxisCoord.length;
+	console.log(spawnProba);
+	return createPositionsAlongAxis(spawnersParallelAxis, spawnersPerpendicularAxisCoord, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition, spawnProba));
 }
 
 /**
- * Ensures all actors are in a valid state and if they are not, resolves the conflict
- * @param world The world
- * @param actors The actors
- * @param proposals The new actors proposal
- * @returns An array of actor with no conflicts
+ * Randomly initializes grounds
+ * @param world the world where the grounds are created
+ * @param minGroundsPerLine the minimum number of created grounds per line along the groundsAxis
+ * @param maxGroundsPerLine the maximum number of created grounds per line along the groundsAxis
+ * @param groundsAxis the returned grounds can reach each other by a translation along this axis
+ * @param groundLineNumbers the coordinates of the returned positions on the not-given axis (for each line where ground are created)
+ * @param numberOfGroundLines The number of lines of grounds (in groundsAxis direction) where grounds are created
+ * @returns an array of numberOfGroundLines to maxGroundsPerLine * numberOfGroundLines grounds with unique positions
+ */
+function initGroundWaypoints(world: World, minGroundsPerLine: number, maxGroundsPerLine: number, groundsAxis : Axis, groundLineNumbers: Array<number>, numberOfGroundLines: number): Array<Array<Actor>> {
+	return Array.from({ length: numberOfGroundLines },
+		(_, index) => (randomPositionsAlongAxis(world, minGroundsPerLine, maxGroundsPerLine, groundsAxis, groundLineNumbers[index])
+		.map((groundPosition) => createGround(groundPosition, index + 1)))
+		);
+}
+
+/**
+ * Randomly initializes spaghettiMonsters
+ * @param world the world where the spaghettiMonsters are created
+ * @param minSpaghettiMonsters the minimum number of returned spaghettiMonsters
+ * @param maxSpaghettiMonsters the maximum number of returned spaghettiMonsters
+ * @param spaghettiMonstersAxis the returned spaghettiMonsters can reach each other by a translation along this axis
+ * @param spaghettiMonstersLineNumber the coordinate of the returned position on the not-given axis
+ * @param waypointNumber the waypointNumber of the spaghettiMonsters
+ * @returns an array of 1 to maxSpaghettiMonsters spaghettiMonsters with unique positions, that all have the same coordinate value on the axis that was not given
+ */
+function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSpaghettiMonsters: number, spaghettiMonstersAxis : Axis, spaghettiMonstersLineNumber: number, waypointNumber: number): Array<Actor> {
+	return randomPositionsAlongAxis(world, minSpaghettiMonsters,  maxSpaghettiMonsters, spaghettiMonstersAxis, spaghettiMonstersLineNumber)
+	.map((spaghettiMonsterPosition) => createspaghettiMonster(spaghettiMonsterPosition, waypointNumber));
+}
+
+/**
+ * Randomly creates the waypoints of the world (creates spawners, ground, and spaghettiMonster)
+ * @param world the world on which the waypoints are created
+ * @param intermediateWaypointsNumber the number of waypoints that have to be reached by the moving actors (spawner and spaghettiMonster not included)
+ * @param averageSpawnsPerPhase number representing the average of the sum of spawns during the spawn phase, for the returned spawners.
+ * Note that this number is inferior to the actual number of returned spawners.
+ * @returns the created waypoints of the world
+ */
+function initWayPointActors(world: World, intermediateWaypointsNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number): Array<Array<Actor>>{
+	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
+	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
+	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
+	const intermediateWaypointsLineNumber: Array<number> =
+	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
+	return [initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
+	.concat(initGroundWaypoints(world, 1, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
+	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
+}
+
+/**
+ * Initializes the actors. Should be used at the beginning of the game
+ * @param world the world where the actors are created
+ * @param intermediateWaypointLinesNumber the number of waypoints that the actors need to cross between the spawners and the spaghettiMonsters
+ * @param averageSpawnsPerPhase number representing the average of the sum of spawns during the spawn phase, for the returned spawners.
+ * Note that this number is inferior to the actual number of returned spawners.
+ * @returns the first actors of the game.
+ */
+function initActors(world: World, intermediateWaypointLinesNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number): Array<Actor> {
+	const waypoints: Array<Array<Actor>> = initWayPointActors(world, intermediateWaypointLinesNumber, spawnersAxis, averageSpawnsPerPhase);
+	return waypoints.flat()
+	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)), otherAxis(spawnersAxis))
+	.map((position) => createGround(position))).concat(createPlayer());
+}
+
+/**
+ * Ensures all proposed actors are in a valid state and if they are not, resolves the conflict
+ * @param world The world where the actors are
+ * @param actors The state of the actors before the proposal of their new state was made
+ * @param proposals We want to know if these actors are valid
+ * @returns An array of actor with valid states and no conflicts
  */
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
-		if (validNewActor(world, currentProposal)) {
+		if (currentProposal === undefined) throw new Error("undefined actor");
+		if (isValidActorInEnvironment(world, currentProposal)) {
+			if(isWalker(currentProposal) &&
+			!(filterByKinds(actors, ["ground", "spawner", "spaghettiMonster"])
+			.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position))
+			)) {
+				return acc;
+			}
 			return acc.concat(currentProposal);
-		} else {
-			return acc.concat(actors[actorIndex]); // doesn't check old position new state -> possible collisions etc
 		}
+		return acc;
 	}, []);
 }
 
@@ -92,15 +153,14 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
  * @param phases The phases
  * @param world The world
  * @param actors The actors
+ * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns A new array of actors
  */
-function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Array<Actor> {
+function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>, spawnersAxis: Axis): Array<Actor> {
 	return phases.reduce((someActors, aPhase) => {
 		const proposals: Actor[]
 			= aPhase.executePhase(someActors,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				someActors.map((anActor) => anActor.actions?.[aPhase.funcName]?.(someActors, anActor))
+				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor, world, spawnersAxis) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
 			);
 		return resolveProposals(world, someActors, proposals);
 	}, actors);
@@ -111,21 +171,18 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>): Arr
  * @param display The display function that displays a world and its actors
  */
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
-	const world: World = initWorld(7, 7);
-	let actors: Array<Actor> = initActors(world);
+	const world: World = initWorld(10, 10);
+	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);
 	const phases: Array<Phase> = initPhases();
-	let finished: boolean = false;
-	let i = 0;
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
-	while (!finished) {
-		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
+	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
+		//console.log(`hp : ${filterByKinds(actors, ["spaghettiMonster"])[0].faithPoints}`);
 		display(world, actors);
-		actors = nextTurn(phases, world, actors);
-		finished = i++ === 15;
+		actors = nextTurn(phases, world, actors, spawnersAxis);
 	}
-	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);
 }
 
 
-export { playGame, initWorld, initPhases, initActors, nextTurn };
+export { playGame, initWorld, initPhases, initActors, initSpawners, nextTurn, initGroundWaypoints };

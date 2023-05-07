@@ -4,15 +4,23 @@
 <head>
   <link rel="stylesheet" href="index.css">
   <script type="module" src="index.ts"></script>
+
+  <audio id="myAudio" loop>
+    <source src="resources/Chinese Rap Full.mp3" type="audio/mpeg">
+    Votre navigateur ne supporte pas l'audio HTML5.
+  </audio>  
 </head>
 
 <body class="warm-bg">
 
   <img src="resources/sprites/ignorant.png" class="hide" id="ignorantSprite">
   <img src="resources/sprites/pirate.png" class="hide" id="goodGuySprite">
-  <img src="resources/sprites/pirate.png" class="hide" id="groundSprite">
+  <img src="resources/sprites/FlyingSpaghettiMonster.png" class="hide" id="spaghettiMonsterSprite">
+  <img src="resources/sprites/pope.png" class="hide" id="ignoranceSpreaderSprite">
+  <img src="resources/sprites/ground.png" class="hide" id="groundSprite">
+  <img src="resources/sprites/spawner.png" class="hide" id="spawnerSprite">
   <img src="resources/sprites/waypoint.png" class="hide" id="waypointSprite">
-    <img src="resources/sprites/undefined.png" class="hide" id="undefinedSprite">
+  <img src="resources/sprites/undefined.png" class="hide" id="undefinedSprite">
   <header>
     <h1>Pastafarist</h1>
   </header>
@@ -25,26 +33,12 @@
         <div class="thermometer-base-fill"></div>
       </div>
     </div>
-    <div class="grid">
-      <canvas id="myCanvas"></canvas>
-    </div>
+    <div id="display-grid"></div>
     <div class="menu">
       <h1>Menu</h1>
       <div class="controls">
-        <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot">
+        <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot" onclick="playMusic()">
           <i class="fa-solid fa-fire-flame-curved fa-xl"></i>
-        </button>
-        <button id="hot" class="btn hot" aria-label="Set temperature to hot">
-          <i class="fa-solid fa-sun fa-xl"></i>
-        </button>
-        <button id="warm" class="btn warm" aria-label="Set temperature to warm">
-          <i class="fa-solid fa-cloud fa-xl"></i>
-        </button>
-        <button id="cold" class="btn cold" aria-label="Set temperature to cold">
-          <i class="fa-solid fa-snowflake fa-xl"></i>
-        </button>
-        <button id="very-cold" class="btn very-cold" aria-label="Set temperature to very cold">
-          <i class="fa-solid fa-icicles fa-xl"></i>
         </button>
       </div>
     </div>
@@ -77,14 +71,19 @@
     if (i <= 10)
       clearInterval(intervalHandler)
     tempFill.style.setProperty("top", `${i}px`);
-    bg(i);
+    document.body.className = `${FILL_HEIGHT[Math.trunc(i/58)]}-bg`;
     i--;
   }
 
-  function bg(x) {
-    document.body.className = `${FILL_HEIGHT[Math.trunc(x/58)]}-bg`;
-  }
+</script>
 
+
+<script>
+  var audio = document.getElementById("myAudio");
+
+  function playMusic() {
+    audio.play();
+  }
 </script>
 
 </html>

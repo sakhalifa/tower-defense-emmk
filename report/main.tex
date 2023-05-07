@@ -1,0 +1,141 @@
+\documentclass{article}
+
+\usepackage[T1]{fontenc} 
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{{./img/}}
+\usepackage{amsmath, amssymb}
+\usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{url}
+\usepackage[linktocpage=true]{hyperref}
+
+\title{Rapport de Projet : Tower Defense}
+\author{Youri CHANCRIN, Théo DESCOMPS, Samuel KHALIFA, Jean-Baptiste MARTINEZ}
+\date{\today}
+
+\makeatletter
+\let\mytitle\@title
+\let\myauthor\@author
+\makeatother
+
+\begin{document}
+
+\begin{flushleft}
+
+\thispagestyle{empty}
+\includegraphics[width=0.2\textwidth]{enseirb-matmeca}
+\graphicspath{{./img/}}
+
+\vspace{\stretch{0.4}}
+
+\hrulefill \\[2em]
+\begin{center}
+\textbf{\Huge \mytitle}\\[0.8em]
+{\large equipe : projetss6-tower-19048}
+\\[0.8em]
+\end{center}
+\hrulefill
+
+\vspace{\stretch{0.6}}
+
+{\large \textbf{Auteurs :} \myauthor}\\
+\vspace{\stretch{0.2}}
+{\large \textbf{Responsable de projet :} David Renault}\\
+\vspace{\stretch{0.2}}
+{\large \textbf{Enseignant référent :} Frédéric Herbreteau}
+
+\vspace{\stretch{1}}
+
+\begin{center}
+  Première année, filière informatique\\
+  Date : \today
+\end{center}
+
+\vspace{\stretch{1}}
+
+\hfill Version actuelle du document : draft
+
+\end{flushleft}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Sujet}
+\begin{enumerate}
+   \item Attentes:
+   \begin{itemize}
+      \item Faire un jeu de type tower défense
+      \item Utiliser la programmation fonctionnelle
+      \begin{itemize}
+         \item pureté, modularité, généralisation et spécialisation, fermetures, décorateurs, chaînage
+      \end{itemize}
+   \end{itemize}
+   \item Contraintes :
+   \begin{itemize}
+      \item Éviter la programmation orientée objet.
+      \item Type commun des entités du jeu "Actor".
+      \item Système de phases de jeu.
+      \item Programmation en TypeScript, tests avec Jest, utilisation de ESLint, client web avec parcel
+   \end{itemize}
+\end{enumerate}
+
+\section{Elements du jeu}
+- Monde
+- Acteurs
+- Phases
+- Boucle de jeu
+- Importance des modules génériques (utils.ts, geometry.ts)
+
+\section{Boucle de jeu}
+- Un monde = plan 2d
+- acteurs = séparé du monde.
+Phases:
+ - Acteur propose une action
+ - Phase transforme les acteurs en fonction de leurs propositions.
+ - Puis, le monde impose ses limites, corrigeant les acteurs invalides (en dehors du monde)
+
+
+\section{Phases, typage fort ou typage faible}
+Choix : Typage fort
+Parce que : Impose rigourosité et cohérence entre les types des propositions des 
+acteurs et la fonction transformant les acteurs et permet d'expérimenter avec 
+le riche système de type de Typescript, notamment les mapped types
+
+Inconvénient : pas dynamique, mais pas un besoin pour nous donc pas important
+
+- Actions par défaut.
+
+\section{Structure du monde et des acteurs}
+Choix : Les acteurs sont séparés du monde
+A cause de l'habitude de la programmation object, on aurait envie d'établir le plus de liens possible entre nos structures
+Parce qu'on est dans la programmation fonctionnelle, on ne peut modifier l'attribut d'un 'object' dans le recréer, 
+donc avoir les acteurs dans le monde est très impratique, car les acteurs sont sans cesse recréé, ceux qui forcerait de 
+recréer le monde pour rien.
+
+\section{Position des acteurs}
+Chaque acteur contient sa position.
+Si un acteur ne bouge pas, il n'est pas modifié.
+
+Inconvénient : complexité n carré, n le nombre d'acteur, pour avoir tous les acteurs à une certaine distance d'un acteur.
+
+Alternative : Faire un tableau 2D avec chaque acteur dans une case. Cependant, ce n'est pas une structure fonctionnelle, 
+le projet portant sur cette dernière, on évite donc l'utilisation d'une matrice des positions.
+
+\section{Génération aléatoire des Acteurs}
+- Génération aléatoire des chemins
+- Génération aléatoire des Acteurs
+
+\section{Détail de la structure Actor}
+- externalProps
+
+\section{Règles et fin de partie}
+
+\section{limite pureté}
+- Dès qu'on fait du random, c'est plus pure
+- Probleme de perf ?
+
+\end{document}

@@ -9,7 +9,7 @@
     "eslint": "npx eslint src tst",
     "check": "npx tsc -p tsconfig.json --noEmit",
     "main": "node --experimental-specifier-resolution=node dist/main.js",
-    "parcel": "npx parcel src/main.ts",
+    "parcel": "npx parcel src/index.html",
     "test": "npx jest --coverage",
     "watchTest": "npx jest --watchAll",
     "watch": "npx tsc -p tsconfig.json --watch",
@@ -36,7 +36,6 @@
     "eslint": "^8.36.0",
     "process": "^0.11.10",
     "tsc-watch": "^6.0.0",
-    "typescript": "^4.9.5",
-    "util": "^0.12.5"
+    "typescript": "^4.9.5"
   }
 }

@@ -1,3 +1,7 @@
+import type { Axis } from "./util";
+
+import { isDeepStrictEqual } from "./util";
+
 /**
  * A 2D vector
  */
@@ -42,6 +46,75 @@ function distance(a: Vector2D, b: Vector2D): number {
 	return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
-export { translatePoint, vector2DToString, createVector, distance };
+function getMovementVectorsInRange(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D>  {
+	return Array.from({ length: 2 * range + 1 }, (_, i) =>
+	Array.from({ length: 2 * range + 1 }, (_, j) => createVector(i - range, j - range))
+	).flat().filter((vector) => distanceFunction(createVector(0, 0) , vector) <= range);
+}
+
+/**
+ * Returns a Vector2D containing the information of the movement that has to be done in order to move by one step from fromPosition towards the given toPosition.
+ * First, the movement is done along the given "firstAxis" parameter.
+ * @param fromPosition the initial position, before the movement
+ * @param toPosition the position that we want to reach, from the fromPosition
+ * @param firstAxis the movement is done along this axis first.
+ * @returns a Vector2D containing the information of the movement that has to be done in order to move towards the given toPosition.
+ */
+function movingVector(fromPosition: Vector2D, toPosition: Vector2D, firstAxis: Axis = "x"): Vector2D {
+	switch (firstAxis) {
+		case "x":
+			if (fromPosition.x < toPosition.x) {
+				return createVector(1, 0);
+			} else if (fromPosition.x > toPosition.x) {
+				return createVector(-1, 0);
+			} else if (fromPosition.y < toPosition.y) {
+				return createVector(0, 1);
+			} else if (fromPosition.y > toPosition.y) {
+				return createVector(0, -1);
+			} else {
+				return createVector(0, 0);
+			}
+		case "y":
+			if (fromPosition.y < toPosition.y) {
+				return createVector(0, 1);
+			} else if (fromPosition.y > toPosition.y) {
+				return createVector(0, -1);
+			} else if (fromPosition.x < toPosition.x) {
+				return createVector(1, 0);
+			} else if (fromPosition.x > toPosition.x) {
+				return createVector(-1, 0);
+			} else {
+				return createVector(0, 0);
+			}
+		default:
+			throw new Error("Unknown axis");
+	}
+}
+
+function linkingPath(fromPosition: Vector2D, toPosition: Vector2D, firstAxis?: Axis): Array<Vector2D> {
+	fromPosition = translatePoint(fromPosition, movingVector(fromPosition, toPosition, firstAxis));
+	function linkingPathTailRecursive(fromPosition: Vector2D, toPosition: Vector2D, positionsAccumulator: Array<Vector2D>): Array<Vector2D> {
+		if (isDeepStrictEqual(fromPosition, toPosition)) {
+			return positionsAccumulator;
+		}
+		const positionToAdd = translatePoint(fromPosition, movingVector(fromPosition, toPosition, firstAxis));
+		return linkingPathTailRecursive(positionToAdd, toPosition, positionsAccumulator.concat(fromPosition));
+	}
+	return linkingPathTailRecursive(fromPosition, toPosition, []);
+}
+
+/**
+ * Returns true iff the given vector respects the coordinate constraints given as parameter
+ * @param vector the vector that is tested
+ * @param xCoord the x coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @param yCoord the x coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @returns true iff the given vector respects the coordinate constraints given as parameter
+ */
+function vectorHasCoords(vector: Vector2D, xCoord?: number, yCoord?: number): boolean {
+	return (xCoord === undefined || (vector.x === xCoord)) &&
+	(yCoord === undefined || (vector.y === yCoord));
+}
+
+export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath, vectorHasCoords, getMovementVectorsInRange };
 
 export type { Vector2D };

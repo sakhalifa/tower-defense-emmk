@@ -1,27 +1,29 @@
-import { Actor, actorToStringInWorld } from "../src/actor";
+import type { Actor } from "../src/actor";
+import type { Axis } from "../src/util";
 import type { World } from "../src/world";
 
-import { createActor, createGround, actorToString, translateActor, stringReplaceAt } from "../src/actor";
+import { createActor, createGround } from "../src/actor_creators";
+import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
+import { defaultActions } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
-
 import { createWorld, worldToString } from "../src/world";
 
 function move(_: Array<Actor>, __: Actor) {
     return createVector(0, 0);
 }
 
-function heal(_: Array<Actor>, __: Actor) {
-    return {actorIndices: [0], amount: [0]};
+function spreadIgnorance(_: Array<Actor>, __: Actor, ___: World, ____?: Axis) {
+    return {impactedActorsIndices: [0], impactAmounts: [0]};
 }
 
 function buildDummyActor(): Actor{
-    return { position: createVector(0, 1), actions: { move: move, heal: heal }, kind: "ignorant" };
+    return { position: createVector(0, 1), actions: defaultActions, kind: "ignorant"};
 }
 
 test("Actor create test", () => {
-    expect(createActor(createVector(0, 1), { move, heal }, "ignorant"))
+    expect(createActor(createVector(0, 1), {}, "ignorant"))
         .toEqual(buildDummyActor());
-    expect(createActor(createVector(100, 100), { move, heal }, "ignorant"))
+    expect(createActor(createVector(100, 100), { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
         .not.toEqual(buildDummyActor());
     expect(createActor(createVector(0, 1), { move }, "ignorant"))
         .not.toEqual(buildDummyActor());
@@ -30,35 +32,25 @@ test("Actor create test", () => {
 test("Actor to string test", () => {
     expect(actorToString({
         position: createVector(0, 1),
-        actions: { move, heal },
+        actions: defaultActions,
         kind: "ignorant"
-    })).toEqual("{position: (0, 1)}");
+    })).toEqual("{position: (0, 1), kind: ignorant}");
 });
 
 test("Actor translate test", () => {
     expect(translateActor(buildDummyActor(), createVector(0, 0))).toEqual(buildDummyActor());
     expect(translateActor(buildDummyActor(), createVector(1, 3))).not.toEqual(buildDummyActor());
-    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual({ position: createVector(1, 4), actions: { move: move, heal: heal }, kind: "ignorant" });
-});
-
-test("String replace test", () => {
-    expect(stringReplaceAt("Bonjour", 0, "B")).toBe("Bonjour");
-    expect(stringReplaceAt("Bonjour", -1, "B")).toBe("BBonjour");
-    expect(stringReplaceAt("Bonjour", -2, "B")).toBe("BBonjour");
-    expect(stringReplaceAt("Bonjour", 7, "B")).toBe("BonjourB");
-    expect(stringReplaceAt("Bonjour", 2, "Au revoir")).toBe("BoAu revoir");
-    expect(stringReplaceAt("Bonjour", -5, "abcde")).toBe("abcdeBonjour");
-    expect(stringReplaceAt("Bonjour", -3, "abcde")).toBe("abcdenjour");
+    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual(createActor(createVector(1, 4), {}, "ignorant"));
 });
 
 test("actorToStringInWorld test", () => {
-    const world = createWorld(3, 3, 0);
+    const world = createWorld(3, 3);
     expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
         .toEqual("      \ni     \n      ");
 });
 
 test("actorToStringInWorld test", () => {
-    const world = createWorld(3, 3, 0);
+    const world = createWorld(3, 3);
     expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
         .toEqual("      \ni     \n      ");
 });
@@ -76,7 +68,7 @@ test("findNextWaypoint test", () => {
         .toEqual(undefined);
 });
 
-function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number): Actor | undefined {
-	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentNextWaypointNumber + 1);
+function findNextWaypoint(actors: Array<Actor>, currentwaypointTargetNumber: number): Actor | undefined {
+	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentwaypointTargetNumber + 1);
 }
 

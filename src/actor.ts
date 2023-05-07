@@ -1,162 +1,143 @@
-import { Vector2D, createVector, vector2DToString, translatePoint } from "./geometry";
-import { isDeepStrictEqual } from "./util";
-import { ActionReturnTypes } from "./phase";
-import { worldStringVectorToIndex } from "./world";
-import { stringReplaceAt } from "./util";
-import { defaultActions, heal, moveTowardNextWaypoint } from "./actor_actions";
-
+import type { Vector2D } from "./geometry";
 import type { World } from "./world";
 import type { ActorActions } from "./actor_actions";
+
+import { vector2DToString, translatePoint, vectorHasCoords } from "./geometry";
+import { isDeepStrictEqual, getRandomArrayElement } from "./util";
+import { vectorToIndexInWorldString, isPositionInWorld } from "./world";
+import { stringReplaceAt } from "./util";
+import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget, getWaypointNumber } from "./props";
 
 /**
  * Actors that can move by themselves on the board.
  */
-type Walker = "ignorant" | "healer";
+const walkerKeys = ["ignorant", "ignoranceSpreader"] as const;
+type Walker = typeof walkerKeys[number];
 
 /**
  * All the different actor kinds.
  */
-type Kind = Walker | "goodGuy" | "ground" | "spawner" | "spaghettimonster";
+const kindKeys = [...walkerKeys, "goodGuy", "ground", "spawner", "spaghettiMonster", "player"] as const;
+type Kind = typeof kindKeys[number];
 
 /**
- * An actor. It has a position, a kind, faith points, different actions, tags and additional properties that are not typed.
+ * An actor. It has a position in the world, a kind, faithPoints points,
+ * different actions describing its behavior during the differents Phases of the game,
+ * and additional properties that are not typed.
  * Additional properties should always check kind and/or tag before actually accessing them.
  */
 type Actor = {
 	position: Vector2D;
 	actions: ActorActions;
 	kind: Kind;
-	externalProps?: any;
-	tags?: string[];
-	ignorance?: number;
+	externalProps?: Record<any, any>;
 };
 
+function hasOneOfKinds(actor: Actor, kinds: Array<Kind>) {
+	return kinds.includes(actor.kind);
+}
+
+function isWalker(actor: Actor): boolean {
+	return hasOneOfKinds(actor, [...walkerKeys]);
+}
+
 /**
- * Returns the string representation of the actor
- * @param actor The actor
- * @returns the string representation of the actor
+ * Returns a string representation of the given actor
+ * @param actor The actor that is described by the returned string
+ * @returns a string representation of the actor
  */
 function actorToString(actor: Actor): string {
-	return `{position: ${vector2DToString(actor.position)}${actor.ignorance !== undefined ? ', fp:' + actor.ignorance : ''}}`;
+	return `{position: ${vector2DToString(actor.position)}, kind: ${actor.kind}}`;
 }
 
 /**
- * Returns the string representation of the world with its actors
- * @param world The world
- * @param worldString The world string
- * @param actor The actor
- * @returns The string representation of the world with its actors
+ * Returns the string representation of the world with the given actor in it
+ * @param world The world represented by worldString, and where the actors are
+ * @param worldString The string that represents the world, but not necessarily representing all of the actors in the world
+ * @param actor The actor that is being added to the string representation of the world
+ * @returns The string representation of the world with the given actor in it
  */
 function actorToStringInWorld(world: World, worldString: string, actor: Actor): string {
-	return stringReplaceAt(worldString, worldStringVectorToIndex(world, actor.position), actor.kind.charAt(0));
+	return stringReplaceAt(worldString, vectorToIndexInWorldString(world, actor.position), actor.kind.charAt(0));
 }
 
 /**
- * Returns the actors from the given actors that are of the given kind
- * @param actors The actors being filtered
- * @param kind The kind used to filter the actors
- * @returns the actors from the given actors that are of the given kind
+ * Return a new array containing actors with the specified kind.
+ * 
+ * @param actors The array to filter from 
+ * @param kinds The kinds to keep
+ * @returns A new array with actor from the given array, of the given kind
  */
-function findKind(actors: Array<Actor>, kind: Kind): Array<Actor> {
-	return actors.reduce((entries: Array<Actor>, currentActor: Actor) => currentActor.kind === kind ? entries.concat(currentActor) : entries, []);
-}
-
-/**
- * Actor constructor
- * @param position The position
- * @param actions The actions
- * @param kind The kind
- * @param externalProps The external properties
- * @param tags The tags
- * @param ignorance The ignorance points
- * @returns A new actor
- */
-function createActor(position: Vector2D, actions: ActorActions, kind: Kind, externalProps?: any, tags?: string[], ignorance?: number): Actor {
-	return { position: position, actions: { ...defaultActions, ...actions }, tags: tags, kind: kind, ignorance: ignorance, externalProps: externalProps };
+function filterByKinds(actors: Array<Actor>, kinds : Array<Kind>): Array<Actor> {
+	return actors.filter((actor) => kinds.find((key) => actor.kind === key));
 }
 
 /**
  * Applies a translation to the actor's position and returns the translated actor.
- * @param actor The actor
+ * @param actor The actor that is being tranlated
  * @param movementVector The movement vector
  * @returns The actor after its position was translated according to a movement vector
  */
-function translateActor(actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
+function translateActor(actor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
 /**
- * 
- * @param actors 
- * @param currentNextWaypointNumber 
- * @returns 
+ * Returns the informations about the waypoint that should be the target once the given waypoint is reached
+ * @param actors all the actors of the game
+ * @param waypointTarget the position of the current waypoint target
+ * @param waypointTargetNumber the number of the current waypoint target
+ * @returns a dictionnary containing the informations about the waypoint that should be the target once the given waypoint is reached
  */
-function findNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number): Actor | undefined {
-	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentNextWaypointNumber + 1);
-}
-
-function updateNextWaypoint(actors: Array<Actor>, currentNextWaypointNumber: number, currentNextWaypointPosition: Vector2D): Actor["externalProps"] {
-	const nextWaypoint = findNextWaypoint(actors, currentNextWaypointNumber);
-	if (nextWaypoint !== undefined) {
-		return { nextWaypointNumber: nextWaypoint.externalProps.waypointNumber, nextWaypointPosition: nextWaypoint.position };
+function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, waypointTargetNumber: number): { waypointTargetNumber: number, waypointTarget: Actor["position"] } {
+	const possibilities = actors.filter((currentActor) => currentActor?.externalProps?.waypointNumber === waypointTargetNumber + 1);
+	if (!possibilities.length) {
+		return { waypointTargetNumber: waypointTargetNumber, waypointTarget: waypointTarget };
 	}
-	return { nextWaypointNumber: currentNextWaypointNumber, nextWaypointPosition: currentNextWaypointPosition };
+	const nextWaypointTarget = getRandomArrayElement(possibilities);
+	return { waypointTargetNumber: getWaypointNumber(nextWaypointTarget), waypointTarget: nextWaypointTarget.position };
 }
 
-function translateTowardWaypoint(actors: Array<Actor>, actor: Actor, movementVector: ActionReturnTypes["move"]): Actor {
-	const newPosition = translatePoint(actor.position, movementVector);
-	if (isDeepStrictEqual(newPosition, actor?.externalProps?.nextWaypointPosition)) {
-		return { ...actor, position: newPosition,
-			externalProps: updateNextWaypoint(actors, actor.externalProps.nextWaypointNumber, actor.externalProps.nextWaypointPosition) };
+/**
+ * Translates the movingActor according to the given movementVector, and updates its waypointTarget if it has been reached
+ * @param actors all the actors of the game
+ * @param movingActor the actor that is being translated
+ * @param movementVector the movement defining where the movingActor is moving
+ * @returns the movingActor with its updated position (after the movement)
+ */ 
+function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
+	const newPosition = translatePoint(movingActor.position, movementVector);
+	if ((isWalker(movingActor)) && isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
+		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));
+		return setWaypointTargetNumber(
+			setWaypointTarget({ ...movingActor, position: newPosition }, nextWaypoint.waypointTarget),
+			nextWaypoint.waypointTargetNumber);
 	}
-	return { ...actor, position: newPosition };
-}
-
-function createIgnorant(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint }, "ignorant", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
+	return { ...movingActor, position: newPosition };
 }
 
 /**
- * Constructor for a default "healer" actor
+ * Returns whether an actor is valid among an environment (world, other actors...) given as parameters
+ * @param world The world where the actor is
+ * @param actor We want to know if this actor is valid
+ * @returns true iif the actor is in the world's bounds
  */
-function createHealer(position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number): Actor {
-	return createActor(position, { move: moveTowardNextWaypoint, heal: heal }, "healer", { nextWaypointNumber: 1, nextWaypointPosition: nextWaypointPosition }, tags, ignorance);
-}
-
-type WalkerCreator = {
-	[key in Walker]: (position: Vector2D, nextWaypointPosition: Vector2D, tags?: string[], ignorance?: number) => Actor
-};
-
-const walkerCreator: WalkerCreator = {
-	ignorant: createIgnorant,
-	healer: createHealer
-};
-
-function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, tags?: string[], ignorance?: number): Actor {
-	const firstWaypoint = findNextWaypoint(path, 0);
-	return walkerCreator[kind](position, firstWaypoint?.position ?? position, tags, ignorance);
+function isValidActorInEnvironment(world: World, actor: Actor): boolean {
+	return isPositionInWorld(world, actor.position);
 }
 
 /**
- * Constructor for a default "spawner" actor
+ * Returns the actors from the given actor array whose position respect the given position constraints
+ * @param actors the actors potentially returned and againt which the coordinate constraints are tested
+ * @param xPosition the x coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @param yPosition the y coordinate constraint. If undefined, x coordinate is not a constraint.
+ * @returns the actors from the given actor array whose position respect the given position constraints
  */
-function createSpawner(position: Vector2D): Actor {
-	return createActor(position, {}, "spawner", { waypointNumber: 0 });
+function filterActorsByPosition(actors: Array<Actor>, xPosition?: number, yPosition?: number): Array<Actor> {
+	return actors.filter((currentActor) => vectorHasCoords(currentActor.position, xPosition, yPosition));
 }
 
-/**
- * Constructor for a default "ground" actor
- */
-function createGround(position: Vector2D, waypointNumber: number): Actor {
-	return createActor(position, {}, "ground", { waypointNumber: waypointNumber });
-}
-
-/**
- * Constructor for a default "spaghettimonster" actor
- */
-function createSpaghettimonster(position: Vector2D, waypointNumber: number): Actor {
-	return createActor(position, {}, "spaghettimonster", { waypointNumber: waypointNumber });
-}
-
-export { actorToString, actorToStringInWorld, createActor, createGround, createSpaghettimonster, createSpawner, createHealer, createWalker, createIgnorant, translateActor, translateTowardWaypoint, findNextWaypoint, stringReplaceAt, findKind, defaultActions };
-export type { Actor, Kind };
+export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, 
+	stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment,
+	filterActorsByPosition, isWalker, hasOneOfKinds, walkerKeys };
+export type { Actor, Kind, Walker };

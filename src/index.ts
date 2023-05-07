@@ -1,21 +1,21 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import type { Kind, Actor } from "./actor";
+import { Kind, Actor, walkerKeys } from "./actor";
+import type { Axis } from "./util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
-import { Vector2D, createVector } from "./geometry";
-
-const canvas: HTMLCanvasElement = document.getElementById("myCanvas") as HTMLCanvasElement;
-
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const ctx = canvas.getContext("2d")!;
-ctx.imageSmoothingEnabled = false;
+import { filterByKinds, hasOneOfKinds } from "./actor";
+import { getFaithPoints, getMaxFaith } from "./props";
 
 const sprites = [
     document.getElementById("undefinedSprite"),
     document.getElementById("ignorantSprite"),
     document.getElementById("goodGuySprite"),
     document.getElementById("waypointSprite"),
+    document.getElementById("spaghettiMonsterSprite"),
+    document.getElementById("ignoranceSpreaderSprite"),
+    document.getElementById("groundSprite"),
+    document.getElementById("spawnerSprite")
 ].map((element) => element as HTMLImageElement);
 
 /**
@@ -24,7 +24,7 @@ const sprites = [
  * @returns a promise that waits `ms` seconds
  */
 function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -33,93 +33,80 @@ function delay(ms: number) {
  * @returns The sprite corresponding to the actor's kind.
  */
 function getActorSprite(actorKind: Kind): HTMLImageElement {
-    switch(actorKind){
+    switch (actorKind) {
         case "ignorant":
             return sprites[1];
         case "goodGuy":
             return sprites[2];
         case "ground":
-            return sprites[3];
-        case "healer":
-            return sprites[2];
+            return sprites[6];
+        case "ignoranceSpreader":
+            return sprites[5];
+        case "spaghettiMonster":
+            return sprites[4];
+        case "spawner":
+            return sprites[7];
         default:
             return sprites[0];
     }
 }
 
-/**
- * Draw a line on the canvas
- * @param begin the beginning of the line
- * @param end the ending of the line
- * @param color the color of the line
- */
-function drawLine(begin: Vector2D, end: Vector2D, color: string){
-    ctx?.beginPath();
-    ctx.lineWidth = 1;
-    ctx?.moveTo(begin.x, begin.y);
-    ctx?.lineTo(end.x, end.y);
-    ctx.strokeStyle = color;
-    ctx?.stroke();
-}
+const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMonster", "ignoranceSpreader", "ignorant"];
 
 /**
- * Display a bar representing the ignorance remaining in an actor, assuming max ignorance is 10.
- * If the actor has undefined ignorance, do nothing
- * 
- * @param actor the actor of which ignorance is to be displayed
- * @param scale the scale of the canvas
- */
-function drawActorIgnorance(actor: Actor, scale: Vector2D){
-    if (actor.ignorance === undefined){
-        return;
-    }
-
-    const barSize = scale.x;
-    const barOffset = createVector(0, -scale.y / 10);
-    const healthBarBegin = createVector(actor.position.x * scale.x + barOffset.x, actor.position.y * scale.y + barOffset.y);
-
-    drawLine(healthBarBegin,
-        createVector(actor.position.x * scale.x + barOffset.x + barSize, actor.position.y * scale.y + barOffset.y),
-        '#ff0000');
-    
-    drawLine(healthBarBegin,
-        createVector((actor.position.x * scale.x + barOffset.x + barSize) * actor.ignorance / 10, actor.position.y * scale.y + barOffset.y),
-        '#00ff00');
-}
-
-/**
- * Draws the content of the world to the canvas
+ * Draws the content of the world to the grid
  * @param world The world
  * @param actors The actors
  */
-async function displayWorldToCanvas(world: World, actors: Array<Actor>){
-    // Update canvas
-    ctx?.clearRect(0, 0, canvas.width, canvas.height);
-
-    const canvasScale: Vector2D = createVector(canvas.width / world.width, canvas.height / world.height);
-    // Draw actor sprite
-    actors.forEach((actor) => 
-        ctx?.drawImage(getActorSprite(actor.kind), 
-            actor.position.x * canvasScale.x, actor.position.y * canvasScale.y, canvasScale.x, canvasScale.y));
-    // Draw Actor ignorance
-    // Only draw ignorance of ignorant
-    actors.filter((actor) => actor.kind === "ignorant").forEach((actor) => drawActorIgnorance(actor, canvasScale)); 
-
-    // wait
-    await delay(1000);
+function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement): void {
+    // generate actorCards
+    // remplace enfants display-grid par les nouveaux actorCard
+    const actorsInDrawOrder = kindDrawOrder.reduce(
+        (acc: Array<Actor>, kind) => acc.concat(actors.filter((a) => hasOneOfKinds(a, [kind])))
+    , []);
+    grid.replaceChildren(...actorsInDrawOrder.map(drawActor));
 }
 
-async function main(){
-    const world: World = initWorld(7, 7);
-	let actors: Array<Actor> = initActors(world);
-	const phases: Array<Phase> = initPhases();
-	let finished: boolean = false;
-	let i = 0;
-	while (!finished) {
-		actors = nextTurn(phases, world, actors);
-		await displayWorldToCanvas(world, actors);
-		finished = i++ === 5;
-	}
+function drawActor(actor: Actor): HTMLDivElement {
+    const child = document.createElement('div') as HTMLDivElement;
+    child.classList.add('actorCard');
+    child.style.gridColumnStart = (actor.position.x + 1).toString();
+    child.style.gridRowStart = (actor.position.y + 1).toString();
+
+    if (hasOneOfKinds(actor, [...walkerKeys])) {
+        const hp = document.createElement('div') as HTMLDivElement;
+        hp.classList.add('hpBar');
+        child.appendChild(hp);
+
+        const health = document.createElement('div') as HTMLDivElement;
+        health.classList.add('health');
+        health.style.width = `${(100 * getFaithPoints(actor) / getMaxFaith(actor)).toString()}%`;
+        hp.appendChild(health);
+    }
+
+    const img = document.createElement('div') as HTMLDivElement;
+    img.classList.add('actorImage');
+    img.style.backgroundImage = `url(${getActorSprite(actor.kind).src}`;
+    child.append(img);
+
+    return child;
+}
+
+async function main(): Promise<void> {
+    const world: World = initWorld(10, 10);
+	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);
+    const phases: Array<Phase> = initPhases();
+
+    const grid = document.getElementById("display-grid") as HTMLDivElement;
+    grid.style.gridTemplate = `repeat(${world.height}, 1fr) / repeat(${world.width}, 1fr)`;
+
+    while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
+        actors = nextTurn(phases, world, actors, spawnersAxis);
+        await displayWorldToGrid(world, actors, grid);
+        // wait
+        await delay(500);
+    }
 }
 
 window.onload = (_) => {
