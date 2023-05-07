@@ -55,7 +55,6 @@ function initSpawners(world: World, minSpawners: number, maxSpawners: number, sp
 	}
 	const spawnersPerpendicularAxisCoord = randomUniqueIntegers(minSpawners, maxSpawners, 0, spawnersParallelAxis === "x" ? world.width : world.height);
 	const spawnProba = averageSpawnsPerPhase / spawnersPerpendicularAxisCoord.length;
-	console.log(spawnProba);
 	return createPositionsAlongAxis(spawnersParallelAxis, spawnersPerpendicularAxisCoord, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition, spawnProba));
 }
 

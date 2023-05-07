@@ -188,7 +188,6 @@ function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: n
 function executeFunctionEveryNCall<T extends (...args: any) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0): (...funcParams: Parameters<T>) => [(...args: Parameters<T>) => [any, ReturnType<T>], ReturnType<T>] {
 	function executeFunctionEveryNCallClosure(funcParams: Parameters<T>, currentNClosure: number): [(...args: Parameters<T>) => [any, ReturnType<T>], ReturnType<T>] {
 		const result: ReturnType<T> = !currentNClosure ? func(...funcParams) : defaultFunc(...funcParams);
-		console.log(result);
 		return [(...recursiveFuncParams: Parameters<T>) => executeFunctionEveryNCallClosure(recursiveFuncParams, (currentNClosure + 1) % n), result];
 	}
 	return (...funcParams: Parameters<T>) => executeFunctionEveryNCallClosure(funcParams, currentN);

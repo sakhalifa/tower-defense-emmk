@@ -120,12 +120,6 @@ function convertEnemies(actors: Array<Actor>, actingActor: Actor, world: World, 
  * @returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
  */
 function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, world: World, spawnersAxis: Axis): ReturnType<ActorActions["move"]>[1] {
-	//console.log(arguments[1]);
-	//console.log("--------------------");
-	//console.log(arguments[2]);
-	//console.log("--------------------");
-	//console.log(arguments[3]);
-	//console.log("\n");
 	return movingVector(movingActor.position, getWaypointTarget(movingActor), otherAxis(spawnersAxis));
 }
 
