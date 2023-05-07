@@ -22,7 +22,7 @@ function getWaypointTarget(actor: Actor): Vector2D {
 }
 
 function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, waypointTarget: waypointTarget } };
+	return { ...actor, externalProps: { ...actor.externalProps, waypointTarget } };
 }
 
 function getWaypointNumber(actor: Actor): number {
@@ -30,7 +30,7 @@ function getWaypointNumber(actor: Actor): number {
 }
 
 function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, waypointNumber: waypointNumber } };
+	return { ...actor, externalProps: { ...actor.externalProps, waypointNumber } };
 }
 
 function getWaypointTargetNumber(actor: Actor): number {
@@ -38,7 +38,7 @@ function getWaypointTargetNumber(actor: Actor): number {
 }
 
 function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, waypointTargetNumber: waypointTargetNumber } };
+	return { ...actor, externalProps: { ...actor.externalProps, waypointTargetNumber } };
 }
 
 function getSpawnProba(actor: Actor): number {
@@ -50,7 +50,7 @@ function setSpawnProba(actor: Actor, spawnProba: number): Actor {
 }
 
 function setSpreadIgnorancePower(actor: Actor, spreadIgnorancePower: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, spreadIgnorancePower: spreadIgnorancePower } };
+	return { ...actor, externalProps: { ...actor.externalProps, spreadIgnorancePower } };
 }
 
 function getSpreadIgnorancePower(actor: Actor): number {
@@ -58,7 +58,7 @@ function getSpreadIgnorancePower(actor: Actor): number {
 }
 
 function setFaithPoints(actor: Actor, faithPoints: number): Actor {
-	return { ...actor, externalProps: { ...actor.externalProps, faithPoints: faithPoints } };
+	return { ...actor, externalProps: { ...actor.externalProps, faithPoints } };
 }
 
 function getFaithPoints(actor: Actor): number {
@@ -67,6 +67,10 @@ function getFaithPoints(actor: Actor): number {
 
 function getMaxFaith(actor: Actor): number {
 	return actor.externalProps!.maxFaith;
+}
+
+function setMaxFaith(actor: Actor, maxFaith: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, maxFaith } };
 }
 
 function getPlayProba(actor: Actor): number {
@@ -78,5 +82,5 @@ export {
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba,
 	setSpreadIgnorancePower, getSpreadIgnorancePower, setFaithPoints, getFaithPoints, getMaxFaith,
-	getPlayProba
+	getPlayProba, setMaxFaith
 };

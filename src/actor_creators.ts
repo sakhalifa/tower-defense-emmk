@@ -5,7 +5,7 @@ import type { Kind, Actor, Walker } from "./actor";
 import { filterByKinds, findNextWaypointTarget } from "./actor";
 import { getRandomArrayElement } from "./util";
 import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies } from "./actor_actions";
-import { setSpawnProba, setWaypointNumber, setWaypointTarget, setWaypointTargetNumber } from "./props";
+import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTarget, setWaypointTargetNumber } from "./props";
 
 /**
  * Actor constructor
@@ -34,9 +34,12 @@ function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, wayp
  */
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant", {faithPoints, maxFaith: 100}),
-		waypointTarget,
-		1);
+				setFaithPoints(
+					setMaxFaith(
+						createActor(position, { move: moveTowardWaypointTarget, temperatureRise, enemyFlee }, "ignorant")
+					,100)
+				,100)
+		,waypointTarget, 1);
 }
 
 /**
