@@ -173,7 +173,7 @@ function fisherYatesShuffle<T>(arrayToShuffle: Array<T>): Array<T> {
 	return fisherYatesShuffleTailRecursive([], arrayToShuffle);
 }
 
-//not really random, but shuffled minvalues
+//not really random, but shuffled minvalues => terminates
 function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: number, minValue: number, maxValue: number): Array<number> {
 	if (maxValue - minValue < maxNumberOfValues) {
 		throw new Error("It is impossible to return more than n unique values among among n values.");
@@ -183,6 +183,14 @@ function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: n
 	}
 
 	return fisherYatesShuffle(Array.from({length: Math.random() * (maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues}, (_, i) => (i + minValue)));
+}
+
+function executeFunctionEveryNCall<T extends (...args: any) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0) {
+	function executeFunctionEveryNCallClosure(funcParams: Parameters<T>, currentNClosure: number) {
+		const result = !currentNClosure ? func(funcParams) : defaultFunc(funcParams);
+		return [(recursiveFuncParams: Parameters<T>) => executeFunctionEveryNCallClosure(recursiveFuncParams, (currentNClosure + 1) % n), result];
+	}
+	return (funcParams: Parameters<T>) => executeFunctionEveryNCallClosure(funcParams, currentN);
 }
 
 export type { Axis };

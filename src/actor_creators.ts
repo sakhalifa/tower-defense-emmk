@@ -92,7 +92,7 @@ function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, fait
  */
 function createSpawner(position: Vector2D, spawnProba: number = 0.3): Actor {
 	return setSpawnProba(
-		setWaypointNumber(createActor(position, { spawn }, "spawner"), 0),
+		setWaypointNumber(createActor(position, { default_spawn: spawn }, "spawner"), 0),
 		spawnProba);
 }
 
