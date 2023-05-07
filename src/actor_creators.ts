@@ -36,7 +36,7 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
 	return setWaypointTargetAndNumber(
 		createActor(position, { move:
 			executeFunctionEveryNCall(moveTowardWaypointTarget, (allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), 2),
-			spreadIgnorance, enemyFlee }, "ignorant", {conviction: 10, faithPoints, maxFaith: 100}),
+			temperatureRise, enemyFlee }, "ignorant", {conviction: 10, faithPoints, maxFaith: 100}),
 		waypointTarget,
 		1);
 }
