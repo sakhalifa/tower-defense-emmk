@@ -1,4 +1,4 @@
-import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createspaghettiMonster } from "../src/actor_creators";
+import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createSpaghettiMonster, createPlayer } from "../src/actor_creators";
 import { temperatureRise, spreadIgnorance, spawn, moveTowardWaypointTarget, convertEnemies, play } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
@@ -16,7 +16,7 @@ test("Spawn test", () => {
 test("TemperatureRise test", () => {
     const world = createWorld(5, 5);
 
-    const monster = createspaghettiMonster(createVector(2, 2), 1);
+    const monster = createSpaghettiMonster(createVector(2, 2), 1);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
     const onPoint = setConviction(createIgnorant(createVector(2, 2), createVector(0, 0)), 3);
     
@@ -52,22 +52,21 @@ test("moveTowardWaypointTarget test", () => {
     expect(moveTowardWaypointTarget([], ignorant, world, 'y')).toEqual(createVector(0, 1));
 });
 
-
-// Skip for now, wait for props to be correctly named
-xtest("convertEnemies test", () => {
+test("convertEnemies test", () => {
     const world = createWorld(5, 5);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 1), 10);
     const ignorant_away = createIgnorant(createVector(5, 5), createVector(0, 1), 10);
-    const good_guy = setRange(createGoodGuy(createVector(0, 0)), 2);
+    const good_guy = createGoodGuy(createVector(0, 0), 2, 0);
     expect(convertEnemies([], good_guy, world, 'y').impactAmounts).toHaveLength(0);
     expect(convertEnemies([ignorant, ignorant_away, ignorant_away, good_guy], good_guy, world, 'y' ).impactAmounts).toHaveLength(1);
     expect(convertEnemies([ignorant, ignorant_away, ignorant_away, good_guy], good_guy, world, 'y' ).impactedActorsIndices[0]).toBe(0);
-    expect(convertEnemies([ignorant, ignorant_away, ignorant_away, good_guy], good_guy, world, 'y' ).impactAmounts[0]).toBe(0);
+    expect(convertEnemies([ignorant, ignorant_away, ignorant_away, good_guy], good_guy, world, 'y' ).impactAmounts[0]).toBe(-1 * 0);
     expect(convertEnemies([ignorant, ignorant, ignorant, good_guy], good_guy, world, 'y' ).impactAmounts).toHaveLength(3);
 });
 
 test("play test", () => {
     const world = createWorld(5, 5);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), 0);
-    expect(play([], ignorant, world, 'y')).toBeUndefined();
+    const player = createPlayer(0);
+    expect(play([ignorant], player, world, 'y')).toBeUndefined();
 });

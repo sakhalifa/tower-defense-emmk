@@ -193,7 +193,19 @@ function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, d
 	return (...funcParams: Parameters<T>) => executeFunctionEveryNCallClosure(funcParams, currentN);
 }
 
+function isNotUndefined<T>(value: T | undefined): value is T {
+	return value !== undefined;
+}
+
+function throwErrorIfUndefined<T>(value: T | undefined): void {
+	if (!isNotUndefined(value)) {
+		throw new Error("unexpected undefined value");
+	}
+}
+
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers,
-	randomUniqueIntegers, otherAxis, fisherYatesShuffle, executeFunctionEveryNCall };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject,
+	almostEvenlySpacedIntegers, evenlySpacedNumbers,
+	randomUniqueIntegers, otherAxis,
+	fisherYatesShuffle, executeFunctionEveryNCall, throwErrorIfUndefined };

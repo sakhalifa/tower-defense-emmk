@@ -4,7 +4,7 @@ import { Actor, filterByKinds } from "./actor";
 import type { Axis } from "./util";
 
 import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
-import { createGround, createspaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
+import { createGround, createSpaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
 import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
 import { spreadConvictionPhase, enemyFleePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
@@ -87,7 +87,7 @@ function initGroundWaypoints(world: World, minGroundsPerLine: number, maxGrounds
  */
 function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSpaghettiMonsters: number, spaghettiMonstersAxis : Axis, spaghettiMonstersLineNumber: number, waypointNumber: number): Array<Actor> {
 	return randomPositionsAlongAxis(world, minSpaghettiMonsters,  maxSpaghettiMonsters, spaghettiMonstersAxis, spaghettiMonstersLineNumber)
-	.map((spaghettiMonsterPosition) => createspaghettiMonster(spaghettiMonsterPosition, waypointNumber));
+	.map((spaghettiMonsterPosition) => createSpaghettiMonster(spaghettiMonsterPosition, waypointNumber));
 }
 
 /**

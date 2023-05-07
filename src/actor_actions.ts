@@ -69,8 +69,8 @@ function spawn(actors: Array<Actor>, spawner: Actor, world: World, spawnerAxis?:
  * @returns The amount of damage to do to the spaghetti monster
  */
 function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["temperatureRise"]> {
-	return actors.find((a) => a.kind === "spaghettiMonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
-		? 0 : getConviction(actor);
+	return actors.find((a) => hasOneOfKinds(a, ["spaghettiMonster"]) && isDeepStrictEqual(a.position, actor.position))
+	=== undefined ? 0 : getConviction(actor);
 }
 
 function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impactedKinds: Array<Kind>,
@@ -177,8 +177,8 @@ function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawn
 	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range, distance) : undefined;
 }
 
-function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
-	if (Math.random() > getPlayProba(actor)) return undefined;
+function play(actors: Array<Actor>, player: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
+	if (Math.random() > getPlayProba(player)) return undefined;
 	return playPriorityAroundLoneGrounds(actors, world, spawnerAxis) ?? getEmptyCell(world, actors);
 }
 
