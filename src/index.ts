@@ -95,7 +95,10 @@ function drawActor(actor: Actor): HTMLDivElement {
 async function main(): Promise<void> {
     const world: World = initWorld(10, 10);
 	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
-	let actors: Array<Actor> = initActors(world, 2, spawnersAxis, 1);
+    const playProba = 0.25;
+	const spawnProba = 1;
+	const intermediateWaypointLinesNumber = 2;
+	let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);
     const phases: Array<Phase> = initPhases();
 
     const grid = document.getElementById("display-grid") as HTMLDivElement;
