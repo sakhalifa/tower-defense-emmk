@@ -1,11 +1,15 @@
 import { Actor } from "./actor";
 import { Vector2D } from "./geometry";
 
+import { throwErrorIfUndefined } from "./util";
+
 function setConviction(actor: Actor, conviction: number): Actor {
 	return { ...actor, externalProps: { ...actor.externalProps, conviction } };
 }
 
 function getConviction(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.conviction);
 	return actor.externalProps!.conviction;
 }
 
@@ -14,10 +18,14 @@ function setRange(actor: Actor, range: number): Actor {
 }
 
 function getRange(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.range);
 	return actor.externalProps!.range;
 }
 
 function getWaypointTarget(actor: Actor): Vector2D {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<Vector2D>(actor.externalProps!.waypointTarget);
 	return actor.externalProps!.waypointTarget!;
 }
 
@@ -26,6 +34,8 @@ function setWaypointTarget(actor: Actor, waypointTarget: Vector2D): Actor {
 }
 
 function getWaypointNumber(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.waypointNumber);
 	return actor.externalProps!.waypointNumber!;
 }
 
@@ -34,7 +44,15 @@ function setWaypointNumber(actor: Actor, waypointNumber: number): Actor {
 }
 
 function getWaypointTargetNumber(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.waypointTargetNumber);
 	return actor.externalProps!.waypointTargetNumber!;
+}
+
+function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, waypointTargetNumber: number): Actor {
+	return setWaypointTarget(
+		setWaypointTargetNumber(actor, waypointTargetNumber), waypointTarget
+	);
 }
 
 function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Actor {
@@ -42,6 +60,8 @@ function setWaypointTargetNumber(actor: Actor, waypointTargetNumber: number): Ac
 }
 
 function getSpawnProba(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.spawnProba);
 	return actor.externalProps!.spawnProba!;
 }
 
@@ -54,6 +74,8 @@ function setSpreadIgnorancePower(actor: Actor, spreadIgnorancePower: number): Ac
 }
 
 function getSpreadIgnorancePower(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.spreadIgnorancePower);
 	return actor.externalProps!.spreadIgnorancePower;
 }
 
@@ -62,10 +84,14 @@ function setFaithPoints(actor: Actor, faithPoints: number): Actor {
 }
 
 function getFaithPoints(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.faithPoints);
 	return actor.externalProps!.faithPoints;
 }
 
 function getMaxFaith(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.maxFaith);
 	return actor.externalProps!.maxFaith;
 }
 
@@ -73,7 +99,15 @@ function setMaxFaith(actor: Actor, maxFaith: number): Actor {
 	return { ...actor, externalProps: { ...actor.externalProps, maxFaith } };
 }
 
+function setFaithPointsAndMax(actor: Actor, faithPoints: number, maxFaithPoints: number): Actor {
+	return setFaithPoints(
+		setMaxFaith(actor, maxFaithPoints), faithPoints
+	);
+}
+
 function getPlayProba(actor: Actor): number {
+	throwErrorIfUndefined<Record<any, any>>(actor.externalProps);
+	throwErrorIfUndefined<number>(actor.externalProps!.playProba);
 	return actor.externalProps!.playProba;
 }
 
@@ -82,5 +116,5 @@ export {
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba,
 	setSpreadIgnorancePower, getSpreadIgnorancePower, setFaithPoints, getFaithPoints, getMaxFaith,
-	getPlayProba, setMaxFaith
+	getPlayProba, setMaxFaith, setWaypointTargetAndNumber, setFaithPointsAndMax
 };

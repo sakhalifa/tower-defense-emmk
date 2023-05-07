@@ -64,8 +64,8 @@ function spawn(actors: Array<Actor>, spawner: Actor, world: World, spawnerAxis?:
  * @returns The amount of damage to do to the spaghetti monster
  */
 function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["temperatureRise"]> {
-	return actors.find((a) => a.kind === "spaghettiMonster" && isDeepStrictEqual(a.position, actor.position)) === undefined
-		? 0 : getConviction(actor);
+	return actors.find((a) => hasOneOfKinds(a, ["spaghettiMonster"]) && isDeepStrictEqual(a.position, actor.position))
+	=== undefined ? 0 : getConviction(actor);
 }
 
 function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impactedKinds: Array<Kind>,

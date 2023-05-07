@@ -1,4 +1,4 @@
-import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createspaghettiMonster } from "../src/actor_creators";
+import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createSpaghettiMonster } from "../src/actor_creators";
 import { temperatureRise, spreadIgnorance, spawn, moveTowardWaypointTarget, convertEnemies, play } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld } from "../src/world";
@@ -16,7 +16,7 @@ test("Spawn test", () => {
 test("TemperatureRise test", () => {
     const world = createWorld(5, 5);
 
-    const monster = createspaghettiMonster(createVector(2, 2), 1);
+    const monster = createSpaghettiMonster(createVector(2, 2), 1);
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), undefined);
     const onPoint = setConviction(createIgnorant(createVector(2, 2), createVector(0, 0)), 3);
     

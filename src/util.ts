@@ -185,6 +185,18 @@ function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: n
 	return fisherYatesShuffle(Array.from({length: Math.random() * (maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues}, (_, i) => (i + minValue)));
 }
 
+function isNotUndefined<T>(value: T | undefined): value is T {
+	return value !== undefined;
+}
+
+function throwErrorIfUndefined<T>(value: T | undefined): void {
+	if (!isNotUndefined(value)) {
+		throw new Error("unexpected undefined value");
+	}
+}
+
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers, otherAxis, fisherYatesShuffle };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject,
+	almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers, otherAxis,
+	fisherYatesShuffle, throwErrorIfUndefined };

@@ -92,7 +92,7 @@ function translateActor(actor: Actor, movementVector: ReturnType<ActorActions["m
 function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, waypointTargetNumber: number): { waypointTargetNumber: number, waypointTarget: Actor["position"] } {
 	const possibilities = actors.filter((currentActor) => currentActor?.externalProps?.waypointNumber === waypointTargetNumber + 1);
 	if (!possibilities.length) {
-		return { waypointTargetNumber: waypointTargetNumber, waypointTarget: waypointTarget };
+		return { waypointTargetNumber, waypointTarget };
 	}
 	const nextWaypointTarget = getRandomArrayElement(possibilities);
 	return { waypointTargetNumber: getWaypointNumber(nextWaypointTarget), waypointTarget: nextWaypointTarget.position };
