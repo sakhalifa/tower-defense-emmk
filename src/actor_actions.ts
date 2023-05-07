@@ -19,8 +19,13 @@ type ActorActions = {
 	convertEnemies: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => ReturnType<typeof impactActorsConviction>;
 	spreadIgnorance: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => ReturnType<typeof impactActorsConviction>;
 	enemyFlee: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => boolean;
-	move: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D;
+	move: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) =>
+	[(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => [any, Vector2D], Vector2D];
 	play: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D | undefined;
+};
+
+const defaultMoveAction = (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["move"]> => {
+	return [defaultMoveAction, createVector(0, 0)];
 };
 
 /**
@@ -32,7 +37,7 @@ const defaultActions: Required<ActorActions> = {
 	spreadIgnorance: (allActors, oneActor, world, spawnerAxis) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
 	convertEnemies: (allActors, oneActor, world, spawnerAxis) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
 	enemyFlee: (allActors, oneActor, world, spawnerAxis) => false,
-	move: (allActors, oneActor, world, spawnerAxis) => { return createVector(0, 0); },
+	move: defaultMoveAction,
 	play: (allActors, oneActor, world, spawnerAxis) => undefined
 };
 
@@ -114,7 +119,13 @@ function convertEnemies(actors: Array<Actor>, actingActor: Actor, world: World, 
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
  */
-function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, world: World, spawnersAxis: Axis): ReturnType<ActorActions["move"]> {
+function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, world: World, spawnersAxis: Axis): ReturnType<ActorActions["move"]>[1] {
+	//console.log(arguments[1]);
+	//console.log("--------------------");
+	//console.log(arguments[2]);
+	//console.log("--------------------");
+	//console.log(arguments[3]);
+	//console.log("\n");
 	return movingVector(movingActor.position, getWaypointTarget(movingActor), otherAxis(spawnersAxis));
 }
 

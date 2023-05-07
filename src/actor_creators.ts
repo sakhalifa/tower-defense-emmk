@@ -34,7 +34,9 @@ function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, wayp
  */
 function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: executeFunctionEveryNCall(moveTowardWaypointTarget, defaultActions.move, 2) , temperatureRise, enemyFlee }, "ignorant", {faithPoints, maxFaith: 100}),
+		createActor(position, { move:
+			executeFunctionEveryNCall(moveTowardWaypointTarget, (allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), 2),
+			spreadIgnorance, enemyFlee }, "ignorant", {faithPoints, maxFaith: 100}),
 		waypointTarget,
 		1);
 }
@@ -48,7 +50,9 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
  */
 function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 70, spreadIgnorancePower: number = 5, range: number = 3): Actor {
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee }, "ignoranceSpreader", {range, spreadIgnorancePower, faithPoints, maxFaith: 70}),
+		createActor(position, { move:
+		executeFunctionEveryNCall(moveTowardWaypointTarget, (allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), 1),
+		spreadIgnorance, enemyFlee }, "ignoranceSpreader", {range, spreadIgnorancePower, faithPoints, maxFaith: 70}),
 		waypointTarget,
 		1);
 }

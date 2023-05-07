@@ -177,7 +177,6 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const phases: Array<Phase> = initPhases();
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
 	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
-		//console.log(`hp : ${filterByKinds(actors, ["spaghettiMonster"])[0].faithPoints}`);
 		display(world, actors);
 		actors = nextTurn(phases, world, actors, spawnersAxis);
 	}

@@ -1,10 +1,12 @@
 import type { ActorActions } from "./actor_actions";
 import { Actor, hasOneOfKinds, walkerKeys } from "./actor";
+import { World } from "./world";
+import { Axis } from "./util";
 
 import { translateAndUpdateWaypoint} from "./actor";
 import { sum } from "./util";
 import { createGoodGuy } from "./actor_creators";
-import { Vector2D } from "./geometry";
+import { Vector2D, createVector } from "./geometry";
 import { getFaithPoints, getMaxFaith, setFaithPoints } from "./props";
 import { impactActorsConviction } from "./actor_actions";
 
@@ -51,9 +53,15 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Return
 	currentActor);
 }
 
-function movePhase(oldActors: Array<Actor>, movementVectors: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
-	return movementVectors.map((movementVector, actorIndex) => translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], movementVector));
+function movePhase(oldActors: Array<Actor>, phaseResults: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
+	return phaseResults.map(
+		(phaseResult, actorIndex) => {
+			const newActor = translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], phaseResult[1]);
+			return ({...newActor, actions: {...newActor.actions, move: phaseResult[0] } });
+		}
+	);
 }
+//(allActors, oneActor, world, spawnerAxis) => { return [(allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), createVector(0, 0)]; }
 
 function updateIgnorance(actor: Actor, actorIndex: number, spreadConvictionResults: Array<ReturnType<typeof impactActorsConviction>>): Actor {
 	return setFaithPoints(actor, 
