@@ -172,8 +172,8 @@ function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawn
 	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range, distance) : undefined;
 }
 
-function play(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
-	if (Math.random() > getPlayProba(actor)) return undefined;
+function play(actors: Array<Actor>, player: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
+	if (Math.random() > getPlayProba(player)) return undefined;
 	return playPriorityAroundLoneGrounds(actors, world, spawnerAxis) ?? getEmptyCell(world, actors);
 }
 

@@ -2,7 +2,7 @@ import { createActor, createGround, createIgnorant, createSpaghettiMonster } fro
 import { enemyFleePhase, movePhase, spawnPhase, temperatureRisePhase, spreadConvictionPhase } from "../src/game_phases";
 import { createVector } from "../src/geometry";
 import { defaultActions, enemyFlee } from "../src/actor_actions";
-import { setWaypointTarget, setWaypointTargetNumber } from "../src/props";
+import { setFaithPoints, setWaypointTargetAndNumber } from "../src/props";
 
 
 test("SpawnPhase test", () => {
@@ -12,8 +12,7 @@ test("SpawnPhase test", () => {
     expect(spawnPhase([newActor], [newActor])).toEqual([newActor, newActor]);
 }); 
 
-// Temperature rise phase => Resolve faith_point issue first !
-xtest("TemperatureRisePhase test", () => {
+test("TemperatureRisePhase test", () => {
     const actor1 = createActor(createVector(0, 0), defaultActions, "ignorant");
     const actor2 = createActor(createVector(0, 0), defaultActions, "ignorant");
     const actor3 = createActor(createVector(0, 0), defaultActions, "ignorant");
@@ -24,14 +23,14 @@ xtest("TemperatureRisePhase test", () => {
     const monsterSmaller = createSpaghettiMonster(createVector(0, 0), 1, 5);
     expect(temperatureRisePhase([actor1, monster], [0])).toEqual([actor1, monster]);
     expect(temperatureRisePhase([actor1, monster], [5])).toEqual([actor1, monsterSmaller]);
-    expect(temperatureRisePhase([actor1, monster], [10])).toEqual([actor1]);
+    expect(temperatureRisePhase([actor1, monster], [10])).toEqual([actor1, {...monster, externalProps: {...monster.externalProps, faithPoints: 0}}]);
 });
 
 // move phase
 test("movePhase test", () => {
     const waypoint1 = createGround(createVector(10, 5), 0);
-    const actor = setWaypointTargetNumber(createActor(createVector(0, 0), defaultActions, "ignorant"), 0);
-    const movedActor = setWaypointTargetNumber(createActor(createVector(10, 5), defaultActions, "ignorant"), 0);
+    const actor = setWaypointTargetAndNumber(createActor(createVector(0, 0), defaultActions, "ignorant"), waypoint1.position, 0);
+    const movedActor = setWaypointTargetAndNumber(createActor(createVector(10, 5), defaultActions, "ignorant"), waypoint1.position, 0);
     expect(movePhase([], [])).toEqual([]);
     expect(movePhase([waypoint1, actor], [createVector(0, 0), createVector(10, 5)])).toEqual([waypoint1, movedActor]);
     expect(movePhase([movedActor], [createVector(-10, -5)])).toEqual([actor]);
