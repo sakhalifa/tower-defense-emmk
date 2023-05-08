@@ -10,46 +10,47 @@ import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgn
 import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys } from "./actor";
 import { AxisLength } from "./world";
 
+type ActorActionParams = {actorsAcc: Array<Actor>, actingActor: Actor, world: World, spawnersAxis: Axis};
+
 /**
  * All the possibles actions for an actor. These actions are called during the phases of the game.
  */
 type ActorActions = {
-	spawn: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Actor | undefined;
-	temperatureRise: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => number;
-	convertEnemies: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => ReturnType<typeof impactActorsConviction>;
-	spreadIgnorance: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => ReturnType<typeof impactActorsConviction>;
-	enemyFlee: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => boolean;
-	move: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D;
-	play: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D | undefined;
+	spawn: (params: ActorActionParams) => Actor | undefined;
+	temperatureRise: (params: ActorActionParams) => number;
+	convertEnemies: (params: ActorActionParams) => ReturnType<typeof impactActorsConviction>;
+	spreadIgnorance: (params: ActorActionParams) => ReturnType<typeof impactActorsConviction>;
+	enemyFlee: (params: ActorActionParams) => boolean;
+	move: (params: ActorActionParams) => Vector2D;
+	play: (params: ActorActionParams) => Vector2D | undefined;
 };
 
 /**
  * All the default actions, so that each Phase can be called on each actor, even if the actor hasn't its specific phase function
  */
 const defaultActions: Required<ActorActions> = {
-	spawn: (allActors, oneActor, world, spawnerAxis) => undefined,
-	temperatureRise: (allActors, oneActor, world, spawnerAxis) => 0,
-	spreadIgnorance: (allActors, oneActor, world, spawnerAxis) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
-	convertEnemies: (allActors, oneActor, world, spawnerAxis) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
-	enemyFlee: (allActors, oneActor, world, spawnerAxis) => false,
-	move: (allActors, oneActor, world, spawnerAxis) => { return createVector(0, 0); },
-	play: (allActors, oneActor, world, spawnerAxis) => undefined
+	spawn: (params) => undefined,
+	temperatureRise: (params) => 0,
+	spreadIgnorance: (params) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
+	convertEnemies: (params) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
+	enemyFlee: (params) => false,
+	move: (params) => { return createVector(0, 0); },
+	play: (params) => undefined
 };
 
 /**
  * The "spawner" action.
  * It has a 50% chance to spawn a new actor, which has 70% chance to be an ignorant, or 30% chance to be an ignoranceSpreader.
- * @param actors The actors in the world
- * @param spawner The current actor that does the action
- * @param spawnersAxis The axis that is parallel to the line that links the spawners
+ * @param params.actorsAcc The actors in the world
+ * @param params.actingActor The current spawner that does the action
  * @returns A new actor to be spawned
  */
-function spawn(actors: Array<Actor>, spawner: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spawn"]> {
-	if (Math.random() < getSpawnProba(spawner)) {
+function spawn(params: ActorActionParams): ReturnType<ActorActions["spawn"]> {
+	if (Math.random() < getSpawnProba(params.actingActor)) {
 		if (Math.random() < 0.7)
-			return createWalker("ignorant", actors, spawner.position);
+			return createWalker("ignorant", params.actorsAcc, params.actingActor.position);
 		else
-			return createWalker("ignoranceSpreader", actors, spawner.position);
+			return createWalker("ignoranceSpreader", params.actorsAcc, params.actingActor.position);
 	}
 	return undefined;
 }
@@ -63,9 +64,9 @@ function spawn(actors: Array<Actor>, spawner: Actor, world: World, spawnerAxis?:
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns The amount of damage to do to the spaghetti monster
  */
-function temperatureRise(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["temperatureRise"]> {
-	return actors.find((a) => hasOneOfKinds(a, ["spaghettiMonster"]) && isDeepStrictEqual(a.position, actor.position))
-	=== undefined ? 0 : getConviction(actor);
+function temperatureRise(params: ActorActionParams): ReturnType<ActorActions["temperatureRise"]> {
+	return params.actorsAcc.find((a) => hasOneOfKinds(a, ["spaghettiMonster"]) && isDeepStrictEqual(a.position, params.actingActor.position))
+	=== undefined ? 0 : getConviction(params.actingActor);
 }
 
 function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impactedKinds: Array<Kind>,
@@ -89,8 +90,8 @@ function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impact
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  */
-function spreadIgnorance(actors: Array<Actor>, actingActor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["spreadIgnorance"]> {
-	return impactActorsConviction(actors, actingActor, ["ignorant"],
+function spreadIgnorance(params: ActorActionParams): ReturnType<ActorActions["spreadIgnorance"]> {
+	return impactActorsConviction(params.actorsAcc, params.actingActor, ["ignorant"],
 	(impactingActor, actorsToImpact) => Array.from({length: actorsToImpact.length}, (_) => getSpreadIgnorancePower(impactingActor)));
 }
 
@@ -102,32 +103,33 @@ function spreadIgnorance(actors: Array<Actor>, actingActor: Actor, world: World,
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
  */
-function convertEnemies(actors: Array<Actor>, actingActor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["convertEnemies"]> {
-	return impactActorsConviction(actors, actingActor, [...walkerKeys],
+function convertEnemies(params: ActorActionParams): ReturnType<ActorActions["convertEnemies"]> {
+	return impactActorsConviction(params.actorsAcc, params.actingActor, [...walkerKeys],
 	(impactingActor, actorsToImpact) => Array.from({length: actorsToImpact.length}, (_) => -1 * getConviction(impactingActor)));
 }
 
 /**
+ * A "move" action
  * Returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
  * @param actors all the actors of the world
- * @param movingActor the actor that is moving
- * @param spawnersAxis The axis that is parallel to the line that links the spawners
+ * @param params.actingActor the actor that is moving
+ * @param params.spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
  */
-function moveTowardWaypointTarget(actors: Array<Actor>, movingActor: Actor, world: World, spawnersAxis: Axis): ReturnType<ActorActions["move"]> {
-	return movingVector(movingActor.position, getWaypointTarget(movingActor), otherAxis(spawnersAxis));
+function moveTowardWaypointTarget(params: ActorActionParams): ReturnType<ActorActions["move"]> {
+	return movingVector(params.actingActor.position, getWaypointTarget(params.actingActor), otherAxis(params.spawnersAxis));
 }
 
 /**
  * The "enemyFlee" action.
  * It returns whether the actor will decide to not exist or not.
  * @param actors The actors in the world
- * @param actor The current actor that does the action
+ * @param params.actingActor The current actor that does the action
  * @param spawnersAxis The axis that is parallel to the line that links the spawners
  * @returns true iif the current actor decides to not exist anymore
  */
-function enemyFlee(actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["enemyFlee"]> {
-	return hasOneOfKinds(actor, [...walkerKeys, "spaghettiMonster"]) ? getFaithPoints(actor) <= 0 : false;
+function enemyFlee(params: ActorActionParams): ReturnType<ActorActions["enemyFlee"]> {
+	return hasOneOfKinds(params.actingActor, [...walkerKeys, "spaghettiMonster"]) ? getFaithPoints(params.actingActor) <= 0 : false;
 }
 
 function getEmptyCell(world: World, actors: Array<Actor>): Vector2D | undefined {
@@ -172,11 +174,16 @@ function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawn
 	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range, distance) : undefined;
 }
 
-function play(actors: Array<Actor>, player: Actor, world: World, spawnerAxis: Axis): ReturnType<ActorActions["play"]> {
-	if (Math.random() > getPlayProba(player)) return undefined;
-	return playPriorityAroundLoneGrounds(actors, world, spawnerAxis) ?? getEmptyCell(world, actors);
+/**
+ * A "play" action
+ * @param params.actingActor the player
+ * @returns 
+ */
+function play(params: ActorActionParams): ReturnType<ActorActions["play"]> {
+	if (Math.random() > getPlayProba(params.actingActor)) return undefined;
+	return playPriorityAroundLoneGrounds(params.actorsAcc, params.world, params.spawnersAxis) ?? getEmptyCell(params.world, params.actorsAcc);
 }
 
-export type { ActorActions };
+export type { ActorActions, ActorActionParams };
 
 export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play, impactActorsConviction };

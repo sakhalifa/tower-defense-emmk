@@ -1,11 +1,17 @@
 import { Vector2D, createVector } from "./geometry";
 import { ActorActions, enemyFlee } from "./actor_actions";
 import type { Kind, Actor, Walker } from "./actor";
+//import type { ActionGenerators } from "./actor";
 
 import { filterByKinds, findNextWaypointTarget } from "./actor";
 import { throwErrorIfUndefined } from "./util";
 import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies } from "./actor_actions";
 import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber, setFaithPointsAndMax, setSpreadIgnorancePower, setRange } from "./props";
+
+
+//function defaultActionGenerator<Key extends keyof ActorActions>(action: ActorActions[Key]): ActionGenerators[Key] {
+//	return () => action;
+//}
 
 /**
  * Actor constructor
