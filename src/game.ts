@@ -3,7 +3,8 @@ import type { Phase } from "./phase";
 import { Actor, filterByKinds } from "./actor";
 import type { Axis } from "./util";
 
-import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
+import { positionsLinking } from "./geometry";
+import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis } from "./world";
 import { createGround, createSpaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
 import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
