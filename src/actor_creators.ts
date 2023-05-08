@@ -8,6 +8,11 @@ import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./util";
 import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies, enemyFlee, defaultActionGenerator } from "./actor_actions";
 import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber, setFaithPointsAndMax, setSpreadIgnorancePower, setRange } from "./props";
 
+
+//function defaultActionGenerator<Key extends keyof ActorActions>(action: ActorActions[Key]): ActionGenerators[Key] {
+//	return () => action;
+//}
+
 /**
  * Actor constructor
  * @param position The position of the created Actor
@@ -40,7 +45,8 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
 	return setWaypointTargetAndNumber(
 				setFaithPointsAndMax(
 						setConviction(
-							createActor(position, { move: executeFunctionEveryNCall(moveTowardWaypointTarget, (allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), 2),
+							createActor(position, { move: //executeFunctionEveryNCall(moveTowardWaypointTarget, (allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), 2),
+								moveTowardWaypointTarget,
 								temperatureRise, enemyFlee }, "ignorant")
 						,10)
 				,faithPoints, 100)
@@ -60,7 +66,8 @@ function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, f
 			setFaithPointsAndMax(
 				setSpreadIgnorancePower(
 					setRange(
-						createActor(position, { move: executeFunctionEveryNCall(moveTowardWaypointTarget, (allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), 2),
+						createActor(position, { move: //executeFunctionEveryNCall(moveTowardWaypointTarget, (allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), 2),
+							moveTowardWaypointTarget,
 							spreadIgnorance, enemyFlee }, "ignoranceSpreader")
 					,range)
 				,spreadIgnorancePower)

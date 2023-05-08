@@ -32,6 +32,12 @@ function createWorld(width: number, height: number): World {
 	};
 }
 
+/**
+ * Returns the length of the given Axis in the given World
+ * @param world the world from which the Axis length is computed
+ * @param axis the axis that we want to know the length
+ * @returns the length of the given Axis in the given World
+ */
 function AxisLength(world: World, axis: Axis) {
 	switch (axis) {
 		case "x":
@@ -99,16 +105,6 @@ function vectorToIndexInWorldString(world: World, vector: Vector2D): number {
 	return vector.y * (world.width * 2 + 1) + vector.x * 2;
 }
 
-function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): Array<Vector2D> {
-	return positions.reduce((acc: Array<Vector2D>, currentPositions, index) => {
-		if (!index) {
-			return acc;
-		}
-		return acc.concat(currentPositions.map((currentPosition) => positions[index - 1]
-		.map((previousPosition) => linkingPath(previousPosition, currentPosition, firstAxis)).flat()).flat());
-	}, []);
-}
-
 function getVectorsInRangeInWorld(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number, world: World, fromPosition: Vector2D): Array<Vector2D> {
 	return getMovementVectorsInRange(range, distanceFunction).map((movementVector) => translatePoint(fromPosition, movementVector))
 	.filter((translatedPosition) => isPositionInWorld(world, translatedPosition));
@@ -123,5 +119,5 @@ function allPositionsInWorld(world: World): Array<Vector2D> {
 export type { World };
 
 export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
-	createPositionsAlongAxis, positionsLinking, AxisLength, getVectorsInRangeInWorld,
+	createPositionsAlongAxis, AxisLength, getVectorsInRangeInWorld,
 	allPositionsInWorld};

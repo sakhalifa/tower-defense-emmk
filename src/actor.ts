@@ -79,7 +79,7 @@ function filterByKinds(actors: Array<Actor>, kinds : Array<Kind>): Array<Actor> 
  * @param movementVector The movement vector
  * @returns The actor after its position was translated according to a movement vector
  */
-function translateActor(actor: Actor, movementVector: ReturnType<ActorActions["move"]>[1]): Actor {
+function translateActor(actor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	return { ...actor, position: translatePoint(actor.position, movementVector) };
 }
 
@@ -106,7 +106,7 @@ function findNextWaypointTarget(actors: Array<Actor>, waypointTarget: Vector2D, 
  * @param movementVector the movement defining where the movingActor is moving
  * @returns the movingActor with its updated position (after the movement)
  */ 
-function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ReturnType<ActorActions["move"]>[1]): Actor {
+function translateAndUpdateWaypoint(actors: Array<Actor>, movingActor: Actor, movementVector: ReturnType<ActorActions["move"]>): Actor {
 	const newPosition = translatePoint(movingActor.position, movementVector);
 	if ((isWalker(movingActor)) && isDeepStrictEqual(newPosition, getWaypointTarget(movingActor))) {
 		const nextWaypoint = findNextWaypointTarget(actors, getWaypointTarget(movingActor), getWaypointTargetNumber(movingActor));

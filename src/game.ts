@@ -3,7 +3,8 @@ import type { Phase } from "./phase";
 import { Actor, filterByKinds } from "./actor";
 import type { Axis } from "./util";
 
-import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
+import { positionsLinking } from "./geometry";
+import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis } from "./world";
 import { createGround, createSpaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
 import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
@@ -156,12 +157,12 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
  * @returns A new array of actors
  */
 function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>, spawnersAxis: Axis): Array<Actor> {
-	return phases.reduce((someActors, aPhase) => {
+	return phases.reduce((actorsAcc, aPhase) => {
 		const proposals: Actor[]
-			= aPhase.executePhase(someActors,
-				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor, world, spawnersAxis) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
+			= aPhase.executePhase(actorsAcc,
+				actorsAcc.map((actingActor) => actingActor.actions[aPhase.funcName]({actorsAcc, actingActor, world, spawnersAxis}) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
 			);
-		return resolveProposals(world, someActors, proposals);
+		return resolveProposals(world, actorsAcc, proposals);
 	}, actors);
 }
 

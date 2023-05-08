@@ -46,6 +46,14 @@ function distance(a: Vector2D, b: Vector2D): number {
 	return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
+/**
+ * Creates a range*range square of positions centered on the position {0, 0} and filter those positions so that
+ * they are in the range of {0, 0} using the given range, and the given distance function.
+ * @param range the range in which the positions from the created square are kept and returned
+ * @param distanceFunction the function that evaluates the distance between two positions.
+ * Its return value is compared to the given range.
+ * @returns all the positions that are in the range of the position {0, 0} using the given distance function
+ */
 function getMovementVectorsInRange(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D>  {
 	return Array.from({ length: 2 * range + 1 }, (_, i) =>
 	Array.from({ length: 2 * range + 1 }, (_, j) => createVector(i - range, j - range))
@@ -91,16 +99,40 @@ function movingVector(fromPosition: Vector2D, toPosition: Vector2D, firstAxis: A
 	}
 }
 
+/**
+ * Returns an array of positions that constitute a path between two other positions, i.e. that visualy links two other positions.
+ * @param fromPosition the starting position and target position for building the path are not included in the returned array
+ * @param toPosition the target position for building the path, not included in the returned array
+ * @param firstAxis this parameter can be used to define the axis to prioritize for movement when multiple options are available.
+ * @returns an array of positions that constitute a path between two other positions, i.e. that visualy links two other positions.
+ */
 function linkingPath(fromPosition: Vector2D, toPosition: Vector2D, firstAxis?: Axis): Array<Vector2D> {
-	fromPosition = translatePoint(fromPosition, movingVector(fromPosition, toPosition, firstAxis));
+	const firstProcessedPosition = translatePoint(fromPosition, movingVector(fromPosition, toPosition, firstAxis));
 	function linkingPathTailRecursive(fromPosition: Vector2D, toPosition: Vector2D, positionsAccumulator: Array<Vector2D>): Array<Vector2D> {
 		if (isDeepStrictEqual(fromPosition, toPosition)) {
 			return positionsAccumulator;
 		}
-		const positionToAdd = translatePoint(fromPosition, movingVector(fromPosition, toPosition, firstAxis));
-		return linkingPathTailRecursive(positionToAdd, toPosition, positionsAccumulator.concat(fromPosition));
+		const nextProcessedPosition = translatePoint(fromPosition, movingVector(fromPosition, toPosition, firstAxis));
+		return linkingPathTailRecursive(nextProcessedPosition, toPosition, positionsAccumulator.concat(fromPosition));
 	}
-	return linkingPathTailRecursive(fromPosition, toPosition, []);
+	return linkingPathTailRecursive(firstProcessedPosition, toPosition, []);
+}
+
+/**
+ * Returns an array of positions that constitute a path linking the given positions, i.e. that visualy links the other positions.
+ * @param positions two-dimensional array of positions. Positions from each "index" are linked to the positions from the "index - 1" index.
+ * the positions given as parameter are not included in the returned array.
+ * @param firstAxis this parameter can be used to define the axis to prioritize for movement when multiple options are available.
+ * @returns an array of positions that constitute a path linking the given positions, i.e. that visualy links the other positions.
+ */
+function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): Array<Vector2D> {
+	return positions.reduce((acc: Array<Vector2D>, currentPositions, index) => {
+		if (!index) {
+			return acc;
+		}
+		return acc.concat(currentPositions.map((currentPosition) => positions[index - 1]
+		.map((previousPosition) => linkingPath(previousPosition, currentPosition, firstAxis)).flat()).flat());
+	}, []);
 }
 
 /**
@@ -115,6 +147,7 @@ function vectorHasCoords(vector: Vector2D, xCoord?: number, yCoord?: number): bo
 	(yCoord === undefined || (vector.y === yCoord));
 }
 
-export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath, vectorHasCoords, getMovementVectorsInRange };
+export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath, vectorHasCoords,
+	getMovementVectorsInRange, positionsLinking };
 
 export type { Vector2D };

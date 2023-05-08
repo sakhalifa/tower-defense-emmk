@@ -1,19 +1,20 @@
 import type { Actor } from "../src/actor";
 import type { Axis } from "../src/util";
 import type { World } from "../src/world";
-import { ActorActions, ActionGenerators } from "../src/actor_actions";
+import type { ActorActionParams } from "../src/actor_actions";
 
+import { ActorActions, ActionGenerators } from "../src/actor_actions";
 import { createActor, createGround } from "../src/actor_creators";
 import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
 import { defaultActions,defaultActionGenerator } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld, worldToString } from "../src/world";
 
-const move = (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["move"]> => {
-	return [move, createVector(0, 0)];
-};
+function move(params: ActorActionParams) {
+    return createVector(0, 0);
+}
 
-function spreadIgnorance(_: Array<Actor>, __: Actor, ___: World, ____?: Axis) {
+function spreadIgnorance(params: ActorActionParams) {
     return {impactedActorsIndices: [0], impactAmounts: [0]};
 }
 

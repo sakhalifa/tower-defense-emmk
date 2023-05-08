@@ -56,8 +56,8 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Return
 function movePhase(oldActors: Array<Actor>, phaseResults: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
 	return phaseResults.map(
 		(phaseResult, actorIndex) => {
-			const newActor = translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], phaseResult[1]);
-			return ({...newActor, actions: {...newActor.actions, move: phaseResult[0] } });
+			const newActor = translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], phaseResult);
+			return ({...newActor, actions: {...newActor.actions} });
 		}
 	);
 }
