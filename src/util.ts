@@ -195,20 +195,6 @@ function throwErrorIfUndefined<T>(value: T | undefined): void {
 	}
 }
 
-// Need to type
-function* defaultGenerator<T extends (...args: any) => any>(func: T, defaultFunc: T, funcParams: Parameters<T>, curN: number = 0, n: number): any {
-    yield curN === 0 ? func(funcParams) : defaultFunc(funcParams);
-    yield* defaultGenerator(func, defaultFunc, funcParams, (curN + 1) % n, n);
-}
-
-function executeFunctionEveryNCallGenerator<T extends (...args: any) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0) {
-
-    return (...funcParams: Parameters<T>) => {
-        const iterator = defaultGenerator(func, defaultFunc, funcParams, currentN, n);
-        return iterator.next();
-    };
-}
-
 export type { Axis };
 
 export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject,
