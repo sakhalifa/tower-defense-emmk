@@ -1,6 +1,6 @@
 import type { Vector2D } from "./geometry";
 import type { World } from "./world";
-import type { ActorActions } from "./actor_actions";
+import type { ActorActions, ActionGenerators } from "./actor_actions";
 
 import { vector2DToString, translatePoint, vectorHasCoords } from "./geometry";
 import { isDeepStrictEqual, getRandomArrayElement } from "./util";
@@ -28,6 +28,7 @@ type Kind = typeof kindKeys[number];
  */
 type Actor = {
 	position: Vector2D;
+	actionGenerators: ActionGenerators
 	actions: ActorActions;
 	kind: Kind;
 	externalProps?: Record<any, any>;
@@ -140,4 +141,4 @@ function filterActorsByPosition(actors: Array<Actor>, xPosition?: number, yPosit
 export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, 
 	stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment,
 	filterActorsByPosition, isWalker, hasOneOfKinds, walkerKeys };
-export type { Actor, Kind, Walker };
+export type { Actor, Kind, Walker, ActionGenerators };

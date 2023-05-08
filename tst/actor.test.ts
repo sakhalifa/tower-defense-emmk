@@ -1,11 +1,11 @@
 import type { Actor } from "../src/actor";
 import type { Axis } from "../src/util";
 import type { World } from "../src/world";
-import { ActorActions } from "../src/actor_actions";
+import { ActorActions, ActionGenerators } from "../src/actor_actions";
 
 import { createActor, createGround } from "../src/actor_creators";
 import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
-import { defaultActions } from "../src/actor_actions";
+import { defaultActions,defaultActionGenerator } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld, worldToString } from "../src/world";
 
@@ -18,7 +18,14 @@ function spreadIgnorance(_: Array<Actor>, __: Actor, ___: World, ____?: Axis) {
 }
 
 function buildDummyActor(): Actor{
-    return { position: createVector(0, 1), actions: defaultActions, kind: "ignorant"};
+	const actionGenerators: ActionGenerators = Object.keys(defaultActions).reduce((acc, key: keyof ActorActions) => {
+		const action = defaultActions[key];
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		acc[key] = defaultActionGenerator(action);
+		return acc;
+	}, {} as ActionGenerators);
+    return { position: createVector(0, 1), actionGenerators, actions: defaultActions, kind: "ignorant"};
 }
 
 test("Actor create test", () => {
@@ -31,11 +38,7 @@ test("Actor create test", () => {
 });
 
 test("Actor to string test", () => {
-    expect(actorToString({
-        position: createVector(0, 1),
-        actions: defaultActions,
-        kind: "ignorant"
-    })).toEqual("{position: (0, 1), kind: ignorant}");
+    expect(actorToString(buildDummyActor())).toEqual("{position: (0, 1), kind: ignorant}");
 });
 
 test("Actor translate test", () => {

@@ -1,10 +1,11 @@
-import { Vector2D, createVector } from "./geometry";
-import { ActorActions, enemyFlee } from "./actor_actions";
-import type { Kind, Actor, Walker } from "./actor";
+import type { Vector2D } from "./geometry";
+import type { ActorActions } from "./actor_actions";
+import type { Kind, Actor, Walker, ActionGenerators } from "./actor";
 
+import { createVector } from "./geometry";
 import { filterByKinds, findNextWaypointTarget } from "./actor";
 import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./util";
-import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies } from "./actor_actions";
+import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies, enemyFlee, defaultActionGenerator } from "./actor_actions";
 import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber, setFaithPointsAndMax, setSpreadIgnorancePower, setRange } from "./props";
 
 /**
@@ -16,7 +17,15 @@ import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointN
  * @returns A new actor
  */
 function createActor(position: Actor["position"], actions: Partial<Actor["actions"]>, kind: Actor["kind"], externalProps?: Actor["externalProps"] ): Actor {
-	return { position, actions: { ...defaultActions, ...actions }, kind, externalProps };
+	const actorActions: ActorActions = { ...defaultActions, ...actions };
+	const actionGenerators: ActionGenerators = Object.keys(actorActions).reduce((acc, key: keyof ActorActions) => {
+		const action = actorActions[key];
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		acc[key] = defaultActionGenerator(action);
+		return acc;
+	}, {} as ActionGenerators);
+	return { position, actionGenerators, actions: actorActions, kind, externalProps };
 }
 
 /**

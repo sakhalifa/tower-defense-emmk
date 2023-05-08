@@ -24,6 +24,14 @@ type ActorActions = {
 	play: (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis) => Vector2D | undefined;
 };
 
+type ActionGenerators = {
+	[Key in keyof ActorActions]: () => ActorActions[Key];
+};
+
+function defaultActionGenerator<Key extends keyof ActorActions>(action: ActorActions[Key]): ActionGenerators[Key] {
+	return (() => action) as ActionGenerators[Key];
+}
+
 const defaultMoveAction = (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["move"]> => {
 	return [defaultMoveAction, createVector(0, 0)];
 };
@@ -31,7 +39,7 @@ const defaultMoveAction = (actors: Array<Actor>, actor: Actor, world: World, spa
 /**
  * All the default actions, so that each Phase can be called on each actor, even if the actor hasn't its specific phase function
  */
-const defaultActions: Required<ActorActions> = {
+const defaultActions: ActorActions = {
 	spawn: (allActors, oneActor, world, spawnerAxis) => undefined,
 	temperatureRise: (allActors, oneActor, world, spawnerAxis) => 0,
 	spreadIgnorance: (allActors, oneActor, world, spawnerAxis) => { return { impactedActorsIndices: [], impactAmounts: [] }; },
@@ -182,6 +190,6 @@ function play(actors: Array<Actor>, player: Actor, world: World, spawnerAxis: Ax
 	return playPriorityAroundLoneGrounds(actors, world, spawnerAxis) ?? getEmptyCell(world, actors);
 }
 
-export type { ActorActions };
+export type { ActorActions, ActionGenerators };
 
-export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play, impactActorsConviction };
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play, impactActorsConviction, defaultActionGenerator };
