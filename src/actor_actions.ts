@@ -26,11 +26,11 @@ type ActorActions = {
 };
 
 type ActionGenerators = {
-	[Key in keyof ActorActions]: () => ActorActions[Key];
+	[Key in keyof ActorActions]: [() => ActionGenerators[Key], ActorActions[Key]];
 };
 
-function defaultActionGenerator<Key extends keyof ActorActions>(action: ActorActions[Key]): ActionGenerators[Key] {
-	return (() => action) as ActionGenerators[Key];
+function createDefaultActionGenerator<Key extends keyof ActorActions>(action: ActorActions[Key]): ActionGenerators[Key] {
+	return [() => createDefaultActionGenerator(action), action] as ActionGenerators[Key];
 }
 
 //const defaultMoveAction = (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["move"]> => {
@@ -198,4 +198,4 @@ function play(params: ActorActionParams): ReturnType<ActorActions["play"]> {
 
 export type { ActorActions, ActionGenerators, ActorActionParams };
 
-export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play, impactActorsConviction, defaultActionGenerator };
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play, impactActorsConviction, createDefaultActionGenerator };

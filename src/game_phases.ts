@@ -1,4 +1,4 @@
-import type { ActorActions } from "./actor_actions";
+import type { ActorActions, ActionGenerators } from "./actor_actions";
 import { Actor, hasOneOfKinds, walkerKeys } from "./actor";
 import { World } from "./world";
 import { Axis } from "./util";
@@ -56,8 +56,10 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Return
 function movePhase(oldActors: Array<Actor>, phaseResults: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
 	return phaseResults.map(
 		(phaseResult, actorIndex) => {
-			const newActor = translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], phaseResult);
-			return ({...newActor, actions: {...newActor.actions} });
+			const newActor: Actor = translateAndUpdateWaypoint(oldActors, oldActors[actorIndex], phaseResult);
+			return ({...newActor,
+				actions: {...newActor.actions, move: newActor.actionGenerators["move"][1]},
+				actionGenerators: {...newActor.actionGenerators, move: newActor.actionGenerators["move"][0]() }});
 		}
 	);
 }

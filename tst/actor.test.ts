@@ -6,7 +6,7 @@ import type { ActorActionParams } from "../src/actor_actions";
 import { ActorActions, ActionGenerators } from "../src/actor_actions";
 import { createActor, createGround } from "../src/actor_creators";
 import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
-import { defaultActions,defaultActionGenerator } from "../src/actor_actions";
+import { defaultActions, createDefaultActionGenerator } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld, worldToString } from "../src/world";
 
@@ -23,18 +23,18 @@ function buildDummyActor(): Actor{
 		const action = defaultActions[key];
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		//@ts-ignore
-		acc[key] = defaultActionGenerator(action);
+		acc[key] = createDefaultActionGenerator(action);
 		return acc;
 	}, {} as ActionGenerators);
     return { position: createVector(0, 1), actionGenerators, actions: defaultActions, kind: "ignorant"};
 }
 
 test("Actor create test", () => {
-    expect(createActor(createVector(0, 1), {}, "ignorant"))
+    expect(createActor(createVector(0, 1), {}, {}, "ignorant"))
         .toEqual(buildDummyActor());
-    expect(createActor(createVector(100, 100), { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
+    expect(createActor(createVector(100, 100), {}, { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
         .not.toEqual(buildDummyActor());
-    expect(createActor(createVector(0, 1), { move }, "ignorant"))
+    expect(createActor(createVector(0, 1), {}, { move }, "ignorant"))
         .not.toEqual(buildDummyActor());
 });
 
@@ -45,7 +45,7 @@ test("Actor to string test", () => {
 test("Actor translate test", () => {
     expect(translateActor(buildDummyActor(), createVector(0, 0))).toEqual(buildDummyActor());
     expect(translateActor(buildDummyActor(), createVector(1, 3))).not.toEqual(buildDummyActor());
-    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual(createActor(createVector(1, 4), {}, "ignorant"));
+    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual(createActor(createVector(1, 4), {}, {}, "ignorant"));
 });
 
 test("actorToStringInWorld test", () => {

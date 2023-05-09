@@ -185,12 +185,12 @@ function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: n
 	return fisherYatesShuffle(Array.from({length: Math.random() * (maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues}, (_, i) => (i + minValue)));
 }
 
-function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0): (...funcParams: Parameters<T>) => [(...args: Parameters<T>) => [any, ReturnType<T>], ReturnType<T>] {
-	function executeFunctionEveryNCallClosure(funcParams: Parameters<T>, currentNClosure: number): [(...args: Parameters<T>) => [any, ReturnType<T>], ReturnType<T>] {
-		const result: ReturnType<T> = !currentNClosure ? func(...funcParams) : defaultFunc(...funcParams);
-		return [(...recursiveFuncParams: Parameters<T>) => executeFunctionEveryNCallClosure(recursiveFuncParams, (currentNClosure + 1) % n), result];
+function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0): [() => [any, T], T] { //typage any...
+	function executeFunctionEveryNCallClosure(currentNClosure: number): [typeof executeFunctionEveryNCallClosure, T] {
+		const nextFunc: T = !currentNClosure ? func : defaultFunc;
+		return [() => executeFunctionEveryNCallClosure((currentNClosure + 1) % n), nextFunc];
 	}
-	return (...funcParams: Parameters<T>) => executeFunctionEveryNCallClosure(funcParams, currentN);
+	return executeFunctionEveryNCallClosure(currentN) as [() => [any, T], T];
 }
 
 function isNotUndefined<T>(value: T | undefined): value is T {
