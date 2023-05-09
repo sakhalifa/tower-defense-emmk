@@ -11,6 +11,14 @@ import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgn
 import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys, kindKeys } from "./actor";
 import { AxisLength } from "./world";
 
+/**
+ * uniform parameters that the actions must have.
+ * 
+ * actorsAcc: All the actors that the action can take into consideration
+ * actingActor: The actor doing the action
+ * world: The world on which the action takes place
+ * spawnerAxis: The axis along which the spawners were created on the world
+ */
 type ActorActionParams = {actorsAcc: Array<Actor>, actingActor: Actor, world: World, spawnersAxis: Axis};
 
 /**
@@ -26,10 +34,18 @@ type ActorActions = {
 	play: (params: ActorActionParams) => Vector2D | undefined;
 };
 
+/**
+ * Contains the signatures that the action generators of the Actors must respect
+ */
 type ActionGenerators = {
 	[Key in keyof ActorActions]: [() => ActionGenerators[Key], ActorActions[Key]];
 };
 
+/**
+ * Creates a default action generator for the given action.
+ * @param action the action we want to decorate to create a generator returning functions to use after the use of the given function
+ * @returns an action generator that will always return the same generator and the same action as the given action
+ */
 function createDefaultActionGenerator<Key extends keyof ActorActions>(action: ActorActions[Key]): ActionGenerators[Key] {
 	return [() => createDefaultActionGenerator(action), action] as ActionGenerators[Key];
 }
@@ -50,8 +66,7 @@ const defaultActions: ActorActions = {
 /**
  * The "spawner" action.
  * It has a 50% chance to spawn a new actor, which has 70% chance to be an ignorant, or 30% chance to be an ignoranceSpreader.
- * @param params.actorsAcc The actors in the world
- * @param params.actingActor The current spawner that does the action
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns A new actor to be spawned
  */
 function spawn(params: ActorActionParams): ReturnType<ActorActions["spawn"]> {
@@ -68,9 +83,7 @@ function spawn(params: ActorActionParams): ReturnType<ActorActions["spawn"]> {
  * The "temperatureRise" action.
  * It returns the damage done to the spaghetti monster. The actor only does damage if it's on the same
  * position as the spaghetti monster
- * @param actors The actors in the world
- * @param actor The current actor that does the action
- * @param spawnersAxis The axis that is parallel to the line that links the spawners
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns The amount of damage to do to the spaghetti monster
  */
 function temperatureRise(params: ActorActionParams): ReturnType<ActorActions["temperatureRise"]> {
@@ -104,9 +117,7 @@ function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impact
 /**
  * The "spreadIgnorance" action.
  * It returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
- * @param actors The actors in the world
- * @param actingActor The current actor that spreads faithPoints
- * @param spawnersAxis The axis that is parallel to the line that links the spawners
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns all the actors the actor will spread faithPoints to, and the amount for which every actor will be impacted.
  */
 function spreadIgnorance(params: ActorActionParams): ReturnType<ActorActions["spreadIgnorance"]> {
@@ -117,9 +128,7 @@ function spreadIgnorance(params: ActorActionParams): ReturnType<ActorActions["sp
 /**
  * The "convertEnemies" action.
  * It returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
- * @param actors The actors in the world
- * @param actingActor The current actor that does the action
- * @param spawnersAxis The axis that is parallel to the line that links the spawners
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns all the actors that will be damaged, and the amount for which every actor damaged will be damaged
  */
 function convertEnemies(params: ActorActionParams): ReturnType<ActorActions["convertEnemies"]> {
@@ -130,9 +139,7 @@ function convertEnemies(params: ActorActionParams): ReturnType<ActorActions["con
 /**
  * A "move" action
  * Returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
- * @param actors all the actors of the world
- * @param params.actingActor the actor that is moving
- * @param params.spawnersAxis The axis that is parallel to the line that links the spawners
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns the movement vector corresponding to the movement that the given actor should do to get closer to its waypointTarget
  */
 function moveTowardWaypointTarget(params: ActorActionParams): ReturnType<ActorActions["move"]> {
@@ -142,9 +149,7 @@ function moveTowardWaypointTarget(params: ActorActionParams): ReturnType<ActorAc
 /**
  * The "enemyFlee" action.
  * It returns whether the actor will decide to not exist or not.
- * @param actors The actors in the world
- * @param params.actingActor The current actor that does the action
- * @param spawnersAxis The axis that is parallel to the line that links the spawners
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns true iif the current actor decides to not exist anymore
  */
 function enemyFlee(params: ActorActionParams): ReturnType<ActorActions["enemyFlee"]> {
@@ -169,39 +174,39 @@ function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vecto
 /**
  * A "play" action
  * Returns a good positions, or undefined if no good position avaible
- * @param params.actingActor the player
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns a good positions, or undefined if no good position avaible
  */
-function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawnerAxis: Axis): Vector2D | undefined {
-	const numberOfLines = AxisLength(world, otherAxis(spawnerAxis));
+function playPriorityAroundLoneGrounds(params: ActorActionParams): Vector2D | undefined {
+	const numberOfLines = AxisLength(params.world, otherAxis(params.spawnersAxis));
 	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
 	const groundListPerLine: Array<Array<Actor>> = consideredLineOrder.map(
 		(consideredLine) => filterByKinds(
-			spawnerAxis === "x" ? filterActorsByPosition(actors, undefined, consideredLine) : filterActorsByPosition(actors, consideredLine, undefined),
+			params.spawnersAxis === "x" ? filterActorsByPosition(params.actorsAcc, undefined, consideredLine) : filterActorsByPosition(params.actorsAcc, consideredLine, undefined),
 			["ground"]
 		));
 	const range: number = 2;
-	const returnedGroundAroundWhichToPlay: Actor | undefined = Array.from({ length: AxisLength(world, spawnerAxis) - 1 }, (_, i) => i + 1)
+	const returnedGroundAroundWhichToPlay: Actor | undefined = Array.from({ length: AxisLength(params.world, params.spawnersAxis) - 1 }, (_, i) => i + 1)
 	.reduce((acc, groundListPerLineConstraint) => {
 		if (acc) return acc;
 		return groundListPerLine.reduce((acc2, currentGrounds) => {
 			if (acc2) return acc2;
 			if (currentGrounds.length === groundListPerLineConstraint) {
 				const groundAroundWhichToPlay: Actor | undefined = currentGrounds
-				.find((currentGround) => getEmptyCellInRange(world, actors, currentGround.position, range, distance));
+				.find((currentGround) => getEmptyCellInRange(params.world, params.actorsAcc, currentGround.position, range, distance));
 				return groundAroundWhichToPlay;
 			}
 			return acc2;
 		}
 		, undefined);
 	}, undefined);
-	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(world, actors, returnedGroundAroundWhichToPlay.position, range, distance) : undefined;
+	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(params.world, params.actorsAcc, returnedGroundAroundWhichToPlay.position, range, distance) : undefined;
 }
 
 /**
  * A "play" action
  * Returns a random valid position for the play action
- * @param params.actingActor the player
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns a random valid position for the play action, or undefined if no positions avaible
  */
 function playRandomValid(params: ActorActionParams): ReturnType<ActorActions["play"]> {
@@ -214,12 +219,12 @@ function playRandomValid(params: ActorActionParams): ReturnType<ActorActions["pl
 /**
  * A "play" action
  * Returns a good positions, or if no good position found, returns a random valid action for the play action, or undefined if no position avaible
- * @param params.actingActor the player
+ * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns a good positions, or if no good position found, returns a random valid action for the play action, or undefined if no position avaible
  */
 function play(params: ActorActionParams): ReturnType<ActorActions["play"]> {
 	if (Math.random() > getPlayProba(params.actingActor)) return undefined;
-	return playPriorityAroundLoneGrounds(params.actorsAcc, params.world, params.spawnersAxis) ??
+	return playPriorityAroundLoneGrounds(params) ??
 	playRandomValid(params);
 }
 
