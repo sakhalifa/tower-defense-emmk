@@ -7,6 +7,10 @@ import { initWorld, initPhases, nextTurn, initActors } from "./game";
 import { filterByKinds, hasOneOfKinds } from "./actor";
 import { getFaithPoints, getMaxFaith } from "./props";
 
+declare global {
+    interface Window { setTemperature(hp: number, hp_max: number): void }
+}
+
 const sprites = [
     document.getElementById("undefinedSprite"),
     document.getElementById("ignorantSprite"),
@@ -58,13 +62,14 @@ const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMo
  * @param world The world
  * @param actors The actors
  */
-function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement): void {
+function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement, boss: Actor): void {
     // generate actorCards
     // remplace enfants display-grid par les nouveaux actorCard
     const actorsInDrawOrder = kindDrawOrder.reduce(
         (acc: Array<Actor>, kind) => acc.concat(actors.filter((a) => hasOneOfKinds(a, [kind])))
-    , []);
+        , []);
     grid.replaceChildren(...actorsInDrawOrder.map(drawActor));
+    window.setTemperature(getFaithPoints(boss), getMaxFaith(boss));
 }
 
 function drawActor(actor: Actor): HTMLDivElement {
@@ -80,7 +85,7 @@ function drawActor(actor: Actor): HTMLDivElement {
 
         const health = document.createElement('div') as HTMLDivElement;
         health.classList.add('health');
-        health.style.width = `${(100 * getFaithPoints(actor) / getMaxFaith(actor)).toString()}%`;
+        health.style.width = `${(100 * getFaithPoints(actor) / getMaxFaith(actor))}%`;
         hp.appendChild(health);
     }
 
@@ -94,11 +99,11 @@ function drawActor(actor: Actor): HTMLDivElement {
 
 async function main(): Promise<void> {
     const world: World = initWorld(10, 10);
-	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
-    const playProba = 0.25;
-	const spawnProba = 1;
-	const intermediateWaypointLinesNumber = 2;
-	let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);
+    const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+    const playProba = 0.05;
+    const spawnProba = 1;
+    const intermediateWaypointLinesNumber = 2;
+    let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);
     const phases: Array<Phase> = initPhases();
 
     const grid = document.getElementById("display-grid") as HTMLDivElement;
@@ -106,7 +111,7 @@ async function main(): Promise<void> {
 
     while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
         actors = nextTurn(phases, world, actors, spawnersAxis);
-        await displayWorldToGrid(world, actors, grid);
+        await displayWorldToGrid(world, actors, grid, filterByKinds(actors, ["spaghettiMonster"])[0]);
         // wait
         await delay(500);
     }
