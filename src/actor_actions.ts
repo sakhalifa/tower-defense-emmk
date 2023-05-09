@@ -1,12 +1,12 @@
 import type { Actor, Kind } from "./actor";
 import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
-import { World, getVectorsInRangeInWorld, allPositionsInWorld, getPositionsNotInGivenPositions } from "./world";
+import { World, getVectorsInRangeInWorld, allPositionsInWorld, getPositionsNotInGivenPositions, getEmptyCellInRange } from "./world";
 
 import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement,
 	fisherYatesShuffle, arrayWithoutElementAtIndex, getRandomArrayElementNotInOtherArray } from "./util";
 import { createWalker } from "./actor_creators";
-import { distance, createVector, movingVector } from "./geometry";
+import { euclideanDistance, createVector, movingVector } from "./geometry";
 import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower, getFaithPoints, getPlayProba } from "./props";
 import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys, kindKeys } from "./actor";
 import { AxisLength } from "./world";
@@ -106,7 +106,7 @@ function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impact
 	): { impactedActorsIndices: Array<number>, impactAmounts: Array<number>; }
 {
 	const impactedActorsIndices: Array<number> = actors.reduce((acc: Array<number>, currentActor: Actor, actorIndex: number) =>
-		hasOneOfKinds(currentActor, impactedKinds) && distance(currentActor.position, actingActor.position) <= getRange(actingActor) ?
+		hasOneOfKinds(currentActor, impactedKinds) && euclideanDistance(currentActor.position, actingActor.position) <= getRange(actingActor) ?
 		acc.concat(actorIndex) :
 		acc,
 		[]);
@@ -156,21 +156,6 @@ function enemyFlee(params: ActorActionParams): ReturnType<ActorActions["enemyFle
 	return hasOneOfKinds(params.actingActor, [...walkerKeys, "spaghettiMonster"]) ? getFaithPoints(params.actingActor) <= 0 : false;
 }
 
-function getEmptyCellsInRange(world: World, actors: Array<Actor>, fromPosition: Vector2D, range: number,
-	distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D> 
-{
-	return getVectorsInRangeInWorld(range, distanceFunction, world, fromPosition).filter((currentWorldPosition) => 
-	distance(currentWorldPosition, fromPosition) <= range &&
-	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
-}
-
-function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number,
-	distanceFunction: (a: Vector2D, b: Vector2D) => number): Vector2D | undefined 
-{
-	const possibleMoves = getEmptyCellsInRange(world, actors, position, range, distanceFunction);
-	return possibleMoves.length > 0 ? getRandomArrayElement(possibleMoves) : undefined;
-}
-
 /**
  * A "play" action
  * Returns a good positions, or undefined if no good position avaible
@@ -182,7 +167,9 @@ function playPriorityAroundLoneGrounds(params: ActorActionParams): Vector2D | un
 	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
 	const groundListPerLine: Array<Array<Actor>> = consideredLineOrder.map(
 		(consideredLine) => filterByKinds(
-			params.spawnersAxis === "x" ? filterActorsByPosition(params.actorsAcc, undefined, consideredLine) : filterActorsByPosition(params.actorsAcc, consideredLine, undefined),
+			params.spawnersAxis === "x" ?
+			filterActorsByPosition(params.actorsAcc, undefined, consideredLine) :
+			filterActorsByPosition(params.actorsAcc, consideredLine, undefined),
 			["ground"]
 		));
 	const range: number = 2;
@@ -192,15 +179,18 @@ function playPriorityAroundLoneGrounds(params: ActorActionParams): Vector2D | un
 		return groundListPerLine.reduce((acc2, currentGrounds) => {
 			if (acc2) return acc2;
 			if (currentGrounds.length === groundListPerLineConstraint) {
+				const actorsWithoutPlayers: Actor[] = params.actorsAcc.filter((a) => !hasOneOfKinds(a, ["player"]));
 				const groundAroundWhichToPlay: Actor | undefined = currentGrounds
-				.find((currentGround) => getEmptyCellInRange(params.world, params.actorsAcc, currentGround.position, range, distance));
+				.find((currentGround) => getEmptyCellInRange(params.world, actorsWithoutPlayers, currentGround.position, range, euclideanDistance));
 				return groundAroundWhichToPlay;
 			}
 			return acc2;
 		}
 		, undefined);
 	}, undefined);
-	return returnedGroundAroundWhichToPlay ? getEmptyCellInRange(params.world, params.actorsAcc, returnedGroundAroundWhichToPlay.position, range, distance) : undefined;
+	return returnedGroundAroundWhichToPlay ?
+	getEmptyCellInRange(params.world, params.actorsAcc, returnedGroundAroundWhichToPlay.position, range, euclideanDistance) :
+	undefined;
 }
 
 /**

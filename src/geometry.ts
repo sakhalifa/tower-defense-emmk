@@ -40,9 +40,9 @@ function vector2DToString(v: Vector2D): string {
  * Computes the distance between 2 vectors
  * @param a a vector
  * @param b another vector
- * @returns the euclidian distance between vector a and b
+ * @returns the euclidean distance between vector a and b
  */
-function distance(a: Vector2D, b: Vector2D): number {
+function euclideanDistance(a: Vector2D, b: Vector2D): number {
 	return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
@@ -52,7 +52,8 @@ function distance(a: Vector2D, b: Vector2D): number {
  * @param range the range in which the positions from the created square are kept and returned
  * @param distanceFunction the function that evaluates the distance between two positions.
  * Its return value is compared to the given range.
- * @returns all the positions that are in the range of the position {0, 0} using the given distance function
+ * @returns all the positions that are in the range of the position {0, 0} using the given distance function.
+ * The position {0, 0} is included in the result.
  */
 function getMovementVectorsInRange(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D>  {
 	return Array.from({ length: 2 * range + 1 }, (_, i) =>
@@ -147,7 +148,7 @@ function vectorHasCoords(vector: Vector2D, xCoord?: number, yCoord?: number): bo
 	(yCoord === undefined || (vector.y === yCoord));
 }
 
-export { translatePoint, vector2DToString, createVector, distance, movingVector, linkingPath, vectorHasCoords,
+export { translatePoint, vector2DToString, createVector, euclideanDistance, movingVector, linkingPath, vectorHasCoords,
 	getMovementVectorsInRange, positionsLinking };
 
 export type { Vector2D };

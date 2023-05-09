@@ -197,7 +197,7 @@ function randomUniqueMinIntegers(minNumberOfValues: number, maxNumberOfValues: n
  * @param otherArray the array containing the elements that must not be returned
  * @returns a random element from the given array that is not in the other given array, or undefined
  */
-function getRandomArrayElementNotInOtherArray<T>(fromArray: Array<T>, otherArray: Array<T>): T | undefined {
+function 	getRandomArrayElementNotInOtherArray<T>(fromArray: Array<T>, otherArray: Array<T>): T | undefined {
 	if (!fromArray.length) {
 		throw new Error('Cannot get a random element from an empty array');
 	}

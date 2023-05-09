@@ -1,8 +1,9 @@
-import { Vector2D, translatePoint } from "./geometry";
-import { Axis } from "./util";
+import type { Vector2D } from "./geometry";
+import type { Axis } from "./util";
+import type { Actor } from "./actor";
 
-import { randomUniqueIntegers, getRandomArrayElementNotInOtherArray } from "./util";
-import { createVector, linkingPath, getMovementVectorsInRange } from "./geometry";
+import { randomUniqueIntegers, getRandomArrayElementNotInOtherArray, getRandomArrayElement, isDeepStrictEqual } from "./util";
+import { createVector, getMovementVectorsInRange, translatePoint } from "./geometry";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
@@ -105,11 +106,25 @@ function vectorToIndexInWorldString(world: World, vector: Vector2D): number {
 	return vector.y * (world.width * 2 + 1) + vector.x * 2;
 }
 
+/**
+ * Returns all the positions in the world that are in the range of the given positon, using the given distance function
+ * @param range the range, i.e. max distance, in which the returned positions are from the position "fromPosition"
+ * @param distanceFunction the function that evaluates the distance between two given positions
+ * @param world the world in which the returned positions must be
+ * @param fromPosition the position from which the returned positions can be reached
+ * @returns all the positions in the world that are in the range of the given positon, using the given distance function.
+ * fromPosition can be part of those returned positions.
+ */
 function getVectorsInRangeInWorld(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number, world: World, fromPosition: Vector2D): Array<Vector2D> {
 	return getMovementVectorsInRange(range, distanceFunction).map((movementVector) => translatePoint(fromPosition, movementVector))
 	.filter((translatedPosition) => isPositionInWorld(world, translatedPosition));
 }
 
+/**
+ * Returns all the positions that are in the bounds of the given world
+ * @param world the world that constrains the possible returned positions' values
+ * @returns all the positions that are in the bounds of the given world
+ */
 function allPositionsInWorld(world: World): Array<Vector2D> {
 	return Array.from({length: world.width}, (_, currentWidth) => {
 		return Array.from({length: world.height}, (_, currentHeight) => createVector(currentWidth, currentHeight));
@@ -122,12 +137,50 @@ function allPositionsInWorld(world: World): Array<Vector2D> {
  * @param givenPositions the positions that must not be returned
  * @returns a random position of the world which isn't in the givenPositions
  */
-function getPositionsNotInGivenPositions(world: World, givenPositions: Array<Vector2D>): Vector2D | undefined {
+function getPositionNotInGivenPositions(world: World, givenPositions: Array<Vector2D>): Vector2D | undefined {
 	return getRandomArrayElementNotInOtherArray(allPositionsInWorld(world), givenPositions);
+}
+
+/**
+ * Returns all the positions from the world where not a single actor from the given actors is, and which
+ * are in the given range, using the given distance function
+ * @param range the range, i.e. max distance, in which the returned positions are from the position "fromPosition"
+ * @param distanceFunction the function that evaluates the distance between two given positions
+ * @param world the world in which the returned positions must be
+ * @param fromPosition the position from which the returned positions can be reached
+ * @param actors the returned positions must respect the condition that not a single actor from this
+ * array is on one of them.
+ * @returns all the positions from the world where not a single actor from the given actors is, and which
+ * are in the given range, using the given distance function
+ */
+function getEmptyCellsInRange(world: World, actors: Array<Actor>, fromPosition: Vector2D, range: number,
+	distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D> 
+{
+	return getVectorsInRangeInWorld(range, distanceFunction, world, fromPosition).filter((currentWorldPosition) => 
+	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
+}
+
+/**
+ * Returns a random position from the world where not a single actor from the given actors is, and which
+ * is in the given range, using the given distance function
+ * @param range the range, i.e. max distance, in which the returned position is from the position "fromPosition"
+ * @param distanceFunction the function that evaluates the distance between two given positions
+ * @param world the world in which the returned position must be
+ * @param fromPosition the position from which the returned position can be reached
+ * @param actors the returned position must respect the condition that not a single actor from this
+ * array is on it.
+ * @returns a random position from the world where not a single actor from the given actors is, and which
+ * is in the given range, using the given distance function
+ */
+function getEmptyCellInRange(world: World, actors: Array<Actor>, fromPosition: Vector2D, range: number,
+	distanceFunction: (a: Vector2D, b: Vector2D) => number): Vector2D | undefined 
+{
+	const possibleMoves = getEmptyCellsInRange(world, actors, fromPosition, range, distanceFunction);
+	return possibleMoves.length > 0 ? getRandomArrayElement(possibleMoves) : undefined;
 }
 
 export type { World };
 
 export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
 	createPositionsAlongAxis, AxisLength, getVectorsInRangeInWorld,
-	allPositionsInWorld, getPositionsNotInGivenPositions};
+	allPositionsInWorld, getPositionNotInGivenPositions as getPositionsNotInGivenPositions, getEmptyCellInRange};

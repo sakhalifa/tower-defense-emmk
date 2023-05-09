@@ -1,4 +1,4 @@
-import { vector2DToString, translatePoint, createVector, distance, movingVector } from "./../src/geometry";
+import { vector2DToString, translatePoint, createVector, euclideanDistance, movingVector } from "./../src/geometry";
 
 
 test("Vector create test", () => {
@@ -27,12 +27,12 @@ test("Vector to string test", () => {
 });
 
 test("Distance test", () => {
-    expect(distance(createVector(0, 0), createVector(0, 0))).toBeCloseTo(0);
-    expect(distance(createVector(0, 0), createVector(1, 1))).toBeCloseTo(1.41);
-    expect(distance(createVector(0, 0), createVector(0, 10))).toBeCloseTo(10);
-    expect(distance(createVector(0, 0), createVector(10, 0))).toBeCloseTo(10);
-    expect(distance(createVector(0, 10), createVector(0, 0))).toBeCloseTo(10);
-    expect(distance(createVector(10, 5), createVector(0, 5))).toBeCloseTo(10);
+    expect(euclideanDistance(createVector(0, 0), createVector(0, 0))).toBeCloseTo(0);
+    expect(euclideanDistance(createVector(0, 0), createVector(1, 1))).toBeCloseTo(1.41);
+    expect(euclideanDistance(createVector(0, 0), createVector(0, 10))).toBeCloseTo(10);
+    expect(euclideanDistance(createVector(0, 0), createVector(10, 0))).toBeCloseTo(10);
+    expect(euclideanDistance(createVector(0, 10), createVector(0, 0))).toBeCloseTo(10);
+    expect(euclideanDistance(createVector(10, 5), createVector(0, 5))).toBeCloseTo(10);
 });
 
 test("movingVector test", () => {
