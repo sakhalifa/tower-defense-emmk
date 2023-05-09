@@ -1,7 +1,7 @@
 import { Vector2D, translatePoint } from "./geometry";
 import { Axis } from "./util";
 
-import { randomUniqueIntegers } from "./util";
+import { randomUniqueIntegers, getRandomArrayElementNotInOtherArray } from "./util";
 import { createVector, linkingPath, getMovementVectorsInRange } from "./geometry";
 
 /**
@@ -116,8 +116,18 @@ function allPositionsInWorld(world: World): Array<Vector2D> {
 	}).flat();
 }
 
+/**
+ * Returns a random position of the world which isn't in the givenPositions
+ * @param world the world form which the positions are created and can be returned
+ * @param givenPositions the positions that must not be returned
+ * @returns a random position of the world which isn't in the givenPositions
+ */
+function getPositionsNotInGivenPositions(world: World, givenPositions: Array<Vector2D>): Vector2D | undefined {
+	return getRandomArrayElementNotInOtherArray(allPositionsInWorld(world), givenPositions);
+}
+
 export type { World };
 
 export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
 	createPositionsAlongAxis, AxisLength, getVectorsInRangeInWorld,
-	allPositionsInWorld};
+	allPositionsInWorld, getPositionsNotInGivenPositions};
