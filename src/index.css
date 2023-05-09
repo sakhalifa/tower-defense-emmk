@@ -106,7 +106,7 @@ header h1 {
 	height: 320px;
 	width: 40px;
 	position: relative;
-	top: 160px; /* lowest value is 11px - highest value is 300px */
+	top: 300px; /* lowest value is 11px - highest value is 300px */
 	transition: top 0.5s linear;
 }
 

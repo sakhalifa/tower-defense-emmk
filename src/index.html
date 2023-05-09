@@ -8,10 +8,10 @@
   <audio id="myAudio" loop>
     <source src="resources/Chinese Rap Full.mp3" type="audio/mpeg">
     Votre navigateur ne supporte pas l'audio HTML5.
-  </audio>  
+  </audio>
 </head>
 
-<body class="warm-bg">
+<body class="very-cold-bg">
 
   <img src="resources/sprites/ignorant.png" class="hide" id="ignorantSprite">
   <img src="resources/sprites/pirate.png" class="hide" id="goodGuySprite">
@@ -54,6 +54,18 @@
     "very-cold"
   ];
 
+  function setTemperature(hp, hp_max) {
+    if (hp < 0) {
+      hp = 0;
+    }
+
+    i = (289 * hp) / hp_max;
+    let tempFill = document.querySelector(".thermometer-body-fill");
+    tempFill.style.setProperty("top", `${i+11}px`);
+    document.body.className = `${FILL_HEIGHT[Math.trunc(i / 58)]}-bg`;
+
+  }
+
   let tempFill = document.querySelector(".thermometer-body-fill");
   let controls = document.querySelector(".controls");
   let i;
@@ -66,12 +78,12 @@
     }
   });
 
-  
+
   function fill() {
     if (i <= 10)
       clearInterval(intervalHandler)
     tempFill.style.setProperty("top", `${i}px`);
-    document.body.className = `${FILL_HEIGHT[Math.trunc(i/58)]}-bg`;
+    document.body.className = `${FILL_HEIGHT[Math.trunc(i / 58)]}-bg`;
     i--;
   }
 
