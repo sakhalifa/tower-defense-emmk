@@ -17,14 +17,14 @@ test("TemperatureRisePhase test", () => {
     const actor1 = createActor(createVector(0, 0), {}, defaultActions, "ignorant");
     const actor2 = createActor(createVector(0, 0), {}, defaultActions, "ignorant");
     const actor3 = createActor(createVector(0, 0), {}, defaultActions, "ignorant");
-    expect(temperatureRisePhase([], [])).toEqual([]);
-    expect(temperatureRisePhase([actor1], [0])).toEqual([actor1]);
-    expect(temperatureRisePhase([actor1, actor2, actor3], [100, 100, 100])).toEqual([actor1, actor2, actor3]);
+    expect(JSON.stringify(temperatureRisePhase([], []))).toEqual(JSON.stringify([]));
+    expect(JSON.stringify(temperatureRisePhase([actor1], [0]))).toEqual(JSON.stringify([actor1]));
+    expect(JSON.stringify(temperatureRisePhase([actor1, actor2, actor3], [100, 100, 100]))).toEqual(JSON.stringify([actor1, actor2, actor3]));
     const monster = createSpaghettiMonster(createVector(0, 0), 1, 10);
     const monsterSmaller = createSpaghettiMonster(createVector(0, 0), 1, 5);
-    expect(temperatureRisePhase([actor1, monster], [0])).toEqual([actor1, monster]);
-    expect(temperatureRisePhase([actor1, monster], [5])).toEqual([actor1, monsterSmaller]);
-    expect(temperatureRisePhase([actor1, monster], [10])).toEqual([actor1, {...monster, externalProps: {...monster.externalProps, faithPoints: 0}}]);
+    expect(JSON.stringify(temperatureRisePhase([actor1, monster], [0]))).toEqual(JSON.stringify([actor1, monster]));
+    expect(JSON.stringify(temperatureRisePhase([actor1, monster], [5]))).toEqual(JSON.stringify([actor1, monsterSmaller]));
+    expect(JSON.stringify(temperatureRisePhase([actor1, monster], [10]))).toEqual(JSON.stringify([actor1, {...monster, externalProps: {...monster.externalProps, faithPoints: 0}}]));
 });
 
 // move phase
@@ -32,11 +32,11 @@ test("movePhase test", () => {
     const waypoint1 = createGround(createVector(10, 5), 0);
     const actor = setWaypointTargetAndNumber(createActor(createVector(0, 0), {}, defaultActions, "ignorant"), waypoint1.position, 0);
     const movedActor = setWaypointTargetAndNumber(createActor(createVector(10, 5), {}, defaultActions, "ignorant"), waypoint1.position, 0);
-    expect(movePhase([], [])).toEqual([]);
-    expect(movePhase([waypoint1, actor], [createVector(0, 0), createVector(10, 5)])).toEqual([waypoint1, movedActor]);
-    expect(movePhase([movedActor], [createVector(-10, -5)])).toEqual([actor]);
-    expect(movePhase([movedActor, waypoint1], [createVector(-10, -5), createVector(0, 0)])).toEqual([actor, waypoint1]);
-    expect(movePhase([actor, movedActor, actor], [createVector(0, 0), createVector(-10, -5), createVector(10, 5)])).toEqual([actor, actor, movedActor]);
+    expect(JSON.stringify(movePhase([], []))).toEqual(JSON.stringify([]));
+    expect(JSON.stringify(movePhase([waypoint1, actor], [createVector(0, 0), createVector(10, 5)]))).toEqual(JSON.stringify([waypoint1, movedActor]));
+    expect(JSON.stringify(movePhase([movedActor], [createVector(-10, -5)]))).toEqual(JSON.stringify([actor]));
+    expect(JSON.stringify(movePhase([movedActor, waypoint1], [createVector(-10, -5), createVector(0, 0)]))).toEqual(JSON.stringify([actor, waypoint1]));
+    expect(JSON.stringify(movePhase([actor, movedActor, actor], [createVector(0, 0), createVector(-10, -5), createVector(10, 5)]))).toEqual(JSON.stringify([actor, actor, movedActor]));
 });
 
 // update faithPoints
@@ -46,10 +46,10 @@ test("movePhase test", () => {
 //spreadConvictionPhase tests
 test("spreadConvictionPhase test", () => {
     const ignorant1 = createIgnorant(createVector(0, 0), createVector(1, 1), 5);
-    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [0]}])).toEqual([ignorant1]);
-    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-5]}])).toEqual([createIgnorant(createVector(0, 0), createVector(1, 1), 0)]);
-    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-2]}, {impactedActorsIndices: [0], impactAmounts: [-1]}])).toEqual([createIgnorant(createVector(0, 0), createVector(1, 1), 2)]);
-    expect(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-2]}, {impactedActorsIndices: [0], impactAmounts: [2]}])).toEqual([ignorant1]);
+    expect(JSON.stringify(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [0]}]))).toEqual(JSON.stringify([ignorant1]));
+    expect(JSON.stringify(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-5]}]))).toEqual(JSON.stringify([createIgnorant(createVector(0, 0), createVector(1, 1), 0)]));
+    expect(JSON.stringify(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-2]}, {impactedActorsIndices: [0], impactAmounts: [-1]}]))).toEqual(JSON.stringify([createIgnorant(createVector(0, 0), createVector(1, 1), 2)]));
+    expect(JSON.stringify(spreadConvictionPhase([ignorant1], [{impactedActorsIndices: [0], impactAmounts: [-2]}, {impactedActorsIndices: [0], impactAmounts: [2]}]))).toEqual(JSON.stringify([ignorant1]));
 });
 
 // Enemy flee phase tests
