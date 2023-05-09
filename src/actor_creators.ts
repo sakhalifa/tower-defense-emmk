@@ -5,8 +5,10 @@ import type { Kind, Actor, Walker, ActionGenerators } from "./actor";
 import { createVector } from "./geometry";
 import { filterByKinds, findNextWaypointTarget } from "./actor";
 import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./util";
-import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies, enemyFlee, createDefaultActionGenerator } from "./actor_actions";
-import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber, setFaithPointsAndMax, setSpreadIgnorancePower, setRange } from "./props";
+import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies,
+	enemyFlee, createDefaultActionGenerator } from "./actor_actions";
+import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber,
+	setFaithPointsAndMax, setSpreadIgnorancePower, setRange, setPlayProba } from "./props";
 
 /**
  * Actor constructor
@@ -65,9 +67,10 @@ function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, f
 			setFaithPointsAndMax(
 				setSpreadIgnorancePower(
 					setRange(
-						createActor(position, {}, { move:
-							moveTowardWaypointTarget,
-							spreadIgnorance, enemyFlee }, "ignoranceSpreader")
+						createActor(position,
+							{},
+							{ move: moveTowardWaypointTarget, spreadIgnorance, enemyFlee },
+							"ignoranceSpreader")
 					,range)
 				,spreadIgnorancePower)
 			,faithPoints, 70)
@@ -129,7 +132,11 @@ function createGround(position: Vector2D, waypointNumber?: number): Actor {
 }
 
 function createGoodGuy(position: Vector2D, range: number = 2, conviction: number = 9): Actor {
-	return createActor(position, {}, {convertEnemies}, "goodGuy", {range, conviction});
+	return setRange(
+			setConviction(
+				createActor(position, {}, {convertEnemies}, "goodGuy")
+			,conviction)
+		,range);
 }
 
 /**
@@ -138,11 +145,19 @@ function createGoodGuy(position: Vector2D, range: number = 2, conviction: number
  * @returns the created Actor of kind "spaghettiMonster"
  */
 function createSpaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 100): Actor {
-	return setWaypointNumber(createActor(position, {}, {}, "spaghettiMonster", {faithPoints, maxFaith: 100}), waypointNumber);
+	return setWaypointNumber(
+			setFaithPoints(
+				setMaxFaith(
+					createActor(position, {}, {}, "spaghettiMonster")
+				,100)
+			,faithPoints)
+		,waypointNumber);
 }
 
 function createPlayer(playProba: number = 0.25): Actor {
-	return createActor(createVector(0, 0), {}, { play: play }, "player", {playProba});
+	return setPlayProba(
+			createActor(createVector(0, 0), {}, { play: play }, "player")
+		,playProba);
 }
 
 export { createActor, createGround, createSpaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, createPlayer, createGoodGuy };

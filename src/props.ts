@@ -111,10 +111,14 @@ function getPlayProba(actor: Actor): number {
 	return actor.externalProps!.playProba;
 }
 
+function setPlayProba(actor: Actor, playProba: number): Actor {
+	return { ...actor, externalProps: { ...actor.externalProps, playProba } };
+}
+
 export {
 	setConviction, getConviction, setRange, getRange,
 	getWaypointTarget, setWaypointTarget, getWaypointNumber, setWaypointNumber,
 	getWaypointTargetNumber, setWaypointTargetNumber, getSpawnProba, setSpawnProba,
 	setSpreadIgnorancePower, getSpreadIgnorancePower, setFaithPoints, getFaithPoints, getMaxFaith,
-	getPlayProba, setMaxFaith, setWaypointTargetAndNumber, setFaithPointsAndMax
+	getPlayProba, setMaxFaith, setWaypointTargetAndNumber, setFaithPointsAndMax, setPlayProba
 };
