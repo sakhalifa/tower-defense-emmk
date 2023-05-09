@@ -145,55 +145,67 @@ i {
 	pointer-events: none;
 }
 
-.very-hot-bg {
-	background: rgb(232, 154, 30);
+.very-cold-bg {
+	background: rgb(187, 237, 181);
 	background: linear-gradient(
-	0deg,
-	rgba(232, 154, 30, 0.8) 0%,
-	rgba(232, 141, 30, 0.6) 35%,
-	rgba(232, 50, 30, 0.5) 100%
-);
-}
-  
-.hot-bg {
-background: rgb(229, 232, 30);
-background: linear-gradient(
-	0deg,
-	rgba(229, 232, 30, 0.8) 0%,
-	rgba(232, 211, 30, 0.6) 35%,
-	rgba(232, 154, 30, 0.5) 100%
-);
-}
-
-.warm-bg {
-background: rgb(30, 232, 52);
-background: linear-gradient(
-	0deg,
-	rgba(30, 232, 52, 0.8) 0%,
-	rgba(151, 232, 30, 0.6) 35%,
-	rgba(229, 232, 30, 0.5) 100%
-);
+		0deg,
+		rgba(170, 255, 160, 0.8) 0%,
+		rgba(91, 173, 87, 0.6) 25%,
+		rgba(85, 156, 91, 0.5) 50%,
+		rgba(51, 128, 70, 0.4) 75%,
+		rgba(26, 92, 50, 0.3) 100%
+	);
 }
 
 .cold-bg {
-background: rgb(30, 212, 232);
-background: linear-gradient(
-	0deg,
-	rgba(30, 212, 232, 0.8) 0%,
-	rgba(30, 232, 130, 0.6) 35%,
-	rgba(30, 232, 52, 0.5) 100%
-);
+	background: rgb(210, 223, 181);
+	background: linear-gradient(
+		0deg,
+		rgba(203, 228, 149, 0.8) 0%,
+		rgba(176, 212, 137, 0.6) 25%,
+		rgba(147, 180, 131, 0.5) 50%,
+		rgba(91, 136, 61, 0.4) 75%,
+		rgba(76, 92, 38, 0.3) 100%
+	);
 }
 
-.very-cold-bg {
-background: rgb(120, 30, 232);
-background: linear-gradient(
-	0deg,
-	rgba(120, 30, 232, 0.8) 0%,
-	rgba(30, 127, 232, 0.6) 35%,
-	rgba(30, 212, 232, 0.5) 100%
-);
+.warm-bg {
+	background: rgb(237, 204, 151);
+	background: linear-gradient(
+		0deg,
+		rgba(237, 204, 151, 0.8) 0%,
+		rgba(217, 176, 112, 0.6) 25%,
+		rgba(191, 143, 63, 0.5) 50%,
+		rgba(164, 115, 29, 0.4) 75%,
+		rgba(139, 87, 4, 0.3) 100%
+	);
 }
+
+.hot-bg {
+	background: rgb(232, 141, 89);
+	background: linear-gradient(
+		0deg,
+		rgba(232, 141, 89, 0.8) 0%,
+		rgba(217, 109, 52, 0.6) 25%,
+		rgba(191, 78, 11, 0.5) 50%,
+		rgba(164, 51, 0, 0.4) 75%,
+		rgba(139, 33, 0, 0.3) 100%
+	);
+}
+
+.very-hot-bg {
+	background: rgb(232, 70, 36);
+	background: linear-gradient(
+		0deg,
+		rgba(232, 70, 36, 0.8) 0%,
+		rgba(217, 40, 15, 0.6) 25%,
+		rgba(191, 16, 0, 0.5) 50%,
+		rgba(164, 0, 0, 0.4) 75%,
+		rgba(139, 0, 0, 0.3) 100%
+	);
+}
+
+
 
 #display-grid {
     width: 90vh;
