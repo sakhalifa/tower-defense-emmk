@@ -1,3 +1,12 @@
+@font-face {
+	font-family: "Hamburg";
+	src: url("./resources/fonts/Hamburg.ttf");
+}
+  
+body {
+	font-family: sans-serif;
+}
+
 html {
 	width: 100vw;
 	height: 100vh;
@@ -8,15 +17,15 @@ body {
     padding: 0;
 }
 
-
 .title {
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    font-size: 50px;
+    font-family: "Hamburg", sans-serif;
+    font-size: 4.5rem;
     padding: 5%;
     border-radius: 10px;
     border: 1px solid black;
     margin-top: 50px;
-    background-color: #FDF0D5;
+    background-color: #4b8048;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8);
 }
 
 .main-content {
@@ -107,6 +116,10 @@ body {
 	overflow: visible;
 }
 
+h1 {
+	margin: 2vh;
+}
+
 .btn {
 	color: #2d2930;
 	background-color: #dbdbdb;
@@ -135,56 +148,57 @@ i {
 .very-hot-bg {
 	background: rgb(232, 154, 30);
 	background: linear-gradient(
-		0deg,
-		rgba(232, 154, 30, 1) 0%,
-		rgba(232, 141, 30, 1) 35%,
-		rgba(232, 50, 30, 1) 100%
-	);
+	0deg,
+	rgba(232, 154, 30, 0.8) 0%,
+	rgba(232, 141, 30, 0.6) 35%,
+	rgba(232, 50, 30, 0.5) 100%
+);
 }
-
+  
 .hot-bg {
-	background: rgb(229, 232, 30);
-	background: linear-gradient(
-		0deg,
-		rgba(229, 232, 30, 1) 0%,
-		rgba(232, 211, 30, 1) 35%,
-		rgba(232, 154, 30, 1) 100%
-	);
+background: rgb(229, 232, 30);
+background: linear-gradient(
+	0deg,
+	rgba(229, 232, 30, 0.8) 0%,
+	rgba(232, 211, 30, 0.6) 35%,
+	rgba(232, 154, 30, 0.5) 100%
+);
 }
 
 .warm-bg {
-	background: rgb(30, 232, 52);
-	background: linear-gradient(
-		0deg,
-		rgba(30, 232, 52, 1) 0%,
-		rgba(151, 232, 30, 1) 35%,
-		rgba(229, 232, 30, 1) 100%
-	);
+background: rgb(30, 232, 52);
+background: linear-gradient(
+	0deg,
+	rgba(30, 232, 52, 0.8) 0%,
+	rgba(151, 232, 30, 0.6) 35%,
+	rgba(229, 232, 30, 0.5) 100%
+);
 }
 
 .cold-bg {
-	background: rgb(30, 212, 232);
-	background: linear-gradient(
-		0deg,
-		rgba(30, 212, 232, 1) 0%,
-		rgba(30, 232, 130, 1) 35%,
-		rgba(30, 232, 52, 1) 100%
-	);
+background: rgb(30, 212, 232);
+background: linear-gradient(
+	0deg,
+	rgba(30, 212, 232, 0.8) 0%,
+	rgba(30, 232, 130, 0.6) 35%,
+	rgba(30, 232, 52, 0.5) 100%
+);
 }
 
 .very-cold-bg {
-	background: rgb(120, 30, 232);
-	background: linear-gradient(
-		0deg,
-		rgba(120, 30, 232, 1) 0%,
-		rgba(30, 127, 232, 1) 35%,
-		rgba(30, 212, 232, 1) 100%
-	);
+background: rgb(120, 30, 232);
+background: linear-gradient(
+	0deg,
+	rgba(120, 30, 232, 0.8) 0%,
+	rgba(30, 127, 232, 0.6) 35%,
+	rgba(30, 212, 232, 0.5) 100%
+);
 }
 
 #display-grid {
-    width: 600px;
-    height: 600px;
+    width: 90vh;
+    height: 90vh;
+	border-radius: 10px;
     border: 1px solid black;
     background-color: #FDF0D5;
 	display: grid;
@@ -193,6 +207,7 @@ i {
     url('resources/sprites/grass.png');
   background-size: cover;
   background-blend-mode: multiply;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
 }
 
 .actorCard {
@@ -222,12 +237,16 @@ i {
 .actors {
     width: 20vw;
     height: 85vh;
+	border-radius: 10px;
     border: 1px solid black;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: first baseline;
-    background-color: #FDF0D5;
+    background-color: #4b8048;
+	font-family: "Hamburg", sans-serif;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+	font-size: 2rem;
 }
 
 .controls {
@@ -238,14 +257,19 @@ i {
 }
 
 .card {
+	font-size: 1rem;
+	font-family: sans-serif;
 	width: 17vw;
 	height: 15vh;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-around;
+	border-radius: 10px;
 	border: 1px solid black;
-	margin-bottom: 3vh;
+	box-shadow: 7px 7px 3px rgba(0, 0, 0, 0.2);
+	margin-bottom: 2vh;
+	background-color: #5ea559;
 }
 
 .infos {
