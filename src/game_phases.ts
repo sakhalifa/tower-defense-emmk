@@ -41,7 +41,7 @@ function playPhase(oldActors: Array<Actor>, phaseResult: Array<ReturnType<ActorA
 
 /**
  * The executePhase function for the "temperatureRise" phase.
- * It inflicts damage to the Spaghetti Monster, our defense target.
+ * It inflicts "damage" to the Spaghetti Monster, our defense target.
  * @param oldActors The actors before the phase
  * @param phaseResult The results of the phase
  * @returns A proposal for the actors after executing the "temperatureRise" phase
@@ -53,6 +53,13 @@ function temperatureRisePhase(oldActors: Array<Actor>, phaseResult: Array<Return
 	currentActor);
 }
 
+/**
+ * The executePhase function for the "move" phase.
+ * It makes the given actors move along the path generated from the spawners to the spaghettiMonsters
+ * @param oldActors The actors before the phase
+ * @param phaseResult The results of the phase
+ * @returns A proposal for the actors after executing the "move" phase
+ */
 function movePhase(oldActors: Array<Actor>, phaseResults: Array<ReturnType<ActorActions["move"]>>): Array<Actor> {
 	return phaseResults.map(
 		(phaseResult, actorIndex) => {
@@ -63,7 +70,6 @@ function movePhase(oldActors: Array<Actor>, phaseResults: Array<ReturnType<Actor
 		}
 	);
 }
-//(allActors, oneActor, world, spawnerAxis) => { return [(allActorsBis, oneActorBis, worldBis, spawnerAxisBis) => createVector(0, 0), createVector(0, 0)]; }
 
 function updateIgnorance(actor: Actor, actorIndex: number, spreadConvictionResults: Array<ReturnType<typeof impactActorsConviction>>): Actor {
 	return setFaithPoints(actor, 

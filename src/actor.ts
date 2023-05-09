@@ -34,10 +34,23 @@ type Actor = {
 	externalProps?: Record<any, any>;
 };
 
+/**
+ * Returns true if the given actor's kind is included in the given array of kind
+ * @param actor the tested actor
+ * @param kinds the array of kinds
+ * @returns true if the given actor's kind is included in the given array of kind
+ */
 function hasOneOfKinds(actor: Actor, kinds: Array<Kind>) {
 	return kinds.includes(actor.kind);
 }
 
+/**
+ * Returns true if the given actor's kind is included in the kinds of the type Walker,
+ * which reprensents the actors that move on the path generated from the spawns to the spaghettiMonsters
+ * @param actor the tested actor
+ * @returns true if the given actor's kind is included in the kinds of the type Walker,
+ * which reprensents the actors that move on the path generated from the spawns to the spaghettiMonsters
+ */
 function isWalker(actor: Actor): boolean {
 	return hasOneOfKinds(actor, [...walkerKeys]);
 }
