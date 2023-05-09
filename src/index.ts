@@ -78,7 +78,7 @@ function drawActor(actor: Actor): HTMLDivElement {
 
         const health = document.createElement('div') as HTMLDivElement;
         health.classList.add('health');
-        health.style.width = "20%";
+        health.style.width = `${actor.faithPoints}%`;
         health.style.height = "100%";
         health.style.backgroundColor = "green";
         hp.appendChild(health);
