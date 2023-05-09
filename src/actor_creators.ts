@@ -1,29 +1,32 @@
-import { Vector2D, createVector } from "./geometry";
-import { ActorActions, enemyFlee } from "./actor_actions";
-import type { Kind, Actor, Walker } from "./actor";
+import type { Vector2D } from "./geometry";
+import type { ActorActions } from "./actor_actions";
+import type { Kind, Actor, Walker, ActionGenerators } from "./actor";
 
+import { createVector } from "./geometry";
 import { filterByKinds, findNextWaypointTarget } from "./actor";
-import { getRandomArrayElement } from "./util";
-import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play } from "./actor_actions";
-import { setSpawnProba, setWaypointNumber, setWaypointTarget, setWaypointTargetNumber } from "./props";
+import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./util";
+import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies, enemyFlee, createDefaultActionGenerator } from "./actor_actions";
+import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber, setFaithPointsAndMax, setSpreadIgnorancePower, setRange } from "./props";
 
 /**
  * Actor constructor
  * @param position The position of the created Actor
  * @param actions The actions of the created Actor
  * @param kind The kind of the created Actor
- * @param externalProps The external properties of the created Actor
  * @param faithPoints The faithPoints points of the created Actor
  * @returns A new actor
  */
-function createActor(position: Vector2D, actions: Partial<ActorActions>, kind: Kind, faithPoints?: number): Actor {
-	return { position, actions: { ...defaultActions, ...actions }, kind, faithPoints };
-}
-
-function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, waypointTargetNumber: number) {
-	return setWaypointTarget(
-		setWaypointTargetNumber(actor, waypointTargetNumber), waypointTarget
-	);
+function createActor(position: Actor["position"], actionGenerators: Partial<Actor["actionGenerators"]>, actions: Partial<Actor["actions"]>, kind: Actor["kind"], externalProps?: Actor["externalProps"] ): Actor {
+	const actorActions: Actor["actions"] = { ...defaultActions, ...actions };
+	const defaultActionsGenerators: ActionGenerators = Object.keys(actorActions).reduce((acc, key: keyof ActorActions) => {
+		const action = actorActions[key];
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		acc[key] = createDefaultActionGenerator(action);
+		return acc;
+	}, {} as ActionGenerators);
+	const actorActionsGenerators: Actor["actionGenerators"] = {...defaultActionsGenerators, ...actionGenerators};
+	return { position, actionGenerators: actorActionsGenerators, actions: actorActions, kind, externalProps };
 }
 
 /**
@@ -33,12 +36,18 @@ function setWaypointTargetAndNumber(actor: Actor, waypointTarget: Vector2D, wayp
  * @param faithPoints the level of faithPoints of the ignorant
  * @returns the created Actor of kind "ignorant"
  */
-function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 10): Actor {
-	//{ waypointTargetNumber: 1, waypointTarget: waypointTarget }
+function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 100): Actor {
+	throwErrorIfUndefined(waypointTarget);
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, temperatureRise: temperatureRise, enemyFlee: enemyFlee }, "ignorant", faithPoints),
-		waypointTarget,
-		1);
+				setFaithPointsAndMax(
+						setConviction(
+							createActor(position,
+								{ move: executeFunctionEveryNCall(moveTowardWaypointTarget, defaultActions["move"], 2) },
+								{ move: moveTowardWaypointTarget, temperatureRise, enemyFlee },
+								"ignorant")
+						,10)
+				,faithPoints, 100)
+	,waypointTarget, 1);
 }
 
 /**
@@ -48,12 +57,19 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
  * @param faithPoints the level of faithPoints of the ignoranceSpreader
  * @returns the created Actor of kind "ignoranceSpreader"
  */
-function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 7): Actor {
-	//
+function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 70, spreadIgnorancePower: number = 5, range: number = 3): Actor {
+	throwErrorIfUndefined(waypointTarget);
 	return setWaypointTargetAndNumber(
-		createActor(position, { move: moveTowardWaypointTarget, spreadIgnorance: spreadIgnorance, enemyFlee: enemyFlee }, "ignoranceSpreader", faithPoints),
-		waypointTarget,
-		1);
+			setFaithPointsAndMax(
+				setSpreadIgnorancePower(
+					setRange(
+						createActor(position, {}, { move:
+							moveTowardWaypointTarget,
+							spreadIgnorance, enemyFlee }, "ignoranceSpreader")
+					,range)
+				,spreadIgnorancePower)
+			,faithPoints, 70)
+		,waypointTarget, 1);
 }
 
 /**
@@ -94,10 +110,11 @@ function createWalker(kind: Walker, path: Array<Actor>, position: Vector2D, fait
  * @returns the created Actor of kind "spawner"
  */
 function createSpawner(position: Vector2D, spawnProba: number = 0.3): Actor {
-	//{ waypointNumber: 0, spawnProba: spawnProba }
 	return setSpawnProba(
-		setWaypointNumber(createActor(position, { spawn: spawn }, "spawner"), 0),
-		spawnProba);
+			setWaypointNumber(
+				createActor(position, {}, { spawn }, "spawner")
+			, 0)
+		,spawnProba);
 }
 
 /**
@@ -106,11 +123,11 @@ function createSpawner(position: Vector2D, spawnProba: number = 0.3): Actor {
  * @returns the created Actor of kind "ground"
  */
 function createGround(position: Vector2D, waypointNumber?: number): Actor {
-	return waypointNumber ? setWaypointNumber(createActor(position, {}, "ground"), waypointNumber) : createActor(position, {}, "ground");
+	return waypointNumber ? setWaypointNumber(createActor(position, {}, {}, "ground"), waypointNumber) : createActor(position, {}, {}, "ground");
 }
 
-function createGoodGuy(position: Vector2D): Actor {
-	return createActor(position, {}, "goodGuy");
+function createGoodGuy(position: Vector2D, range: number = 2, conviction: number = 9): Actor {
+	return createActor(position, {}, {convertEnemies}, "goodGuy", {range, conviction});
 }
 
 /**
@@ -118,12 +135,12 @@ function createGoodGuy(position: Vector2D): Actor {
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
  * @returns the created Actor of kind "spaghettiMonster"
  */
-function createspaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 50): Actor {
-	return setWaypointNumber(createActor(position, {}, "spaghettiMonster", faithPoints), waypointNumber);
+function createSpaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 100): Actor {
+	return setWaypointNumber(createActor(position, {}, {}, "spaghettiMonster", {faithPoints, maxFaith: 100}), waypointNumber);
 }
 
-function createPlayer(): Actor {
-	return createActor(createVector(0, 0), { play: play }, "player");
+function createPlayer(playProba: number = 0.25): Actor {
+	return createActor(createVector(0, 0), {}, { play: play }, "player", {playProba});
 }
 
-export { createActor, createGround, createspaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, createPlayer, createGoodGuy };
+export { createActor, createGround, createSpaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, createPlayer, createGoodGuy };

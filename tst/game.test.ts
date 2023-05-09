@@ -1,5 +1,5 @@
 import { initWorld, initPhases, initSpawners, initGroundWaypoints, initActors } from "../src/game";
-import { convertEnemiesPhase, enemyFleePhase, movePhase, spawnPhase } from "../src/game_phases";
+import { spreadConvictionPhase, enemyFleePhase, movePhase, spawnPhase } from "../src/game_phases";
 import { createWorld, isPositionInWorld } from "../src/world";
 import { createPhase } from "../src/phase";
 
@@ -9,7 +9,7 @@ test("initWorld test", () => {
     expect(() => initWorld(61, -4)).toThrow();
 
     // test with valid world dimension
-    expect(initWorld(10, 10)).toEqual(createWorld(10, 10, 0));
+    expect(initWorld(10, 10)).toEqual(createWorld(10, 10));
 
 });
 
@@ -18,7 +18,7 @@ test("initPhases test", () => {
     expect(initPhases()).toContainEqual(createPhase("spawn", spawnPhase));
     expect(initPhases()).toContainEqual(createPhase("move", movePhase));
     expect(initPhases()).toContainEqual(createPhase("enemyFlee", enemyFleePhase));
-    expect(initPhases()).toContainEqual(createPhase("convertEnemies", convertEnemiesPhase));
+    expect(initPhases()).toContainEqual(createPhase("convertEnemies", spreadConvictionPhase));
 });
 
 test("init Spawner test", () => {
@@ -34,6 +34,9 @@ test("initGroundWaypoints test", () => {
     expect(initGroundWaypoints(world, 2, 2, 'y', [1, 3], 2)).toHaveLength(2);
 });
 
-test.each(initActors(initWorld(5, 5), 5)[0])("Init actor test", (actor) => {
+test.each(initActors(initWorld(5, 5), 5, "x"))("Init actor test", (actor) => { //refactor with forEach on axis?
+    expect(isPositionInWorld(initWorld(5, 5), actor.position)).toBeTruthy();
+});
+test.each(initActors(initWorld(5, 5), 5, "y"))("Init actor test", (actor) => {
     expect(isPositionInWorld(initWorld(5, 5), actor.position)).toBeTruthy();
 });

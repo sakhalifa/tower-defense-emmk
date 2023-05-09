@@ -1,9 +1,8 @@
-import type { Vector2D } from "./geometry";
-import { Axis, otherAxis } from "./util";
+import { Vector2D, translatePoint } from "./geometry";
+import { Axis } from "./util";
 
 import { randomUniqueIntegers } from "./util";
-import { createVector, linkingPath } from "./geometry";
-import { Actor } from "./actor";
+import { createVector, linkingPath, getMovementVectorsInRange } from "./geometry";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
@@ -12,17 +11,15 @@ import { Actor } from "./actor";
 type World = {
 	readonly width: number;
 	readonly height: number;
-	turnsElapsed: number;
 };
 
 /**
  * A world constructor
  * @param width the width of the world
  * @param height The height of the world
- * @param turnsElapsed the turns elapsed
  * @returns A world with the given width and height and turns elapsed.
  */
-function createWorld(width: number, height: number, turnsElapsed: number): World {
+function createWorld(width: number, height: number): World {
 	if (width <= 0 || height <= 0){
 		throw new Error("World size values must be positive");
 	}
@@ -30,12 +27,17 @@ function createWorld(width: number, height: number, turnsElapsed: number): World
 		throw new Error("World size values must be integers");
 	}
 	return {
-		width: width,
-		height: height,
-		turnsElapsed
+		width,
+		height
 	};
 }
 
+/**
+ * Returns the length of the given Axis in the given World
+ * @param world the world from which the Axis length is computed
+ * @param axis the axis that we want to know the length
+ * @returns the length of the given Axis in the given World
+ */
 function AxisLength(world: World, axis: Axis) {
 	switch (axis) {
 		case "x":
@@ -50,6 +52,7 @@ function AxisLength(world: World, axis: Axis) {
 /**
  * Returns an array of 1 to maxPositions random unique aligned positions
  * @param world the world on which the positions are computed
+ * @param minPositions the minimum number of positions inside the returned array
  * @param maxPositions the maximum number of positions inside the returned array
  * @param axis the returned positions can reach each other by a translation along this axis
  * @param lineNumber the coordinate of the returned position on the not-given axis
@@ -95,23 +98,26 @@ function worldToString(world: World): string {
  * @param vector the vector representing the position, represented as a character in the world string representation
  * @returns the position of the character representing the content of what is at the position described by the given vector, in the given world
  */
-function worldStringVectorToIndex(world: World, vector: Vector2D): number {
+function vectorToIndexInWorldString(world: World, vector: Vector2D): number {
 	if (!isPositionInWorld(world, vector)){
 		throw new Error("Position is not in world");
 	}
 	return vector.y * (world.width * 2 + 1) + vector.x * 2;
 }
 
-function positionsLinking(positions: Array<Array<Vector2D>>, firstAxis?: Axis): Array<Vector2D> {
-	return positions.reduce((acc: Array<Vector2D>, currentPositions, index) => {
-		if (!index) {
-			return acc;
-		}
-		return acc.concat(currentPositions.map((currentPosition) => positions[index - 1]
-		.map((previousPosition) => linkingPath(previousPosition, currentPosition, firstAxis)).flat()).flat());
-	}, []);
+function getVectorsInRangeInWorld(range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number, world: World, fromPosition: Vector2D): Array<Vector2D> {
+	return getMovementVectorsInRange(range, distanceFunction).map((movementVector) => translatePoint(fromPosition, movementVector))
+	.filter((translatedPosition) => isPositionInWorld(world, translatedPosition));
+}
+
+function allPositionsInWorld(world: World): Array<Vector2D> {
+	return Array.from({length: world.width}, (_, currentWidth) => {
+		return Array.from({length: world.height}, (_, currentHeight) => createVector(currentWidth, currentHeight));
+	}).flat();
 }
 
 export type { World };
 
-export { createWorld, worldToString, isPositionInWorld, worldStringVectorToIndex, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking, AxisLength };
+export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
+	createPositionsAlongAxis, AxisLength, getVectorsInRangeInWorld,
+	allPositionsInWorld};

@@ -1,11 +1,11 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import type { Kind, Actor } from "./actor";
+import { Kind, Actor, walkerKeys } from "./actor";
 import type { Axis } from "./util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
-import { Vector2D, createVector } from "./geometry";
-import { filterByKinds, walkerKeys } from "./actor";
+import { filterByKinds, hasOneOfKinds } from "./actor";
+import { getFaithPoints, getMaxFaith } from "./props";
 
 const sprites = [
     document.getElementById("undefinedSprite"),
@@ -51,18 +51,20 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
     }
 }
 
-const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMonster", ...walkerKeys];
+const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMonster", "ignoranceSpreader", "ignorant"];
 
 /**
  * Draws the content of the world to the grid
  * @param world The world
  * @param actors The actors
  */
-function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement) {
+function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement): void {
     // generate actorCards
     // remplace enfants display-grid par les nouveaux actorCard
-
-    grid.replaceChildren(...actors.map(drawActor));
+    const actorsInDrawOrder = kindDrawOrder.reduce(
+        (acc: Array<Actor>, kind) => acc.concat(actors.filter((a) => hasOneOfKinds(a, [kind])))
+    , []);
+    grid.replaceChildren(...actorsInDrawOrder.map(drawActor));
 }
 
 function drawActor(actor: Actor): HTMLDivElement {
@@ -71,16 +73,14 @@ function drawActor(actor: Actor): HTMLDivElement {
     child.style.gridColumnStart = (actor.position.x + 1).toString();
     child.style.gridRowStart = (actor.position.y + 1).toString();
 
-    if (!["ground", "spaghettiMonster"].includes(actor.kind)) {
+    if (hasOneOfKinds(actor, [...walkerKeys])) {
         const hp = document.createElement('div') as HTMLDivElement;
         hp.classList.add('hpBar');
         child.appendChild(hp);
 
         const health = document.createElement('div') as HTMLDivElement;
         health.classList.add('health');
-        health.style.width = `${actor.faithPoints}%`;
-        health.style.height = "100%";
-        health.style.backgroundColor = "green";
+        health.style.width = `${(100 * getFaithPoints(actor) / getMaxFaith(actor)).toString()}%`;
         hp.appendChild(health);
     }
 
@@ -92,18 +92,19 @@ function drawActor(actor: Actor): HTMLDivElement {
     return child;
 }
 
-async function main() {
-    const world: World = initWorld(15, 15);
-    const intermediateWaypointsLineNumber = Math.random() < 0.6 ? 2 : 3;
-    const initActorsResult: [Array<Actor>, Axis] = initActors(world, intermediateWaypointsLineNumber, 1);
-    let actors = initActorsResult[0];
-    const spawnersAxis = initActorsResult[1];
+async function main(): Promise<void> {
+    const world: World = initWorld(10, 10);
+	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+    const playProba = 0.25;
+	const spawnProba = 1;
+	const intermediateWaypointLinesNumber = 2;
+	let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);
     const phases: Array<Phase> = initPhases();
 
     const grid = document.getElementById("display-grid") as HTMLDivElement;
     grid.style.gridTemplate = `repeat(${world.height}, 1fr) / repeat(${world.width}, 1fr)`;
 
-    while (actors.find((a) => a.kind === "spaghettiMonster")!.faithPoints! > 0) {
+    while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
         actors = nextTurn(phases, world, actors, spawnersAxis);
         await displayWorldToGrid(world, actors, grid);
         // wait

@@ -4,10 +4,14 @@
  * @returns the sum of all the elements of the array
  */
 function sum(array: Array<number>) {
-	return array.reduce((p, c) => p + c, 0);
+	return array.reduce((acc, current) => acc + current, 0);
 }
 
-//not pure
+/**
+ * Returns a random element from the given array
+ * @param fromArray the array from where the random element is returned
+ * @returns a random element from the given array
+ */
 function getRandomArrayElement<T>(fromArray: Array<T>): T {
 	if (!fromArray.length) {
 		throw new Error('Cannot get a random element from an empty array');
@@ -156,6 +160,52 @@ function randomUniqueIntegers(minNumberOfValues: number, maxNumberOfValues: numb
 	return randomUniqueIntegersTailRecursive(minNumberOfValues, maxNumberOfValues, []);
 }
 
+function arrayWithoutElementAtIndex<T>(arr: Array<T>, index: number): Array<T> {
+	return arr.slice(0, index).concat(arr.slice(index + 1));
+}
+
+function fisherYatesShuffle<T>(arrayToShuffle: Array<T>): Array<T> {
+	function fisherYatesShuffleTailRecursive(alreadyShuffled: Array<T>, restToShuffle: Array<T>): Array<T> {
+		if (restToShuffle.length === 0) return alreadyShuffled;
+		const randomIndex = Math.random() * restToShuffle.length;
+		return fisherYatesShuffleTailRecursive(alreadyShuffled.concat(restToShuffle[randomIndex]), arrayWithoutElementAtIndex(restToShuffle, randomIndex));
+	}
+	return fisherYatesShuffleTailRecursive([], arrayToShuffle);
+}
+
+//not really random, but shuffled minvalues (terminates)
+function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: number, minValue: number, maxValue: number): Array<number> {
+	if (maxValue - minValue < maxNumberOfValues) {
+		throw new Error("It is impossible to return more than n unique values among among n values.");
+	}
+	if (minNumberOfValues > maxNumberOfValues || minValue > maxValue) {
+		throw new Error("Params starting with 'min' must be inferior to their counterpart starting with 'max'");
+	}
+
+	return fisherYatesShuffle(Array.from({length: Math.random() * (maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues}, (_, i) => (i + minValue)));
+}
+
+function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0): [() => [any, T], T] { //typage any...
+	function executeFunctionEveryNCallClosure(currentNClosure: number): [typeof executeFunctionEveryNCallClosure, T] {
+		const nextFunc: T = !currentNClosure ? func : defaultFunc;
+		return [() => executeFunctionEveryNCallClosure((currentNClosure + 1) % n), nextFunc];
+	}
+	return executeFunctionEveryNCallClosure(currentN) as [() => [any, T], T];
+}
+
+function isNotUndefined<T>(value: T | undefined): value is T {
+	return value !== undefined;
+}
+
+function throwErrorIfUndefined<T>(value: T | undefined): void {
+	if (!isNotUndefined(value)) {
+		throw new Error("unexpected undefined value");
+	}
+}
+
 export type { Axis };
 
-export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers, evenlySpacedNumbers, randomUniqueIntegers, otherAxis };
+export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject,
+	almostEvenlySpacedIntegers, evenlySpacedNumbers,
+	randomUniqueIntegers, otherAxis,
+	fisherYatesShuffle, executeFunctionEveryNCall, throwErrorIfUndefined };

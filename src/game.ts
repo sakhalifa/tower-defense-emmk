@@ -1,14 +1,16 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
-import type { Actor } from "./actor";
+import { Actor, filterByKinds } from "./actor";
 import type { Axis } from "./util";
 
-import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis, positionsLinking } from "./world";
-import { createGround, createspaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
-import { isValidActorInEnvironment, walkerKeys } from "./actor";
+import { positionsLinking } from "./geometry";
+import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis } from "./world";
+import { createGround, createSpaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
+import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
-import { convertEnemiesPhase, enemyFleePhase, spreadIgnorancePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
-import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis } from "./util";
+import { spreadConvictionPhase, enemyFleePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
+import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./util";
+import { getFaithPoints } from "./props";
 
 /**
  * Initializes a new world to the given width and height where 0 turns
@@ -18,7 +20,7 @@ import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis } from "./u
  * @returns A brand new world where 0 turns have elapsed
  */
 function initWorld(width: number, height: number): World {
-	return createWorld(width, height, 0);
+	return createWorld(width, height);
 }
 
 /**
@@ -28,9 +30,9 @@ function initPhases(): Array<Phase> {
 	return [
 		createPhase("spawn", spawnPhase),
 		createPhase("temperatureRise", temperatureRisePhase),
-		createPhase("convertEnemies", convertEnemiesPhase),
+		createPhase("convertEnemies", spreadConvictionPhase),
+		createPhase("spreadIgnorance", spreadConvictionPhase),
 		createPhase("move", movePhase),
-		createPhase("spreadIgnorance", spreadIgnorancePhase),
 		createPhase("play", playPhase),
 		createPhase("enemyFlee", enemyFleePhase)
 	];
@@ -54,7 +56,6 @@ function initSpawners(world: World, minSpawners: number, maxSpawners: number, sp
 	}
 	const spawnersPerpendicularAxisCoord = randomUniqueIntegers(minSpawners, maxSpawners, 0, spawnersParallelAxis === "x" ? world.width : world.height);
 	const spawnProba = averageSpawnsPerPhase / spawnersPerpendicularAxisCoord.length;
-	console.log(spawnProba);
 	return createPositionsAlongAxis(spawnersParallelAxis, spawnersPerpendicularAxisCoord, spawnerLineNumber).map((spawnerPosition) => createSpawner(spawnerPosition, spawnProba));
 }
 
@@ -87,7 +88,7 @@ function initGroundWaypoints(world: World, minGroundsPerLine: number, maxGrounds
  */
 function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSpaghettiMonsters: number, spaghettiMonstersAxis : Axis, spaghettiMonstersLineNumber: number, waypointNumber: number): Array<Actor> {
 	return randomPositionsAlongAxis(world, minSpaghettiMonsters,  maxSpaghettiMonsters, spaghettiMonstersAxis, spaghettiMonstersLineNumber)
-	.map((spaghettiMonsterPosition) => createspaghettiMonster(spaghettiMonsterPosition, waypointNumber));
+	.map((spaghettiMonsterPosition) => createSpaghettiMonster(spaghettiMonsterPosition, waypointNumber));
 }
 
 /**
@@ -98,16 +99,15 @@ function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSp
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the created waypoints of the world
  */
-function initWayPointActors(world: World, intermediateWaypointsNumber: number, averageSpawnsPerPhase?: number): [Array<Array<Actor>>, Axis] {
-	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+function initWayPointActors(world: World, intermediateWaypointsNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number): Array<Array<Actor>>{
 	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
 	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
 	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
 	const intermediateWaypointsLineNumber: Array<number> =
 	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
-	return [[initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
+	return [initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
 	.concat(initGroundWaypoints(world, 1, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
-	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]), spawnersAxis];
+	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
 }
 
 /**
@@ -118,11 +118,11 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number, a
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the first actors of the game.
  */
-function initActors(world: World, intermediateWaypointLinesNumber: number, averageSpawnsPerPhase?: number): [Array<Actor>, Axis] {
-	const [waypoints, spawnersAxis]: [Array<Array<Actor>>, Axis] = initWayPointActors(world, intermediateWaypointLinesNumber, averageSpawnsPerPhase);
-	return [waypoints.flat()
+function initActors(world: World, intermediateWaypointLinesNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number, playProba? : number): Array<Actor> {
+	const waypoints: Array<Array<Actor>> = initWayPointActors(world, intermediateWaypointLinesNumber, spawnersAxis, averageSpawnsPerPhase);
+	return waypoints.flat()
 	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)), otherAxis(spawnersAxis))
-	.map((position) => createGround(position))).concat(createPlayer()), spawnersAxis];
+	.map((position) => createGround(position))).concat(createPlayer(playProba));
 }
 
 /**
@@ -134,12 +134,17 @@ function initActors(world: World, intermediateWaypointLinesNumber: number, avera
  */
 function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<Actor>): Array<Actor> {
 	return proposals.reduce((acc: Array<Actor>, currentProposal: Actor, actorIndex: number) => {
+		if (currentProposal === undefined) throw new Error("undefined actor");
 		if (isValidActorInEnvironment(world, currentProposal)) {
-			if(walkerKeys.find((key) => currentProposal.kind === key)) {
-				return acc.concat(currentProposal);
+			if(isWalker(currentProposal) &&
+			!(filterByKinds(actors, ["ground", "spawner", "spaghettiMonster"])
+			.find((currentGround) => isDeepStrictEqual(currentGround.position, currentProposal.position))
+			)) {
+				return acc;
 			}
+			return acc.concat(currentProposal);
 		}
-		return acc.concat(actors[actorIndex]); // doesn't check old Actor validity
+		return acc;
 	}, []);
 }
 
@@ -152,12 +157,12 @@ function resolveProposals(world: World, actors: Array<Actor>, proposals: Array<A
  * @returns A new array of actors
  */
 function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>, spawnersAxis: Axis): Array<Actor> {
-	return phases.reduce((someActors, aPhase) => {
+	return phases.reduce((actorsAcc, aPhase) => {
 		const proposals: Actor[]
-			= aPhase.executePhase(someActors,
-				someActors.map((anActor) => anActor.actions[aPhase.funcName](someActors, anActor, world, spawnersAxis) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
+			= aPhase.executePhase(actorsAcc,
+				actorsAcc.map((actingActor) => actingActor.actions[aPhase.funcName]({actorsAcc, actingActor, world, spawnersAxis}) as any /* ReturnType<ActorActions[keyof ActorActions]> */)
 			);
-		return resolveProposals(world, someActors, proposals);
+		return resolveProposals(world, actorsAcc, proposals);
 	}, actors);
 }
 
@@ -167,19 +172,17 @@ function nextTurn(phases: Array<Phase>, world: World, actors: Array<Actor>, spaw
  */
 function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	const world: World = initWorld(10, 10);
-	const initActorsResult: [Array<Actor>, Axis] = initActors(world, 2, 1);
-	let actors = initActorsResult[0];
-	const spawnersAxis = initActorsResult[1];
+	const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
+	const playProba = 0.25;
+	const spawnProba = 1;
+	const intermediateWaypointLinesNumber = 2;
+	let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);
 	const phases: Array<Phase> = initPhases();
-	let i = 0;
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
-	while (i < 10) {
-		console.log(`turn : \x1b[33m ${i} \x1b[0m`);
+	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
 		display(world, actors);
 		actors = nextTurn(phases, world, actors, spawnersAxis);
-		++i;
 	}
-	console.log(`turn : \x1b[33m ${i} \x1b[0m`);
 	display(world, actors);
 }
 

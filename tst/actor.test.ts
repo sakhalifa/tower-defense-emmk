@@ -1,54 +1,61 @@
 import type { Actor } from "../src/actor";
+import type { Axis } from "../src/util";
+import type { World } from "../src/world";
+import type { ActorActionParams } from "../src/actor_actions";
 
+import { ActorActions, ActionGenerators } from "../src/actor_actions";
 import { createActor, createGround } from "../src/actor_creators";
 import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
-import { defaultActions } from "../src/actor_actions";
+import { defaultActions, createDefaultActionGenerator } from "../src/actor_actions";
 import { createVector } from "../src/geometry";
 import { createWorld, worldToString } from "../src/world";
 
-function move(_: Array<Actor>, __: Actor) {
+function move(params: ActorActionParams) {
     return createVector(0, 0);
 }
 
-function spreadIgnorance(_: Array<Actor>, __: Actor) {
-    return {actorIndices: [0], amount: [0]};
+function spreadIgnorance(params: ActorActionParams) {
+    return {impactedActorsIndices: [0], impactAmounts: [0]};
 }
 
 function buildDummyActor(): Actor{
-    return { position: createVector(0, 1), actions: defaultActions, kind: "ignorant", faithPoints: undefined, externalProps: undefined };
+	const actionGenerators: ActionGenerators = Object.keys(defaultActions).reduce((acc, key: keyof ActorActions) => {
+		const action = defaultActions[key];
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		acc[key] = createDefaultActionGenerator(action);
+		return acc;
+	}, {} as ActionGenerators);
+    return { position: createVector(0, 1), actionGenerators, actions: defaultActions, kind: "ignorant"};
 }
 
 test("Actor create test", () => {
-    expect(createActor(createVector(0, 1), {}, "ignorant"))
+    expect(createActor(createVector(0, 1), {}, {}, "ignorant"))
         .toEqual(buildDummyActor());
-    expect(createActor(createVector(100, 100), { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
+    expect(createActor(createVector(100, 100), {}, { move, spreadIgnorance: spreadIgnorance }, "ignorant"))
         .not.toEqual(buildDummyActor());
-    expect(createActor(createVector(0, 1), { move }, "ignorant"))
+    expect(createActor(createVector(0, 1), {}, { move }, "ignorant"))
         .not.toEqual(buildDummyActor());
 });
 
 test("Actor to string test", () => {
-    expect(actorToString({
-        position: createVector(0, 1),
-        actions: defaultActions,
-        kind: "ignorant"
-    })).toEqual("{position: (0, 1)}");
+    expect(actorToString(buildDummyActor())).toEqual("{position: (0, 1), kind: ignorant}");
 });
 
 test("Actor translate test", () => {
     expect(translateActor(buildDummyActor(), createVector(0, 0))).toEqual(buildDummyActor());
     expect(translateActor(buildDummyActor(), createVector(1, 3))).not.toEqual(buildDummyActor());
-    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual(createActor(createVector(1, 4), {}, "ignorant"));
+    expect(translateActor(buildDummyActor(), createVector(1, 3))).toEqual(createActor(createVector(1, 4), {}, {}, "ignorant"));
 });
 
 test("actorToStringInWorld test", () => {
-    const world = createWorld(3, 3, 0);
+    const world = createWorld(3, 3);
     expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
         .toEqual("      \ni     \n      ");
 });
 
 test("actorToStringInWorld test", () => {
-    const world = createWorld(3, 3, 0);
+    const world = createWorld(3, 3);
     expect(actorToStringInWorld(world, worldToString(world), buildDummyActor()))
         .toEqual("      \ni     \n      ");
 });
@@ -70,3 +77,4 @@ function findNextWaypoint(actors: Array<Actor>, currentwaypointTargetNumber: num
 	return actors.find((currentActor) => currentActor?.externalProps?.waypointNumber === currentwaypointTargetNumber + 1);
 }
 
+export {move};
