@@ -12,7 +12,7 @@ declare global {
 }
 
 const sprites = [
-    document.getElementById("undefinedSprite"),
+    document.getElementById("grassSprite"),
     document.getElementById("ignorantSprite"),
     document.getElementById("goodGuySprite"),
     document.getElementById("waypointSprite"),

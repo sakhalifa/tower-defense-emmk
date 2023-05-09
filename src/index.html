@@ -20,12 +20,10 @@
   <img src="resources/sprites/ground.png" class="hide" id="groundSprite">
   <img src="resources/sprites/spawner.png" class="hide" id="spawnerSprite">
   <img src="resources/sprites/waypoint.png" class="hide" id="waypointSprite">
-  <img src="resources/sprites/undefined.png" class="hide" id="undefinedSprite">
-  <header>
-    <h1>Pastafarist</h1>
-  </header>
+  <img src="resources/sprites/grass.png" class="hide" id="grassSprite">
   <div class="main-content">
     <div class="thermometer">
+      <h1 class="title">Pastafarist</h1>
       <div class="thermometer-body">
         <div class="thermometer-body-fill"></div>
       </div>
@@ -43,6 +41,7 @@
       </div>
     </div>
   </div>
+  <dialog id="lol">COucou</dialog>
 </body>
 
 <script>
@@ -66,26 +65,9 @@
 
   }
 
-  let tempFill = document.querySelector(".thermometer-body-fill");
-  let controls = document.querySelector(".controls");
-  let i;
-  let intervalHandler;
-
-  controls.addEventListener("click", (event) => {
-    if (event.target.nodeName === "BUTTON") {
-      i = 300;
-      intervalHandler = window.setInterval(fill, 30);
-    }
-  });
-
-
-  function fill() {
-    if (i <= 10)
-      clearInterval(intervalHandler)
-    tempFill.style.setProperty("top", `${i}px`);
-    document.body.className = `${FILL_HEIGHT[Math.trunc(i / 58)]}-bg`;
-    i--;
-  }
+  document.getElementById("very-hot").addEventListener("click", () =>{
+    document.getElementById("lol").showModal();
+  })
 
 </script>
 
