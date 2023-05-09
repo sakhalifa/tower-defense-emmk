@@ -100,7 +100,7 @@ function drawActor(actor: Actor): HTMLDivElement {
 async function main(): Promise<void> {
     const world: World = initWorld(10, 10);
     const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
-    const playProba = 0.05;
+    const playProba = 0.2;
     const spawnProba = 1;
     const intermediateWaypointLinesNumber = 2;
     let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);

@@ -13,6 +13,8 @@
 
 <body class="very-cold-bg">
 
+  <div class="home-screen"></div>
+
   <img src="resources/sprites/ignorant.png" class="hide" id="ignorantSprite">
   <img src="resources/sprites/pirate.png" class="hide" id="goodGuySprite">
   <img src="resources/sprites/FlyingSpaghettiMonster.png" class="hide" id="spaghettiMonsterSprite">
@@ -32,16 +34,52 @@
       </div>
     </div>
     <div id="display-grid"></div>
-    <div class="menu">
-      <h1>Menu</h1>
+    <div class="actors">
+      <h1>Actors</h1>
       <div class="controls">
-        <button id="very-hot" class="btn very-hot" aria-label="Set temperature to very hot" onclick="playMusic()">
-          <i class="fa-solid fa-fire-flame-curved fa-xl"></i>
-        </button>
+        <div class="card">
+          <img src="resources/sprites/ignorant.png" alt="pirate" width="70" height="70">
+          <div class="infos">
+            <div class="name">Ignorant</div>
+            <ul class="stats">
+              <li>Attack : 10</li>
+              <li>Health : 100</li>
+              <li>Speed : 1</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <img src="resources/sprites/pope.png" alt="pirate" width="70" height="70">
+          <div class="infos">
+            <div class="name">Pope</div>
+            <ul class="stats">
+              <li>Regen : 5</li>
+              <li>Health : 70</li>
+              <li>Speed : 2</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <img src="resources/sprites/pirate.png" alt="pirate" width="70" height="70">
+          <div class="infos">
+            <div class="name">Pirate</div>
+            <ul class="stats">
+              <li>Attack : 9</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <img src="resources/sprites/FlyingSpaghettiMonster.png" alt="pirate" width="70" height="70">
+          <div class="infos">
+            <div class="name">Spaghetti Monster</div>
+            <ul class="stats">
+              <li>Health : 100</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <dialog id="lol">COucou</dialog>
 </body>
 
 <script>
@@ -64,10 +102,6 @@
     document.body.className = `${FILL_HEIGHT[Math.trunc(i / 58)]}-bg`;
 
   }
-
-  document.getElementById("very-hot").addEventListener("click", () =>{
-    document.getElementById("lol").showModal();
-  })
 
 </script>
 

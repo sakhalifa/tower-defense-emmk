@@ -219,13 +219,46 @@ i {
 	background-color: green;
 }
 
-.menu {
+.actors {
     width: 20vw;
-    height: 70vh;
+    height: 85vh;
     border: 1px solid black;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: first baseline;
     background-color: #FDF0D5;
+}
+
+.controls {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.card {
+	width: 17vw;
+	height: 15vh;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	border: 1px solid black;
+	margin-bottom: 3vh;
+}
+
+.infos {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.name {
+	font-weight: bold;
+}
+
+.stats {
+	text-align: justify;
 }
