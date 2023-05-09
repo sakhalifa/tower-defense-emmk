@@ -16,7 +16,9 @@ import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointN
  * @param faithPoints The faithPoints points of the created Actor
  * @returns A new actor
  */
-function createActor(position: Actor["position"], actionGenerators: Partial<Actor["actionGenerators"]>, actions: Partial<Actor["actions"]>, kind: Actor["kind"], externalProps?: Actor["externalProps"] ): Actor {
+function createActor(position: Actor["position"], actionGenerators: Partial<Actor["actionGenerators"]>,
+	actions: Partial<Actor["actions"]>, kind: Actor["kind"], externalProps?: Actor["externalProps"] ): Actor
+{
 	const actorActions: Actor["actions"] = { ...defaultActions, ...actions };
 	const defaultActionsGenerators: ActionGenerators = Object.keys(actorActions).reduce((acc, key: keyof ActorActions) => {
 		const action = actorActions[key];

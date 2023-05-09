@@ -29,13 +29,21 @@ function buildDummyActor(): Actor{
     return { position: createVector(0, 1), actionGenerators, actions: defaultActions, kind: "ignorant", externalProps: undefined};
 }
 
-xtest("Actor create test", () => {
+test("Actor create test", () => {
     expect(JSON.stringify(createActor(createVector(0, 1), {}, {}, "ignorant")))
         .toEqual(JSON.stringify(buildDummyActor()));
-    expect(JSON.stringify(createActor(createVector(100, 100), {}, { move, spreadIgnorance: spreadIgnorance }, "ignorant")))
+    expect(JSON.stringify(createActor(createVector(100, 100), {}, { move, spreadIgnorance }, "ignorant")))
         .not.toEqual(JSON.stringify(buildDummyActor()));
-    expect(JSON.stringify(createActor(createVector(0, 1), {}, { move }, "ignorant")))
-        .not.toEqual(JSON.stringify(buildDummyActor()));
+
+    expect(createActor(createVector(0, 1), {}, { move, spreadIgnorance }, "ignorant").actions.move)
+        .toBe(move);
+    expect(createActor(createVector(0, 1), {}, { spreadIgnorance }, "ignorant").actions.move)
+        .not.toBe(move);
+
+    // This test doesn't seem to work. The 2 previous "expect" make sure everything is fine.
+
+    // expect(JSON.stringify(createActor(createVector(0, 1), {}, { move, spreadIgnorance }, "ignorant")))
+    //     .not.toEqual(JSON.stringify(buildDummyActor()));
 });
 
 test("Actor to string test", () => {
