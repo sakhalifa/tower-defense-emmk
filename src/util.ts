@@ -44,10 +44,18 @@ function isDeepStrictEqual(object1: any, object2: any) {
 	return true;
 }
 
-function isObject(object: any) {
+/**
+ * Returns true if the tested value's type is Object
+ * @param object the tested value
+ * @returns true if the tested value's type is Object
+ */
+function isObject(object: any): boolean {
 	return object !== null && typeof object === "object";
 }
 
+/**
+ * Type representing axes in a basis
+ */
 type Axis = "x" | "y";
 
 /**

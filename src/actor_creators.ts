@@ -13,9 +13,10 @@ import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointN
 /**
  * Actor constructor
  * @param position The position of the created Actor
+ * @param actionGenerators The generators of the actions of the created actor
  * @param actions The actions of the created Actor
  * @param kind The kind of the created Actor
- * @param faithPoints The faithPoints points of the created Actor
+ * @param externalProps The data or parameters concerning the created actor
  * @returns A new actor
  */
 function createActor(position: Actor["position"], actionGenerators: Partial<Actor["actionGenerators"]>,
@@ -59,6 +60,9 @@ function createIgnorant(position: Vector2D, waypointTarget: Vector2D, faithPoint
  * @param position the position where the ignoranceSpreader is in the world
  * @param waypointTarget the next position that the ignoranceSpreader has to reach
  * @param faithPoints the level of faithPoints of the ignoranceSpreader
+ * @param spreadIgnorancePower this value indicates how much the created "ignoranceSpreader" can increase the faith of the "ignorant" actors
+ * in its range
+ * @param range the range in which the ignoranceSpreader can affect the ignorants
  * @returns the created Actor of kind "ignoranceSpreader"
  */
 function createIgnoranceSpreader(position: Vector2D, waypointTarget: Vector2D, faithPoints: number = 70, spreadIgnorancePower: number = 5, range: number = 3): Actor {
@@ -124,6 +128,7 @@ function createSpawner(position: Vector2D, spawnProba: number = 0.3): Actor {
 
 /**
  * Constructor for a default "ground" actor
+ * @param position the position of the ground
  * @param waypointNumber the number indexing the order in which the waypoints have to be reached
  * @returns the created Actor of kind "ground"
  */
@@ -131,6 +136,13 @@ function createGround(position: Vector2D, waypointNumber?: number): Actor {
 	return waypointNumber ? setWaypointNumber(createActor(position, {}, {}, "ground"), waypointNumber) : createActor(position, {}, {}, "ground");
 }
 
+/**
+ * Constructor for a default "goodGuy" actor
+ * @param position the position of the goodGuy
+ * @param range the range in which the goodGuy can affect the walkers
+ * @param conviction the conviction defines how impacting the goodGuy is on the walkers
+ * @returns the created Actor of kind "goodGuy"
+ */
 function createGoodGuy(position: Vector2D, range: number = 2, conviction: number = 9): Actor {
 	return setRange(
 			setConviction(
@@ -141,7 +153,9 @@ function createGoodGuy(position: Vector2D, range: number = 2, conviction: number
 
 /**
  * Constructor for a default "spaghettiMonster" actor
- * @param waypointNumber the number indexing the order in which the waypoints have to be reached
+ * @param position the position of the goodGuy
+ * @param waypointNumber the number indexing the order in which the waypoints (including the spaghettiMonster) have to be reached
+ * @param faithPoints the faith of the spaghettiMonster. The game is lost when its faithPoints reach 0.
  * @returns the created Actor of kind "spaghettiMonster"
  */
 function createSpaghettiMonster(position: Vector2D, waypointNumber: number, faithPoints: number = 100): Actor {
@@ -154,10 +168,16 @@ function createSpaghettiMonster(position: Vector2D, waypointNumber: number, fait
 		,waypointNumber);
 }
 
+/**
+ * Constructor for a default "player" actor
+ * @param playProba the probability for the player to play, for each play Phase
+ * @returns the created Actor of kind "player"
+ */
 function createPlayer(playProba: number = 0.25): Actor {
 	return setPlayProba(
 			createActor(createVector(0, 0), {}, { play: play }, "player")
 		,playProba);
 }
 
-export { createActor, createGround, createSpaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant, createPlayer, createGoodGuy };
+export { createActor, createGround, createSpaghettiMonster, createSpawner, createIgnoranceSpreader, createWalker, createIgnorant,
+	createPlayer, createGoodGuy };
