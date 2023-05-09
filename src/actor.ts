@@ -28,7 +28,7 @@ type Kind = typeof kindKeys[number];
  */
 type Actor = {
 	position: Vector2D;
-	actionGenerators: ActionGenerators
+	actionGenerators: ActionGenerators;
 	actions: ActorActions;
 	kind: Kind;
 	externalProps?: Record<any, any>;
@@ -140,5 +140,5 @@ function filterActorsByPosition(actors: Array<Actor>, xPosition?: number, yPosit
 
 export { actorToString, actorToStringInWorld, translateActor, translateAndUpdateWaypoint, 
 	stringReplaceAt, filterByKinds, findNextWaypointTarget, isValidActorInEnvironment,
-	filterActorsByPosition, isWalker, hasOneOfKinds, walkerKeys };
+	filterActorsByPosition, isWalker, hasOneOfKinds, walkerKeys, kindKeys };
 export type { Actor, Kind, Walker, ActionGenerators };

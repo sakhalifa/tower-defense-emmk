@@ -1,13 +1,14 @@
 import type { Actor, Kind } from "./actor";
 import type { Vector2D } from "./geometry";
 import type { Axis } from "./util";
-import { World, getVectorsInRangeInWorld, allPositionsInWorld } from "./world";
+import { World, getVectorsInRangeInWorld, allPositionsInWorld, getPositionsNotInGivenPositions } from "./world";
 
-import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement, fisherYatesShuffle } from "./util";
+import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement,
+	fisherYatesShuffle, arrayWithoutElementAtIndex, getRandomArrayElementNotInOtherArray } from "./util";
 import { createWalker } from "./actor_creators";
 import { distance, createVector, movingVector } from "./geometry";
 import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower, getFaithPoints, getPlayProba } from "./props";
-import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys } from "./actor";
+import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys, kindKeys } from "./actor";
 import { AxisLength } from "./world";
 
 type ActorActionParams = {actorsAcc: Array<Actor>, actingActor: Actor, world: World, spawnersAxis: Axis};
@@ -32,10 +33,6 @@ type ActionGenerators = {
 function createDefaultActionGenerator<Key extends keyof ActorActions>(action: ActorActions[Key]): ActionGenerators[Key] {
 	return [() => createDefaultActionGenerator(action), action] as ActionGenerators[Key];
 }
-
-//const defaultMoveAction = (actors: Array<Actor>, actor: Actor, world: World, spawnerAxis?: Axis): ReturnType<ActorActions["move"]> => {
-//	return [defaultMoveAction, createVector(0, 0)];
-//};
 
 /**
  * All the default actions, so that each Phase can be called on each actor, even if the actor hasn't its specific phase function
@@ -81,9 +78,19 @@ function temperatureRise(params: ActorActionParams): ReturnType<ActorActions["te
 	=== undefined ? 0 : getConviction(params.actingActor);
 }
 
+/**
+ * Filter the actors whose faith must be impacted (positively or negatively) and return an object containing their indices and how much their faith is impacted
+ * @param actors the actors from which the impacted actors are filtered
+ * @param actingActor the actor that is impacting the faith of the other actors
+ * @param impactedKinds the kinds of the actors that can be impacted by the actingActor
+ * @param impactFunction the function defining the value by which the faith of the actors is impacted
+ * @returns an object containing:
+ * - the indices, in the given actors, of the impacted actors
+ * - the values corresponding to how much the faithPoints of the impacted actors are impacted
+ */
 function impactActorsConviction(actors: Array<Actor>, actingActor: Actor, impactedKinds: Array<Kind>,
-								impactFunction: (impactingActor: Actor, actorsToImpact: Array<Actor>) => Array<number>,
-								): { impactedActorsIndices: Array<number>, impactAmounts: Array<number>; }
+	impactFunction: (impactingActor: Actor, actorsToImpact: Array<Actor>) => Array<number>,
+	): { impactedActorsIndices: Array<number>, impactAmounts: Array<number>; }
 {
 	const impactedActorsIndices: Array<number> = actors.reduce((acc: Array<number>, currentActor: Actor, actorIndex: number) =>
 		hasOneOfKinds(currentActor, impactedKinds) && distance(currentActor.position, actingActor.position) <= getRange(actingActor) ?
@@ -144,22 +151,27 @@ function enemyFlee(params: ActorActionParams): ReturnType<ActorActions["enemyFle
 	return hasOneOfKinds(params.actingActor, [...walkerKeys, "spaghettiMonster"]) ? getFaithPoints(params.actingActor) <= 0 : false;
 }
 
-function getEmptyCell(world: World, actors: Array<Actor>): Vector2D | undefined {
-	return fisherYatesShuffle(allPositionsInWorld(world)).find((currentWorldPosition) => 
-	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
-}
-
-function getEmptyCellsInRange(world: World, actors: Array<Actor>, fromPosition: Vector2D, range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D> {
+function getEmptyCellsInRange(world: World, actors: Array<Actor>, fromPosition: Vector2D, range: number,
+	distanceFunction: (a: Vector2D, b: Vector2D) => number): Array<Vector2D> 
+{
 	return getVectorsInRangeInWorld(range, distanceFunction, world, fromPosition).filter((currentWorldPosition) => 
 	distance(currentWorldPosition, fromPosition) <= range &&
 	!actors.some((currentActor) => isDeepStrictEqual(currentActor.position, currentWorldPosition)));
 }
 
-function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number): Vector2D | undefined {
+function getEmptyCellInRange(world: World, actors: Array<Actor>, position: Vector2D, range: number,
+	distanceFunction: (a: Vector2D, b: Vector2D) => number): Vector2D | undefined 
+{
 	const possibleMoves = getEmptyCellsInRange(world, actors, position, range, distanceFunction);
 	return possibleMoves.length > 0 ? getRandomArrayElement(possibleMoves) : undefined;
 }
 
+/**
+ * A "play" action
+ * Returns a good positions, or undefined if no good position avaible
+ * @param params.actingActor the player
+ * @returns a good positions, or undefined if no good position avaible
+ */
 function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawnerAxis: Axis): Vector2D | undefined {
 	const numberOfLines = AxisLength(world, otherAxis(spawnerAxis));
 	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
@@ -188,14 +200,30 @@ function playPriorityAroundLoneGrounds(actors: Array<Actor>, world: World, spawn
 
 /**
  * A "play" action
+ * Returns a random valid position for the play action
  * @param params.actingActor the player
- * @returns 
+ * @returns a random valid position for the play action, or undefined if no positions avaible
+ */
+function playRandomValid(params: ActorActionParams): ReturnType<ActorActions["play"]> {
+	return getPositionsNotInGivenPositions(
+		params.world, 
+		filterByKinds(params.actorsAcc, arrayWithoutElementAtIndex([...kindKeys], [...kindKeys].indexOf("player"))).map((a) => a.position)
+	);
+}
+
+/**
+ * A "play" action
+ * Returns a good positions, or if no good position found, returns a random valid action for the play action, or undefined if no position avaible
+ * @param params.actingActor the player
+ * @returns a good positions, or if no good position found, returns a random valid action for the play action, or undefined if no position avaible
  */
 function play(params: ActorActionParams): ReturnType<ActorActions["play"]> {
 	if (Math.random() > getPlayProba(params.actingActor)) return undefined;
-	return playPriorityAroundLoneGrounds(params.actorsAcc, params.world, params.spawnersAxis) ?? getEmptyCell(params.world, params.actorsAcc);
+	return playPriorityAroundLoneGrounds(params.actorsAcc, params.world, params.spawnersAxis) ??
+	playRandomValid(params);
 }
 
 export type { ActorActions, ActionGenerators, ActorActionParams };
 
-export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget, defaultActions, play, impactActorsConviction, createDefaultActionGenerator };
+export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget,
+	defaultActions, play, impactActorsConviction, createDefaultActionGenerator};

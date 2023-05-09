@@ -8,18 +8,6 @@ function sum(array: Array<number>) {
 }
 
 /**
- * Returns a random element from the given array
- * @param fromArray the array from where the random element is returned
- * @returns a random element from the given array
- */
-function getRandomArrayElement<T>(fromArray: Array<T>): T {
-	if (!fromArray.length) {
-		throw new Error('Cannot get a random element from an empty array');
-	}
-	return fromArray[Math.floor(Math.random() * fromArray.length)];
-}
-
-/**
  * Substitutes the i-th character of a string with another string.
  * @param baseString The string to replace the character
  * @param index The index to replace the character
@@ -173,8 +161,18 @@ function fisherYatesShuffle<T>(arrayToShuffle: Array<T>): Array<T> {
 	return fisherYatesShuffleTailRecursive([], arrayToShuffle);
 }
 
-//not really random, but shuffled minvalues (terminates)
-function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: number, minValue: number, maxValue: number): Array<number> {
+/**
+ * This function terminates, not {@link randomUniqueIntegers}.
+ * Randomly returns minNumberOfValues to maxNumberOfValues (included) randomly sorted unique integers (no repetition) whose values are in [minValue, maxValue)
+ * and that contain all the lowest values that can possibly be returned.
+ * @param minNumberOfValues the minimum number of returned values
+ * @param maxNumberOfValues the maximum number of returned values
+ * @param minValue the minimum value that a returned value can take
+ * @param maxValue the (maximum + 1) value that a returned value can take
+ * @returns minNumberOfValues to maxNumberOfValues (included) randomly sorted unique integers (no repetition) whose values are in [minValue, maxValue)
+ * and that contain all the lowest values that can possibly be returned.
+ */
+function randomUniqueMinIntegers(minNumberOfValues: number, maxNumberOfValues: number, minValue: number, maxValue: number): Array<number> {
 	if (maxValue - minValue < maxNumberOfValues) {
 		throw new Error("It is impossible to return more than n unique values among among n values.");
 	}
@@ -183,6 +181,40 @@ function randomUniqueIntegersBis(minNumberOfValues: number, maxNumberOfValues: n
 	}
 
 	return fisherYatesShuffle(Array.from({length: Math.random() * (maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues}, (_, i) => (i + minValue)));
+}
+
+/**
+ * Returns a random element from the given array that is not in the other given array, or undefined
+ * @param fromArray the array from where the random element is returned
+ * @param otherArray the array containing the elements that must not be returned
+ * @returns a random element from the given array that is not in the other given array, or undefined
+ */
+function getRandomArrayElementNotInOtherArray<T>(fromArray: Array<T>, otherArray: Array<T>): T | undefined {
+	if (!fromArray.length) {
+		throw new Error('Cannot get a random element from an empty array');
+	}
+	const randomIndexOrder: Array<number> = Array.from({length: fromArray.length}, (_, i) => (i));
+	const elementIndex: number | undefined = randomIndexOrder.reduce(
+		(acc, randomIndex) => {
+			if (acc === undefined && !otherArray.some((el) => isDeepStrictEqual(el, fromArray[randomIndex]))) {
+				return randomIndex;
+			}
+			return acc;
+		},
+	undefined);
+	return elementIndex === undefined ? undefined : fromArray[elementIndex];
+}
+
+/**
+ * Returns a random element from the given array
+ * @param fromArray the array from where the random element is returned
+ * @returns a random element from the given array
+ */
+function getRandomArrayElement<T>(fromArray: Array<T>): T {
+	if (!fromArray.length) {
+		throw new Error('Cannot get a random element from an empty array');
+	}
+	return fromArray[Math.floor(Math.random() * fromArray.length)];
 }
 
 function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0): [() => [any, T], T] { //typage any...
@@ -206,6 +238,6 @@ function throwErrorIfUndefined<T>(value: T | undefined): void {
 export type { Axis };
 
 export { sum, getRandomArrayElement, stringReplaceAt, isDeepStrictEqual, isObject,
-	almostEvenlySpacedIntegers, evenlySpacedNumbers,
-	randomUniqueIntegers, otherAxis,
+	almostEvenlySpacedIntegers, evenlySpacedNumbers, getRandomArrayElementNotInOtherArray,
+	randomUniqueIntegers, otherAxis, arrayWithoutElementAtIndex,
 	fisherYatesShuffle, executeFunctionEveryNCall, throwErrorIfUndefined };
