@@ -67,26 +67,26 @@
 \section{Sujet}
 L'objectif de ce projet est la réalisation d'un jeu de type tower défense.
 
-Ce genre peut se résumer en une seule phrase :\\
-\center \label{description_jeu} Des attaquants envahissent une zone défendue par des défenseurs.
+Ce genre peut se résumer en une seule phrase :\\[8px]
+\centerline{\emph{\label{description_jeu} Des attaquants envahissent une zone défendue par des défenseurs.}}\\
 
-La programmation fonctionnelle sera mise en avant.
-L'executable sera réalisé en Typescript.
+La programmation fonctionnelle est le paradigme mis en avant.
+L'exécutable est réalisé en Typescript.
 
 \subsection{Theme}
 Nous avons choisi de créer un jeu de tower defense autour du thème
-du Pastafirsme.
+du Pastafarisme.
 Selon cette religion, la température de la Terre est inversement proportionnelle 
 au nombre de pirates qu’elle contient.
 Il faut donc répandre cette idéologie en défendant le monstre spaghetti volant et 
-en augmentant le nombre de pirate sur terre.
+en augmentant le nombre de pirate sur Terre.
 
 \section{Conception}
 
-Débutons la conception avec notre description du jeu \ref{description_jeu} 
+Nous débutons la conception avec notre description du jeu \ref{description_jeu} 
 pour en tirer des élements fondamentaux.
 
-On remarque en premier lieu la présence d'entité, des attaquants, mais aussi des 
+On remarque en premier lieu la présence d'entités, des attaquants, mais aussi des 
 défenseurs. Bien qu'elles soient antagonistes, ces entités ont des similarités, notamment 
 dans le traitement de leurs actions. 
 
@@ -96,51 +96,49 @@ On décide donc de les regrouper sous le même nom, les acteurs.
 \subsection{Entité Acteur}
 
 Les acteurs forment un ensemble d'entités qui intéragissent entre elles.
-Pour définir ces interactions, chaque acteur a besoin d'avoir un ensemble 
-de comportements. Pour que ces interactions prennent effet, nos entités ont 
+Pour définir ces interactions, chaque acteur a besoin de disposer d'un ensemble 
+de comportements qui lui sont propre. Pour que ces interactions prennent effet, nos entités ont 
 égalements besoin d'un état interne.
 
-Le type acteur est très vague et peut représenter beaucoup de choses.
+Le type acteur est très générique et peut représenter beaucoup de choses.
 Pour garder une consistence entre nos acteurs, on définit des archétypes.
-
-(Bon la partie qui suit je sais pas si c'est pas plus de la réalisation :/, 
-peut être réduire ou déplacer ? besoin d'avis)
 
 \begin{itemize}
    \item Spaghetti Monster : Le gentil monstre spaghetti que les défenseurs doivent protéger.
    \item Good Guy : Les défenseurs.
-   \item Ignorant : Un type d'attaquants.
-   \item Ignorance Spreader : Un autre type d'attaquants.
+   \item Ignorant : Un type d'attaquant.
+   \item Ignorance Spreader : Un autre type d'attaquant.
    \item Spawner : Un point d'apparition pour les attaquants.
-   \item Ground : Un bout de chemin sur lequel les attaquans se déplacent.
+   \item Ground : Un bout de chemin sur lequel les attaquants se déplacent.
 \end{itemize}
 
 Les types Good Guy, Ignorant et Ignorance Spreader représentent 
 les défenseurs et les attaquants, ils découlent de notre démarche.
 Cependant, nos acteurs comportent aussi un type Spawner et Ground.
-Ces types ne peuvent pas être attaquer ou attaquer, mais ils ont 
-d'autres interactions avec le reste des entités qui justifient qu'il 
+Ces types ne peuvent pas être attaqués ou attaquer, mais ils peuvent interagir avec le reste des entités, ce qui justifie qu'ils
 soient aussi considérés comme des acteurs.
 
 En effet, Spawner peut être vu comme un attaquant immortel, et Ground 
 un défenseur qui contraint le déplacement des attaquants.
 
-Avec la diversification des acteurs vient un nouveau problème,
-les attributs spécifiques.
+Toutes les entités disposent de certains attributs, qui sont :
 
-Dans le cas de la \textbf{position}, par exemple, tous les acteurs en ont besoin.
-Mais si l'on s'intéresse aux attributs spécifiques aux combats, les acteurs 
-qui n'attaquent pas n'ont pas d'intérêts à les avoir.
+\begin{itemize}
+    \item Une \textbf{position}
+    \item Un \textbf{type} d'entité
+\end{itemize}
+
+Avec la diversification des acteurs vient le problème de la spécialisation qui se traduit par l'ajout d'attributs \emph{spécifiques} à chaque acteur.
+
+Par exemple, les acteurs béligérants ont besoins d'attributs spécifiques tels que des points de croyance et une limite que ces points peuvent atteindre.
 
 On pourrait rajouter tous les attributs nécessaires à tous les comportements 
 à tous les acteurs. Mais c'est une mauvaise idée pour deux raisons.
-Premièrement, cela entrainerait une modification sur le type acteur.
-Ce-dernier étant utilisé dans de nombreux contextes, cela favoriserait 
-l'apparition de comportements imprévus.
+Premièrement, cela entraînerait une modification sur le type acteur à chaque nouvel attribut ajouté, et entraînerai une modification de la signatures de certaines fonctions auxiliaires comme le constructeur.
 Secondement, le type acteur aurait toujours plus d'états possibles, 
 et deviendrait de plus en plus complexe et lourd à comprendre et gérer.
 
-Pour éviter ces désagréments, nous avons séparer la responsabilités des attributs 
+Pour éviter ces désagréments, nous avons séparé la responsabilité des attributs 
 dépendants de certains comportements dans un champs \textbf{externalProps}.
 Pour que ce champs puisse satisfaire toutes les possibilités d'attributs, il
 est de type dictionnaire de quelconque. Toutefois, ce typage faible est compensé 
