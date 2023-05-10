@@ -2,7 +2,7 @@
 	font-family: "Hamburg";
 	src: url("./resources/fonts/Hamburg.ttf");
 }
-  
+
 body {
 	font-family: sans-serif;
 }
@@ -13,35 +13,35 @@ html {
 }
 
 body {
-    margin: 0;
-    padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 .title {
-    font-family: "Hamburg", sans-serif;
-    font-size: 4.5rem;
-    padding: 5%;
-    border-radius: 10px;
-    border: 1px solid black;
-    margin-top: 50px;
-    background-color: #4b8048;
+	font-family: "Hamburg", sans-serif;
+	font-size: 4.5rem;
+	padding: 5%;
+	border-radius: 10px;
+	border: 1px solid black;
+	margin-top: 50px;
+	background-color: #4b8048;
 	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8);
 }
 
 .main-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
 }
 
 .hide {
-    display: none;
+	display: none;
 }
 
 .thermometer {
-    height: 100vh;
-    width: 200px;
+	height: 100vh;
+	width: 200px;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -107,7 +107,8 @@ body {
 	height: 320px;
 	width: 40px;
 	position: relative;
-	top: 300px; /* lowest value is 11px - highest value is 300px */
+	top: 300px;
+	/* lowest value is 11px - highest value is 300px */
 	transition: top 0.5s linear;
 }
 
@@ -147,79 +148,82 @@ i {
 
 .very-cold-bg {
 	background: rgb(187, 237, 181);
-	background: linear-gradient(
-		0deg,
-		rgba(170, 255, 160, 0.8) 0%,
-		rgba(91, 173, 87, 0.6) 25%,
-		rgba(85, 156, 91, 0.5) 50%,
-		rgba(51, 128, 70, 0.4) 75%,
-		rgba(26, 92, 50, 0.3) 100%
-	);
+	background: linear-gradient(0deg,
+			rgba(170, 255, 160, 0.8) 0%,
+			rgba(91, 173, 87, 0.6) 25%,
+			rgba(85, 156, 91, 0.5) 50%,
+			rgba(51, 128, 70, 0.4) 75%,
+			rgba(26, 92, 50, 0.3) 100%);
 }
 
 .cold-bg {
 	background: rgb(210, 223, 181);
-	background: linear-gradient(
-		0deg,
-		rgba(203, 228, 149, 0.8) 0%,
-		rgba(176, 212, 137, 0.6) 25%,
-		rgba(147, 180, 131, 0.5) 50%,
-		rgba(91, 136, 61, 0.4) 75%,
-		rgba(76, 92, 38, 0.3) 100%
-	);
+	background: linear-gradient(0deg,
+			rgba(203, 228, 149, 0.8) 0%,
+			rgba(176, 212, 137, 0.6) 25%,
+			rgba(147, 180, 131, 0.5) 50%,
+			rgba(91, 136, 61, 0.4) 75%,
+			rgba(76, 92, 38, 0.3) 100%);
 }
 
 .warm-bg {
 	background: rgb(237, 204, 151);
-	background: linear-gradient(
-		0deg,
-		rgba(237, 204, 151, 0.8) 0%,
-		rgba(217, 176, 112, 0.6) 25%,
-		rgba(191, 143, 63, 0.5) 50%,
-		rgba(164, 115, 29, 0.4) 75%,
-		rgba(139, 87, 4, 0.3) 100%
-	);
+	background: linear-gradient(0deg,
+			rgba(237, 204, 151, 0.8) 0%,
+			rgba(217, 176, 112, 0.6) 25%,
+			rgba(191, 143, 63, 0.5) 50%,
+			rgba(164, 115, 29, 0.4) 75%,
+			rgba(139, 87, 4, 0.3) 100%);
 }
 
 .hot-bg {
 	background: rgb(232, 141, 89);
-	background: linear-gradient(
-		0deg,
-		rgba(232, 141, 89, 0.8) 0%,
-		rgba(217, 109, 52, 0.6) 25%,
-		rgba(191, 78, 11, 0.5) 50%,
-		rgba(164, 51, 0, 0.4) 75%,
-		rgba(139, 33, 0, 0.3) 100%
-	);
+	background: linear-gradient(0deg,
+			rgba(232, 141, 89, 0.8) 0%,
+			rgba(217, 109, 52, 0.6) 25%,
+			rgba(191, 78, 11, 0.5) 50%,
+			rgba(164, 51, 0, 0.4) 75%,
+			rgba(139, 33, 0, 0.3) 100%);
 }
 
 .very-hot-bg {
 	background: rgb(232, 70, 36);
-	background: linear-gradient(
-		0deg,
-		rgba(232, 70, 36, 0.8) 0%,
-		rgba(217, 40, 15, 0.6) 25%,
-		rgba(191, 16, 0, 0.5) 50%,
-		rgba(164, 0, 0, 0.4) 75%,
-		rgba(139, 0, 0, 0.3) 100%
-	);
+	background: linear-gradient(0deg,
+			rgba(232, 70, 36, 0.8) 0%,
+			rgba(217, 40, 15, 0.6) 25%,
+			rgba(191, 16, 0, 0.5) 50%,
+			rgba(164, 0, 0, 0.4) 75%,
+			rgba(139, 0, 0, 0.3) 100%);
 }
 
+#controls-and-display {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 90vh;
+	height: 90vh;
+}
 
+#controls {
+	margin: 1em;
+	width: fit-content;
+	display: flex;
+	
+}
 
 #display-grid {
-    width: 90vh;
-    height: 90vh;
+	width: 100%;
+	flex-grow: 1;
 	border-radius: 10px;
-    border: 1px solid black;
-    background-color: #FDF0D5;
+	border: 1px solid black;
+	background-color: #FDF0D5;
 	display: grid;
 	background-image:
-    linear-gradient(green, green),
-    url('resources/sprites/grass.png');
-  background-size: cover;
-  background-blend-mode: multiply;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
+		linear-gradient(green, green),
+		url('resources/sprites/grass.png');
+	background-size: cover;
+	background-blend-mode: multiply;
+	box-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
 }
 
 .actorCard {
@@ -232,7 +236,7 @@ i {
 	background-size: 100% 100%;
 }
 
-.hpBar{
+.hpBar {
 	position: absolute;
 	width: 100%;
 	height: 10%;
@@ -241,21 +245,21 @@ i {
 	margin: 0;
 }
 
-.health{
+.health {
 	height: 100%;
 	background-color: green;
 }
 
 .actors {
-    width: 20vw;
-    height: 85vh;
+	width: 20vw;
+	height: 85vh;
 	border-radius: 10px;
-    border: 1px solid black;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: first baseline;
-    background-color: #4b8048;
+	border: 1px solid black;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: first baseline;
+	background-color: #4b8048;
 	font-family: "Hamburg", sans-serif;
 	box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
 	font-size: 2rem;
