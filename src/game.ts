@@ -1,15 +1,15 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
 import { Actor, filterByKinds } from "./actor";
-import type { Axis } from "./util";
+import type { Axis } from "./utils/util";
 
-import { positionsLinking } from "./geometry";
+import { positionsLinking } from "./utils/geometry";
 import { createWorld, randomPositionsAlongAxis, createPositionsAlongAxis } from "./world";
 import { createGround, createSpaghettiMonster, createSpawner, createPlayer } from "./actor_creators";
 import { isValidActorInEnvironment, isWalker } from "./actor";
 import { createPhase } from "./phase";
-import { spreadConvictionPhase, enemyFleePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./game_phases";
-import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./util";
+import { spreadConvictionPhase, enemyFleePhase, spawnPhase, temperatureRisePhase, movePhase, playPhase } from "./execute_phases";
+import { almostEvenlySpacedIntegers, randomUniqueIntegers, otherAxis, isDeepStrictEqual } from "./utils/util";
 import { getFaithPoints } from "./props";
 
 /**

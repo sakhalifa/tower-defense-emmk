@@ -1,10 +1,10 @@
-import type { Vector2D } from "./geometry";
+import type { Vector2D } from "./utils/geometry";
 import type { ActorActions } from "./actor_actions";
-import type { Kind, Actor, Walker, ActionGenerators } from "./actor";
+import type { Actor, Walker, ActionGenerators } from "./actor";
 
-import { createVector } from "./geometry";
-import { filterByKinds, findNextWaypointTarget } from "./actor";
-import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./util";
+import { createVector } from "./utils/geometry";
+import { findNextWaypointTarget } from "./actor";
+import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./utils/util";
 import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies,
 	enemyFlee, createDefaultActionGenerator } from "./actor_actions";
 import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber,

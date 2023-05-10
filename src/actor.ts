@@ -1,11 +1,11 @@
-import type { Vector2D } from "./geometry";
+import type { Vector2D } from "./utils/geometry";
 import type { World } from "./world";
 import type { ActorActions, ActionGenerators } from "./actor_actions";
 
-import { vector2DToString, translatePoint, vectorHasCoords } from "./geometry";
-import { isDeepStrictEqual, getRandomArrayElement } from "./util";
+import { vector2DToString, translatePoint, vectorHasCoords } from "./utils/geometry";
+import { isDeepStrictEqual, stringReplaceAt } from "./utils/util";
+import { getRandomArrayElement } from "./utils/array_utils";
 import { vectorToIndexInWorldString, isPositionInWorld } from "./world";
-import { stringReplaceAt } from "./util";
 import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget, getWaypointNumber } from "./props";
 
 /**

@@ -1,4 +1,5 @@
-import { getRandomArrayElement, isObject, stringReplaceAt, isDeepStrictEqual, sum, evenlySpacedNumbers, almostEvenlySpacedIntegers } from "../src/util";
+import { isObject, stringReplaceAt, isDeepStrictEqual, evenlySpacedNumbers, almostEvenlySpacedIntegers } from "../src/utils/util";
+import { getRandomArrayElement, sum } from "../src/utils/array_utils";
 
 test("sum test", () => {
     // Test on integers

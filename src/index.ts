@@ -1,7 +1,7 @@
 import type { World } from "./world";
 import type { Phase } from "./phase";
 import { Kind, Actor, walkerKeys } from "./actor";
-import type { Axis } from "./util";
+import type { Axis } from "./utils/util";
 
 import { initWorld, initPhases, nextTurn, initActors } from "./game";
 import { filterByKinds, hasOneOfKinds } from "./actor";

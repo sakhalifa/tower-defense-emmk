@@ -1,6 +1,6 @@
 import { createActor, createGround, createIgnorant, createSpaghettiMonster } from "../src/actor_creators";
-import { enemyFleePhase, movePhase, spawnPhase, temperatureRisePhase, spreadConvictionPhase } from "../src/game_phases";
-import { createVector } from "../src/geometry";
+import { enemyFleePhase, movePhase, spawnPhase, temperatureRisePhase, spreadConvictionPhase } from "../src/execute_phases";
+import { createVector } from "../src/utils/geometry";
 import { defaultActions, enemyFlee } from "../src/actor_actions";
 import { setFaithPoints, setWaypointTargetAndNumber } from "../src/props";
 import { move } from "./actor.test";

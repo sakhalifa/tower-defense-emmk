@@ -1,6 +1,6 @@
 import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createSpaghettiMonster, createPlayer } from "../src/actor_creators";
 import { temperatureRise, spreadIgnorance, spawn, moveTowardWaypointTarget, convertEnemies, play } from "../src/actor_actions";
-import { createVector } from "../src/geometry";
+import { createVector } from "../src/utils/geometry";
 import { createWorld } from "../src/world";
 import { setConviction, setSpreadIgnorancePower, setRange } from "../src/props";
 import { setSpawnProba } from "../src/props";

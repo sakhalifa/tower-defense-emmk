@@ -1,12 +1,10 @@
-import type { ActorActions, ActionGenerators } from "./actor_actions";
+import type { ActorActions } from "./actor_actions";
 import { Actor, hasOneOfKinds, walkerKeys } from "./actor";
-import { World } from "./world";
-import { Axis } from "./util";
+import type { Vector2D } from "./utils/geometry";
 
 import { translateAndUpdateWaypoint} from "./actor";
-import { sum } from "./util";
+import { sum } from "./utils/array_utils";
 import { createGoodGuy } from "./actor_creators";
-import { Vector2D, createVector } from "./geometry";
 import { getFaithPoints, getMaxFaith, setFaithPoints } from "./props";
 import { impactActorsConviction } from "./actor_actions";
 

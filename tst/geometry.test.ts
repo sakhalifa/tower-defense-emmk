@@ -1,4 +1,4 @@
-import { vector2DToString, translatePoint, createVector, euclideanDistance, movingVector } from "./../src/geometry";
+import { vector2DToString, translatePoint, createVector, euclideanDistance, movingVector } from "../src/utils/geometry";
 
 
 test("Vector create test", () => {

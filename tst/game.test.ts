@@ -1,5 +1,5 @@
 import { initWorld, initPhases, initSpawners, initGroundWaypoints, initActors } from "../src/game";
-import { spreadConvictionPhase, enemyFleePhase, movePhase, spawnPhase } from "../src/game_phases";
+import { spreadConvictionPhase, enemyFleePhase, movePhase, spawnPhase } from "../src/execute_phases";
 import { createWorld, isPositionInWorld } from "../src/world";
 import { createPhase } from "../src/phase";
 

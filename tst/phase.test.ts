@@ -1,5 +1,5 @@
 import type { Actor } from "../src/actor";
-import type { Vector2D } from "../src/geometry";
+import type { Vector2D } from "../src/utils/geometry";
 import type { ActorActions } from "../src/actor_actions";
 
 import { createPhase } from "../src/phase";

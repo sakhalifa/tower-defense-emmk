@@ -3,8 +3,6 @@ import type { Actor } from "./actor";
 
 import { worldToString } from "./world";
 import { actorToStringInWorld } from "./actor";
-
-
 import { playGame } from "./game";
 
 /**

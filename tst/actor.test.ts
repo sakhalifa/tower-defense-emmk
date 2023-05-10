@@ -1,5 +1,5 @@
 import type { Actor } from "../src/actor";
-import type { Axis } from "../src/util";
+import type { Axis } from "../src/utils/util";
 import type { World } from "../src/world";
 import type { ActorActionParams } from "../src/actor_actions";
 
@@ -7,7 +7,7 @@ import { ActorActions, ActionGenerators } from "../src/actor_actions";
 import { createActor, createGround } from "../src/actor_creators";
 import { actorToString, translateActor, actorToStringInWorld } from "../src/actor";
 import { defaultActions, createDefaultActionGenerator } from "../src/actor_actions";
-import { createVector } from "../src/geometry";
+import { createVector } from "../src/utils/geometry";
 import { createWorld, worldToString } from "../src/world";
 
 function move(params: ActorActionParams): ReturnType<ActorActions["move"]> {

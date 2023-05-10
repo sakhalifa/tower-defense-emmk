@@ -1,9 +1,10 @@
-import type { Vector2D } from "./geometry";
-import type { Axis } from "./util";
+import type { Vector2D } from "./utils/geometry";
+import type { Axis } from "./utils/util";
 import type { Actor } from "./actor";
 
-import { randomUniqueIntegers, getRandomArrayElementNotInOtherArray, getRandomArrayElement, isDeepStrictEqual } from "./util";
-import { createVector, getMovementVectorsInRange, translatePoint } from "./geometry";
+import { randomUniqueIntegers, isDeepStrictEqual } from "./utils/util";
+import { getRandomArrayElementNotInOtherArray, getRandomArrayElement } from "./utils/array_utils";
+import { createVector, getMovementVectorsInRange, translatePoint } from "./utils/geometry";
 
 /**
  * A world. It has a width, a height and keeps track of how many turns
@@ -39,7 +40,7 @@ function createWorld(width: number, height: number): World {
  * @param axis the axis that we want to know the length
  * @returns the length of the given Axis in the given World
  */
-function AxisLength(world: World, axis: Axis) {
+function axisLength(world: World, axis: Axis) {
 	switch (axis) {
 		case "x":
 			return world.width;
@@ -60,7 +61,7 @@ function AxisLength(world: World, axis: Axis) {
  * @returns an array of 1 to maxPositions random unique positions, that all have the same coordinate value on the axis that was not given
  */
 function randomPositionsAlongAxis(world: World, minPositions: number, maxPositions: number, axis: Axis, lineNumber: number): Array<Vector2D>{
-	return createPositionsAlongAxis(axis, randomUniqueIntegers(minPositions, maxPositions, 0, AxisLength(world, axis)), lineNumber);
+	return createPositionsAlongAxis(axis, randomUniqueIntegers(minPositions, maxPositions, 0, axisLength(world, axis)), lineNumber);
 }
 
 /**
@@ -182,5 +183,5 @@ function getEmptyCellInRange(world: World, actors: Array<Actor>, fromPosition: V
 export type { World };
 
 export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
-	createPositionsAlongAxis, AxisLength, getVectorsInRangeInWorld,
+	createPositionsAlongAxis, axisLength as AxisLength, getVectorsInRangeInWorld,
 	allPositionsInWorld, getPositionNotInGivenPositions as getPositionsNotInGivenPositions, getEmptyCellInRange};

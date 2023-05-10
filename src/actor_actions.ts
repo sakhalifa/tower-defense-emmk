@@ -1,12 +1,13 @@
 import type { Actor, Kind } from "./actor";
-import type { Vector2D } from "./geometry";
-import type { Axis } from "./util";
-import { World, getVectorsInRangeInWorld, allPositionsInWorld, getPositionsNotInGivenPositions, getEmptyCellInRange } from "./world";
+import type { Vector2D } from "./utils/geometry";
+import type { Axis } from "./utils/util";
+import type { World } from "./world";
 
-import { isDeepStrictEqual, otherAxis, randomUniqueIntegers, getRandomArrayElement,
-	fisherYatesShuffle, arrayWithoutElementAtIndex, getRandomArrayElementNotInOtherArray } from "./util";
+import { getPositionsNotInGivenPositions, getEmptyCellInRange } from "./world";
+import { isDeepStrictEqual, otherAxis, randomUniqueIntegers } from "./utils/util";
+import { arrayWithoutElementAtIndex } from "./utils/array_utils";
 import { createWalker } from "./actor_creators";
-import { euclideanDistance, createVector, movingVector } from "./geometry";
+import { euclideanDistance, createVector, movingVector } from "./utils/geometry";
 import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower, getFaithPoints, getPlayProba } from "./props";
 import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys, kindKeys } from "./actor";
 import { AxisLength } from "./world";

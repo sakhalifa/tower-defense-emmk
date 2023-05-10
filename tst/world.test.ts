@@ -1,4 +1,4 @@
-import { createVector } from "../src/geometry";
+import { createVector } from "../src/utils/geometry";
 import { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString } from "../src/world";
 
 test("createWorld test", () => {
