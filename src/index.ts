@@ -8,7 +8,7 @@ import { filterByKinds, hasOneOfKinds } from "./actor";
 import { getFaithPoints, getMaxFaith } from "./props";
 
 declare global {
-    interface Window { setTemperature(hp: number, hp_max: number): void }
+    interface Window { setTemperature(hp: number, hp_max: number): void}
 }
 
 const sprites = [
@@ -97,6 +97,10 @@ function drawActor(actor: Actor): HTMLDivElement {
     return child;
 }
 
+const defaultSpeed = 500;
+
+let speedModifier = 1;
+
 async function main(): Promise<void> {
     const world: World = initWorld(10, 10);
     const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
@@ -113,12 +117,19 @@ async function main(): Promise<void> {
         actors = nextTurn(phases, world, actors, spawnersAxis);
         await displayWorldToGrid(world, actors, grid, filterByKinds(actors, ["spaghettiMonster"])[0]);
         // wait
-        await delay(500);
+        while (speedModifier === 0) await delay(100);
+        await delay(defaultSpeed * speedModifier);
     }
 }
 
 window.onload = (_) => {
     main();
+    const speedSlider = document.getElementById("speed-slider")! as HTMLInputElement;
+    speedSlider.addEventListener("input", (e) => {
+        if(speedSlider.value === "0")
+        speedModifier = 0;
+        else
+        speedModifier = 1 / Number(speedSlider.value);
+        document.getElementById("speed-value")!.textContent = `${speedSlider.value}x`;
+    });
 };
-
-
