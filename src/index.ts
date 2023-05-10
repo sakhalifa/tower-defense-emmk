@@ -11,6 +11,9 @@ declare global {
     interface Window { setTemperature(hp: number, hp_max: number): void}
 }
 
+/**
+ * sprites for the different elements of the game, including the actors, the empty cells...
+ */
 const sprites = [
     document.getElementById("grassSprite"),
     document.getElementById("ignorantSprite"),
@@ -55,23 +58,33 @@ function getActorSprite(actorKind: Kind): HTMLImageElement {
     }
 }
 
+/**
+ * The order in which the actors have to be displayed
+ */
 const kindDrawOrder: Array<Kind> = ["ground", "spawner", "goodGuy", "spaghettiMonster", "ignoranceSpreader", "ignorant"];
 
 /**
  * Draws the content of the world to the grid
- * @param world The world
- * @param actors The actors
+ * @param world The world on which the game is happening
+ * @param actors The actors partaking to the game
+ * @param mainSpaghettiMonster the spaghettiMonster that defines the current temperature and which is the one
+ * that makes the player loose the game when it has no faith points anymore
  */
-function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement, boss: Actor): void {
+function displayWorldToGrid(world: World, actors: Array<Actor>, grid: HTMLDivElement, mainSpaghettiMonster: Actor): void {
     // generate actorCards
     // remplace enfants display-grid par les nouveaux actorCard
     const actorsInDrawOrder = kindDrawOrder.reduce(
         (acc: Array<Actor>, kind) => acc.concat(actors.filter((a) => hasOneOfKinds(a, [kind])))
         , []);
     grid.replaceChildren(...actorsInDrawOrder.map(drawActor));
-    window.setTemperature(getFaithPoints(boss), getMaxFaith(boss));
+    window.setTemperature(getFaithPoints(mainSpaghettiMonster), getMaxFaith(mainSpaghettiMonster));
 }
 
+/**
+ * Creates the dom element (computes its position and content) containing the actor to display
+ * @param actor the actor to display
+ * @returns the dom element containing the actor to display
+ */
 function drawActor(actor: Actor): HTMLDivElement {
     const child = document.createElement('div') as HTMLDivElement;
     child.classList.add('actorCard');
@@ -97,10 +110,16 @@ function drawActor(actor: Actor): HTMLDivElement {
     return child;
 }
 
-const defaultSpeed = 500;
+/**
+ * The delay between two new computations of the game state and display refresh
+ */
+const defaultDelay = 500;
 
 let speedModifier = 1;
 
+/**
+ * Inits the game and its display for the web client, and runs it
+ */
 async function main(): Promise<void> {
     const world: World = initWorld(10, 10);
     const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
@@ -118,10 +137,12 @@ async function main(): Promise<void> {
         await displayWorldToGrid(world, actors, grid, filterByKinds(actors, ["spaghettiMonster"])[0]);
         // wait
         while (speedModifier === 0) await delay(100);
-        await delay(defaultSpeed * speedModifier);
+        await delay(defaultDelay * speedModifier);
     }
 }
-
+/**
+ * Calls the main function and creates a slider to modify the speed of the game
+ */
 window.onload = (_) => {
     main();
     const speedSlider = document.getElementById("speed-slider")! as HTMLInputElement;

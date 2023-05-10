@@ -18,6 +18,12 @@ function stringReplaceAt(baseString: string, index: number, replacement: string)
 	return baseString.substring(0, index) + replacement + baseString.substring(index + replacement.length);
 }
 
+/**
+ * Check with deep equality wether two given objects (or primary types) are equal
+ * @param object1 one of the two compared objects
+ * @param object2 the other one of the two compared objects
+ * @returns true if the two given objects are equal, using deep equality
+ */
 function isDeepStrictEqual(object1: any, object2: any) {
 	if(object1 === object2)
 		return true;
@@ -156,10 +162,21 @@ function randomUniqueIntegers(minNumberOfValues: number, maxNumberOfValues: numb
 	return randomUniqueIntegersTailRecursive(minNumberOfValues, maxNumberOfValues, []);
 }
 
+/**
+ * Returns a new instance of the given array without the element of this array that is at the given index
+ * @param arr the array on which an element is removed
+ * @param index the index at which the element of the array is removed
+ * @returns a new instance of the given array without the element of this array that is at the given index
+ */
 function arrayWithoutElementAtIndex<T>(arr: Array<T>, index: number): Array<T> {
 	return arr.slice(0, index).concat(arr.slice(index + 1));
 }
 
+/**
+ * Shuffles a new instance of the given array using a pure recursive version of the Fisher-Yates shuffle algorithm
+ * @param arrayToShuffle the array to shuffle
+ * @returns a shuffled new instance of the given array using a pure recursive version of the Fisher-Yates shuffle algorithm
+ */
 function fisherYatesShuffle<T>(arrayToShuffle: Array<T>): Array<T> {
 	function fisherYatesShuffleTailRecursive(alreadyShuffled: Array<T>, restToShuffle: Array<T>): Array<T> {
 		if (restToShuffle.length === 0) return alreadyShuffled;
@@ -225,7 +242,18 @@ function getRandomArrayElement<T>(fromArray: Array<T>): T {
 	return fromArray[Math.floor(Math.random() * fromArray.length)];
 }
 
-function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0): [() => [any, T], T] { //typage any...
+/**
+ * Pure functionnal decorator used to call the given function "func" every "n" call of the decorator,
+ * and call the given function "defaultFunc" when "func" isn't called
+ * @param func the function that have to be called every n call of the decorator
+ * @param defaultFunc the function to call otherwise
+ * @param n func is called every n call
+ * @param currentN counter, compared to n
+ * @returns the new decorator (pure functionnal decorator) and the current returned value (by func or defaultFunc)
+ */
+function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, defaultFunc: T, n: number, currentN: number = 0)
+	: [() => [any, T], T] //any is used but should be "typeof executeFunctionEveryNCallClosure". The idea is to have a recursive type
+{
 	function executeFunctionEveryNCallClosure(currentNClosure: number): [typeof executeFunctionEveryNCallClosure, T] {
 		const nextFunc: T = !currentNClosure ? func : defaultFunc;
 		return [() => executeFunctionEveryNCallClosure((currentNClosure + 1) % n), nextFunc];
@@ -233,10 +261,19 @@ function executeFunctionEveryNCall<T extends (...args: any[]) => any>(func: T, d
 	return executeFunctionEveryNCallClosure(currentN) as [() => [any, T], T];
 }
 
+/**
+ * Returns true if the given value is not undefined
+ * @param value the checked value
+ * @returns true if the given value is not undefined
+ */
 function isNotUndefined<T>(value: T | undefined): value is T {
 	return value !== undefined;
 }
 
+/**
+ * Throws an error if the given value is undefined
+ * @param value the checked value
+ */
 function throwErrorIfUndefined<T>(value: T | undefined): void {
 	if (!isNotUndefined(value)) {
 		throw new Error("unexpected undefined value");

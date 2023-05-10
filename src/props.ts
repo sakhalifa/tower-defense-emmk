@@ -3,6 +3,20 @@ import { Vector2D } from "./geometry";
 
 import { throwErrorIfUndefined } from "./util";
 
+///
+/// 
+///
+
+/**
+ * This file contains:
+ * - getters to get the content of the externalProps field of the given actor of type {@link Actor}
+ * - setters to set the externalProps of the given actor to the given value
+ */
+
+///
+/// 
+///
+
 function setConviction(actor: Actor, conviction: number): Actor {
 	return { ...actor, externalProps: { ...actor.externalProps, conviction } };
 }

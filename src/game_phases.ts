@@ -71,6 +71,14 @@ function movePhase(oldActors: Array<Actor>, phaseResults: Array<ReturnType<Actor
 	);
 }
 
+/**
+ * Returns the given actor, with its ignorance updated by taking into consideration the spreadConvictionResults
+ * @param actor the actor whose ignorance must be updated using the spreadConvictionResults
+ * @param actorIndex the index by which the actor is referenced in spreadConvictionResults.impactedActorsIndices
+ * @param spreadConvictionResults array of objects containing unique indices referencing the actor to update, and the
+ * values by which the ignorance of the actors are impacted
+ * @returns the given actor, with its ignorance updated by taking into consideration the spreadConvictionResults
+ */
 function updateIgnorance(actor: Actor, actorIndex: number, spreadConvictionResults: Array<ReturnType<typeof impactActorsConviction>>): Actor {
 	return setFaithPoints(actor, 
 		Math.min(spreadConvictionResults.reduce((ignoranceAcc, spreadIgnoranceResult) =>
