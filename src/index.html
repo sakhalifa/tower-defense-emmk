@@ -15,7 +15,7 @@
 
   <div class="home-screen"></div>
 
-  <img src="resources/sprites/ignorant.png" class="hide" id="ignorantSprite">
+  <img src="resources/sprites/new_ignorant.png" class="hide" id="ignorantSprite">
   <img src="resources/sprites/pirate.png" class="hide" id="goodGuySprite">
   <img src="resources/sprites/spaghetti_on_ground.png" class="hide" id="spaghettiMonsterSprite">
   <img src="resources/sprites/pope.png" class="hide" id="ignoranceSpreaderSprite">
@@ -44,7 +44,7 @@
       <h1>Actors</h1>
       <div class="controls">
         <div class="card">
-          <img src="resources/sprites/ignorant.png" alt="ignorant" width="70" height="70">
+          <img src="resources/sprites/new_ignorant.png" alt="ignorant" width="70" height="70">
           <div class="infos">
             <div class="name">Ignorant</div>
             <ul class="stats">
@@ -118,6 +118,7 @@
   function playMusic() {
     audio.play();
   }
+  playMusic();
 
   //This is unfortunately dumb but I have to do it :(
   document.getElementById("speed-slider").value = 1;
