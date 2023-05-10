@@ -27,7 +27,7 @@ function arrayWithoutElementAtIndex<T>(arr: Array<T>, index: number): Array<T> {
 function fisherYatesShuffle<T>(arrayToShuffle: Array<T>): Array<T> {
 	function fisherYatesShuffleTailRecursive(alreadyShuffled: Array<T>, restToShuffle: Array<T>): Array<T> {
 		if (restToShuffle.length === 0) return alreadyShuffled;
-		const randomIndex = Math.random() * restToShuffle.length;
+		const randomIndex = Math.floor(Math.random() * restToShuffle.length);
 		return fisherYatesShuffleTailRecursive(alreadyShuffled.concat(restToShuffle[randomIndex]), arrayWithoutElementAtIndex(restToShuffle, randomIndex));
 	}
 	return fisherYatesShuffleTailRecursive([], arrayToShuffle);
