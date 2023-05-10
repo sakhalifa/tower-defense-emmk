@@ -155,6 +155,60 @@ Quelque chose comme un système de phase.
 
 \subsection{Phase}
 
+Nos acteurs effectuent des actions qui ont des conséquences.
+Cela implique qu'il y a un avant et un après aux actions.
+Pour chaque type d'action, on créer une phase.
+Elle agit comme un ordonnanceur, elle obtient les intentions de chaque 
+acteur pour l'action qu'elle traite, et applique les modifications, 
+créant une nouvelle liste d'acteur.
+
+Nommons un tour de jeu comme une execution de l'ensemble de nos phases.
+
+Dans un soucis de cohérence et d'équité entre les acteurs, 
+leurs intentions sont traitées de manière synchronisées au cours des phases.
+Si ce n'était pas le cas, l'ordre dans lequel les acteurs jouent pourrait influer 
+sur le résultat du tour de jeu. Par exemple, si un acteur joue dans sa 
+phase d'attaque, inflige des dégats à un ennemi, puis joue sa phase de déplacements,
+s'eloignant et privant l'ennemi d'une juste riposte.
+
+Le découpage d'un tour de jeu en une liste de phase permet d'être modulaire.
+Il en résulte qu'il est très simple de rajouter des phases de jeu, ou de 
+changer l'ordre dans lequel les acteurs agissent.
+
+Enfin, il peut arriver que les intentions des acteurs soient incompatibles.
+Par exemple, si deux acteurs ayant des collisions veulent aller au même endroit.
+Chaque phase doit pouvoir résoudre ses conflits.
+
+Nous disposons donc d'acteurs, qui peuvent désormais intéragir entre eux avec 
+une grande modularité.
+
+Il ne nous manque plus qu'une seule notion issue de notre description du jeu 
+\ref{description_jeu} , celle de zone.
+
+On aimerait contraindre nos acteurs à rester dans celle-ci. Cela 
+rejoint l'idée précédente d'intention d'un acteur à interdire, en l'occurence, 
+on veut interdire les acteurs de quitter notre zone de jeu.
+
+Mais cela n'est pas possible avec nos phases, car elles n'ont justement pas 
+cette notion de zone.
+On va donc remédier au problème en créant un objet supérieur, un objet représentant 
+un monde.
+
+\subsection{Monde}
+
+Notre monde doit représenter une zone de jeu.
+C'est un ensemble de coordonnées sur lesquelles nos entités peuvent exister.
+
+Grâce à lui, on va réaliser deux opérations supérieur aux phases et aux acteurs que 
+l'on ne pourrait faire autrement.
+Tout d'abord, contraindre tous les acteurs à se trouver dans notre monde.
+Ensuite, définir le chemin que les attaquants vont parcourir lors de leur 
+invasion.
+
+Avec ces trois élements que sont les acteurs, les phases et le monde, on va pouvoir 
+créer des acteurs de différents types, effectuant diverses actions, le tout dans une 
+zone définie.
+
 
 
 
