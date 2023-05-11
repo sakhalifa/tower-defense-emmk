@@ -1,14 +1,19 @@
 \documentclass{article}
 
 \usepackage[T1]{fontenc} 
-\usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \graphicspath{{./img/}}
 \usepackage{amsmath, amssymb}
 \usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm]{geometry}
 \usepackage{url}
-\usepackage[linktocpage=true]{hyperref}
+\usepackage[linktocpage=true, hidelinks]{hyperref}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = blue
+}
+\usepackage{float}
+\usepackage[english]{babel}
 
 \title{Rapport de Projet : Tower Defense}
 \author{Youri CHANCRIN, Théo DESCOMPS, Samuel KHALIFA, Jean-Baptiste MARTINEZ}
@@ -67,9 +72,10 @@
 \section{Sujet}
 L'objectif de ce projet est la réalisation d'un jeu de type tower défense.
 
-Ce genre peut se résumer en une seule phrase :\\[8px]
-\centerline{\emph{\label{description_jeu} Des attaquants envahissent une zone défendue par des défenseurs.}}\\
-
+Ce genre peut se résumer en une seule phrase :
+\begin{center}
+    \emph{Des attaquants envahissent une zone défendue par des défenseurs.}\label{description_jeu}
+\end{center}
 La programmation fonctionnelle est le paradigme mis en avant.
 L'exécutable est réalisé en Typescript.
 
@@ -77,7 +83,7 @@ L'exécutable est réalisé en Typescript.
 Nous avons choisi de créer un jeu de tower defense autour du thème
 du Pastafarisme.
 Selon cette religion, la température de la Terre est inversement proportionnelle 
-au nombre de pirates qu’elle contient.
+au nombre de pirates qu'elle contient.
 Il faut donc répandre cette idéologie en défendant le monstre spaghetti volant et 
 en augmentant le nombre de pirate sur Terre.
 
@@ -208,6 +214,31 @@ créer des acteurs de différents types, effectuant diverses actions, le tout da
 zone définie.
 
 
+\section{Réalisation}
+
+\subsection{Génération aléatoire de chemin}
+Nous résolvons le problème de génération aléatoire de chemin en deux étapes. D'abord, nous positionnons des points de passage que le chemin généré doit comprendre, ensuite nous lions ces points de passage.
+
+\subsubsection{Génération des points de passage}
+Les points de passage sont générés en considérant une direction à prendre le long d'un axe du monde. Par exemple, il peuvent être générés de manière à ce que chaque nouveau point de passage ait une coordonnée supérieure sur l'axe des abscisses au point de passage précédent.
+Les premiers points de passage se situent sur les acteurs de type Spawner, et les derniers points de passages sur les acteurs de type Spaghetti Monster.\\
+Pour que les chemins ne soient jamais trop courts, nous contraignons les spawners à être générés sur un bord du plateau de jeu opposé au bord sur lequel seront générés les monstres en spaghetti.
+Les spawners sont donc répartis sur un axe (qu'on appellera "axe des spawners") dont la direction est perpendiculaire à la direction selon laquelle les points de passages sont générés. Les points de passage sont numérotés dans l'ordre croissant en fonction de leur coordonnée sur l'axe perpendiculaire à l'axe des spawners. Cette numérotation définit l'ordre dans lequel ils doivent être parcourus, comme le présente la \hyperref[fig:points de passage]{Figure \ref{fig:points de passage}}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.9\textwidth]{points_de_passage.png}
+    \caption{Exemple de génération aléatoire de chemin dans un monde de taille 5 x 5}%
+    \label{fig:points de passage}%
+\end{figure}
+
+Il reste maintenant à lier ces points de passage pour former un ou plusieurs chemins menant des spawners aux monstres en spaghetti.
+
+\subsubsection{Liaison des points de passage}
+
+Nous voyons dans la \hyperref[fig:points de passage]{Figure \ref{fig:points de passage}} que des chemins de lien ont été générés. Ces chemins sont générés d'une manière très simple qui consiste à relier chaque point de passage de numérotation $n$ aux points de passage de numérotation $n - 1$, en commençant par placer des cases de chemin le long d'un axe (ici des abscisses) puis le long de l'autre axe (ici des ordonnées). La fonction reliant deux points de passage est une fonction récursive terminale prenant en paramètres une position initiale et une position finale à relier. À chaque appel récursif, il suffit de modifier la position initiale en l'ayant déplacé de une case vers la case finale, et ce jusqu'à ce que la case initiale corresponde à la case finale.
+
+Il est facile de se convaincre que de cette manière, n'importe quel chemin peut être généré, pour peu qu'on place correctement les points de passage nécessaires à sa génération.
 
 
 \section{Boucle de jeu}
