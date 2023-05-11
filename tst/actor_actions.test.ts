@@ -1,7 +1,7 @@
-import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createSpaghettiMonster, createPlayer } from "../src/actor_creators";
-import { temperatureRise, spreadIgnorance, spawn, moveTowardWaypointTarget, convertEnemies, play } from "../src/actor_actions";
-import { createVector } from "../src/utils/geometry";
-import { createWorld } from "../src/world";
+import { createGoodGuy, createIgnoranceSpreader, createIgnorant, createSpawner, createWalker, createSpaghettiMonster, createPlayer, createGround, createActor } from "../src/actor_creators";
+import { temperatureRise, spreadIgnorance, spawn, moveTowardWaypointTarget, convertEnemies, play, playPriorityAroundLoneGrounds } from "../src/actor_actions";
+import { createVector, euclideanDistance } from "../src/utils/geometry";
+import { createWorld, getVectorsInRangeInWorld } from "../src/world";
 import { setConviction, setSpreadIgnorancePower, setRange } from "../src/props";
 import { setSpawnProba } from "../src/props";
 
@@ -69,4 +69,19 @@ test("play test", () => {
     const ignorant = createIgnorant(createVector(0, 0), createVector(0, 0), 0);
     const player = createPlayer(0);
     expect(play({actorsAcc: [ignorant], actingActor: player, world, spawnersAxis: 'y'})).toBeUndefined();
+});
+
+xtest("playPriorityAroundLoneGrounds test", () => {
+    const world = createWorld(5, 5);
+    const bottomGround = createGround(createVector(4, 1));
+    const rightGround = createGround(createVector(1, 4));
+    const topLeftGround = createGround(createVector(1, 1));
+    const grounds = [topLeftGround, bottomGround, rightGround];
+    const player = createPlayer(1);
+    const range = 2;
+    const distanceFunction = euclideanDistance;
+    const xAxisSolutions = getVectorsInRangeInWorld(range, euclideanDistance, world, bottomGround.position);
+    const yAxisSolutions = getVectorsInRangeInWorld(range, euclideanDistance, world, rightGround.position);
+    expect(xAxisSolutions).toContainEqual(playPriorityAroundLoneGrounds({actorsAcc: grounds, actingActor: player, world, spawnersAxis: "x"}, range, distanceFunction));
+    expect(yAxisSolutions).toContainEqual(playPriorityAroundLoneGrounds({actorsAcc: grounds, actingActor: player, world, spawnersAxis: "y"}, range, distanceFunction));
 });

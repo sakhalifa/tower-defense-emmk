@@ -138,7 +138,7 @@ function allPositionsInWorld(world: World): Array<Vector2D> {
  * @param givenPositions the positions that must not be returned
  * @returns a random position of the world which isn't in the givenPositions
  */
-function getPositionNotInGivenPositions(world: World, givenPositions: Array<Vector2D>): Vector2D | undefined {
+function getRandomPositionNotInGivenPositions(world: World, givenPositions: Array<Vector2D>): Vector2D | undefined {
 	return getRandomArrayElementNotInOtherArray(allPositionsInWorld(world), givenPositions);
 }
 
@@ -184,4 +184,4 @@ export type { World };
 
 export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
 	createPositionsAlongAxis, axisLength as AxisLength, getVectorsInRangeInWorld,
-	allPositionsInWorld, getPositionNotInGivenPositions as getPositionsNotInGivenPositions, getEmptyCellInRange};
+	allPositionsInWorld, getRandomPositionNotInGivenPositions as getPositionNotInGivenPositions, getEmptyCellInRange};
