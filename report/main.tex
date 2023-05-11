@@ -95,10 +95,9 @@ On décide donc de les regrouper sous le même nom, les acteurs.
 
 \subsection{Entité Acteur}
 
-Les acteurs forment un ensemble d'entités qui intéragissent entre elles.
-Pour définir ces interactions, chaque acteur a besoin de disposer d'un ensemble 
-de comportements qui lui sont propre. Pour que ces interactions prennent effet, nos entités ont 
-égalements besoin d'un état interne.
+
+Les acteurs forment un ensemble d'entités aux comportements et états variés 
+qui intéragissent entre elles.
 
 Le type acteur est très générique et peut représenter beaucoup de choses.
 Pour garder une consistence entre nos acteurs, on définit des archétypes.
@@ -121,7 +120,17 @@ soient aussi considérés comme des acteurs.
 En effet, Spawner peut être vu comme un attaquant immortel, et Ground 
 un défenseur qui contraint le déplacement des attaquants.
 
-Toutes les entités disposent de certains attributs, qui sont :
+Pour définir ces interactions, chaque acteur a besoin de disposer d'un ensemble 
+de comportements qui lui sont propre. 
+
+Concernant les comportements des acteurs, on veut qu'ils puissent évoluer 
+au cours de la partie, comme pour simuler qu'un acteur subit un effet incapacitant 
+ou stimulant.
+
+Pour que ces interactions prennent effet, nos entités ont 
+égalements besoin d'un état interne.
+
+Les états internes des entités comportent toujours :
 
 \begin{itemize}
     \item Une \textbf{position}
@@ -146,8 +155,8 @@ par la présence de fonctions getter et setter agissants comme une interface
 avec \textbf{externalProps}.
 
 Nos acteurs sont donc parés à toutes éventalité d'évolution.
-Cependant, bien qu'ils disposent de comportements, ils ne peuvent pas se modifier 
-entre eux directement.
+Cependant, bien qu'ils disposent de comportements, ils ne peuvent modifier leurs 
+états internes directement.
 Nous avons besoin de quelque chose d'ordre supérieur pour gérer leurs interactions.
 Quelque chose comme un système de phase.
 
@@ -161,6 +170,15 @@ acteur pour l'action qu'elle traite, et applique les modifications,
 créant une nouvelle liste d'acteur.
 
 Nommons un tour de jeu comme une execution de l'ensemble de nos phases.
+
+Voici une liste des actions que les phases doivent permettre aux acteurs de réaliser :
+\begin{itemize}
+  \item Se déplacer
+  \item Attaquer un autre acteur
+  \item Soigner un autre acteur
+  \item Faire apparaitre des nouveaux acteurs
+  \item Se retirer du jeu
+\end{itemize}  
 
 Dans un soucis de cohérence et d'équité entre les acteurs, 
 leurs intentions sont traitées de manière synchronisées au cours des phases.
@@ -201,23 +219,11 @@ Grâce à lui, on va réaliser deux opérations supérieur aux phases et aux act
 l'on ne pourrait faire autrement.
 Tout d'abord, contraindre tous les acteurs à se trouver dans notre monde.
 Ensuite, définir le chemin que les attaquants vont parcourir lors de leur 
-invasion.
+invasion sur la zone de jeu.
 
 Avec ces trois élements que sont les acteurs, les phases et le monde, on va pouvoir 
 créer des acteurs de différents types, effectuant diverses actions, le tout dans une 
 zone définie.
-
-
-
-
-\section{Boucle de jeu}
-- Un monde = plan 2d
-- acteurs = séparé du monde.
-Phases:
- - Acteur propose une action
- - Phase transforme les acteurs en fonction de leurs propositions.
- - Puis, le monde impose ses limites, corrigeant les acteurs invalides (en dehors du monde)
-
 
 \section{réalisation}
 \subsection{Phases, typage fort ou typage faible}
