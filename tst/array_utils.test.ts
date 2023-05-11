@@ -29,5 +29,5 @@ test("getRandomArrayElementNotInOtherArray test", () => {
 
 test("getRandomArrayElement test", () => {
    expect(() => getRandomArrayElement([])).toThrow();
-   expect(getRandomArrayElement([1])).toBe(1)
+   expect(getRandomArrayElement([1])).toBe(1);
 });

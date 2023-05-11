@@ -3,7 +3,7 @@ import type { Vector2D } from "./utils/geometry";
 import type { Axis } from "./utils/util";
 import type { World } from "./world";
 
-import { getPositionsNotInGivenPositions, getEmptyCellInRange } from "./world";
+import { getPositionNotInGivenPositions, getEmptyCellInRange } from "./world";
 import { isDeepStrictEqual, otherAxis, randomUniqueIntegers } from "./utils/util";
 import { arrayWithoutElementAtIndex } from "./utils/array_utils";
 import { createWalker } from "./actor_creators";
@@ -158,12 +158,14 @@ function enemyFlee(params: ActorActionParams): ReturnType<ActorActions["enemyFle
 }
 
 /**
- * A "play" action
+ * Can be used for inside "play" actions
  * Returns a good positions, or undefined if no good position avaible
  * @param params The uniform parameters for the actions. See {@link ActorActionParams} for further details.
  * @returns a good positions, or undefined if no good position avaible
  */
-function playPriorityAroundLoneGrounds(params: ActorActionParams): Vector2D | undefined {
+function playPriorityAroundLoneGrounds(params: ActorActionParams, range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number)
+: Vector2D | undefined 
+{
 	const numberOfLines = AxisLength(params.world, otherAxis(params.spawnersAxis));
 	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
 	const groundListPerLine: Array<Array<Actor>> = consideredLineOrder.map(
@@ -173,7 +175,6 @@ function playPriorityAroundLoneGrounds(params: ActorActionParams): Vector2D | un
 			filterActorsByPosition(params.actorsAcc, consideredLine, undefined),
 			["ground"]
 		));
-	const range: number = 2;
 	const returnedGroundAroundWhichToPlay: Actor | undefined = Array.from({ length: AxisLength(params.world, params.spawnersAxis) - 1 }, (_, i) => i + 1)
 	.reduce((acc, groundListPerLineConstraint) => {
 		if (acc) return acc;
@@ -182,7 +183,7 @@ function playPriorityAroundLoneGrounds(params: ActorActionParams): Vector2D | un
 			if (currentGrounds.length === groundListPerLineConstraint) {
 				const actorsWithoutPlayers: Actor[] = params.actorsAcc.filter((a) => !hasOneOfKinds(a, ["player"]));
 				const groundAroundWhichToPlay: Actor | undefined = currentGrounds
-				.find((currentGround) => getEmptyCellInRange(params.world, actorsWithoutPlayers, currentGround.position, range, euclideanDistance));
+				.find((currentGround) => getEmptyCellInRange(params.world, actorsWithoutPlayers, currentGround.position, range, distanceFunction));
 				return groundAroundWhichToPlay;
 			}
 			return acc2;
@@ -201,7 +202,7 @@ function playPriorityAroundLoneGrounds(params: ActorActionParams): Vector2D | un
  * @returns a random valid position for the play action, or undefined if no positions avaible
  */
 function playRandomValid(params: ActorActionParams): ReturnType<ActorActions["play"]> {
-	return getPositionsNotInGivenPositions(
+	return getPositionNotInGivenPositions(
 		params.world, 
 		filterByKinds(params.actorsAcc, arrayWithoutElementAtIndex([...kindKeys], [...kindKeys].indexOf("player"))).map((a) => a.position)
 	);
@@ -215,11 +216,13 @@ function playRandomValid(params: ActorActionParams): ReturnType<ActorActions["pl
  */
 function play(params: ActorActionParams): ReturnType<ActorActions["play"]> {
 	if (Math.random() > getPlayProba(params.actingActor)) return undefined;
-	return playPriorityAroundLoneGrounds(params) ??
+	const range = 2;
+	const distanceFunction = euclideanDistance;
+	return playPriorityAroundLoneGrounds(params, range, distanceFunction) ??
 	playRandomValid(params);
 }
 
 export type { ActorActions, ActionGenerators, ActorActionParams };
 
 export { temperatureRise, spreadIgnorance, convertEnemies, enemyFlee, spawn, moveTowardWaypointTarget,
-	defaultActions, play, impactActorsConviction, createDefaultActionGenerator};
+	defaultActions, play, impactActorsConviction, createDefaultActionGenerator, playPriorityAroundLoneGrounds};

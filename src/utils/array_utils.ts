@@ -43,7 +43,7 @@ function getRandomArrayElementNotInOtherArray<T>(fromArray: Array<T>, otherArray
 	if (!fromArray.length) {
 		throw new Error('Cannot get a random element from an empty array');
 	}
-	const randomIndexOrder: Array<number> = Array.from({length: fromArray.length}, (_, i) => (i));
+	const randomIndexOrder: Array<number> = fisherYatesShuffle(Array.from({length: fromArray.length}, (_, i) => (i)));
 	const elementIndex: number | undefined = randomIndexOrder.reduce(
 		(acc, randomIndex) => {
 			if (acc === undefined && !otherArray.some((el) => isDeepStrictEqual(el, fromArray[randomIndex]))) {
