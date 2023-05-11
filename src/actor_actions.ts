@@ -3,14 +3,14 @@ import type { Vector2D } from "./utils/geometry";
 import type { Axis } from "./utils/util";
 import type { World } from "./world";
 
-import { getPositionNotInGivenPositions, getEmptyCellInRange } from "./world";
-import { isDeepStrictEqual, otherAxis, randomUniqueIntegers } from "./utils/util";
+import { getRandomPositionNotInGivenPositions, getEmptyCellInRange } from "./world";
+import { isDeepStrictEqual, otherAxis, randomUniqueMinIntegers } from "./utils/util";
 import { arrayWithoutElementAtIndex } from "./utils/array_utils";
 import { createWalker } from "./actor_creators";
 import { euclideanDistance, createVector, movingVector } from "./utils/geometry";
 import { getConviction, getWaypointTarget, getRange, getSpawnProba, getSpreadIgnorancePower, getFaithPoints, getPlayProba } from "./props";
 import { filterActorsByPosition, filterByKinds, hasOneOfKinds, walkerKeys, kindKeys } from "./actor";
-import { AxisLength } from "./world";
+import { axisLength } from "./world";
 
 /**
  * uniform parameters that the actions must have.
@@ -166,16 +166,16 @@ function enemyFlee(params: ActorActionParams): ReturnType<ActorActions["enemyFle
 function playPriorityAroundLoneGrounds(params: ActorActionParams, range: number, distanceFunction: (a: Vector2D, b: Vector2D) => number)
 : Vector2D | undefined 
 {
-	const numberOfLines = AxisLength(params.world, otherAxis(params.spawnersAxis));
-	const consideredLineOrder: Array<number> = randomUniqueIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
+	const numberOfLines = axisLength(params.world, otherAxis(params.spawnersAxis));
+	const consideredLineOrder: Array<number> = randomUniqueMinIntegers(numberOfLines, numberOfLines, 0, numberOfLines);
 	const groundListPerLine: Array<Array<Actor>> = consideredLineOrder.map(
 		(consideredLine) => filterByKinds(
 			params.spawnersAxis === "x" ?
 			filterActorsByPosition(params.actorsAcc, undefined, consideredLine) :
 			filterActorsByPosition(params.actorsAcc, consideredLine, undefined),
-			["ground"]
+			["ground", "spawner", "spaghettiMonster"]
 		));
-	const returnedGroundAroundWhichToPlay: Actor | undefined = Array.from({ length: AxisLength(params.world, params.spawnersAxis) - 1 }, (_, i) => i + 1)
+	const returnedGroundAroundWhichToPlay: Actor | undefined = Array.from({ length: axisLength(params.world, params.spawnersAxis) - 1 }, (_, i) => i + 1)
 	.reduce((acc, groundListPerLineConstraint) => {
 		if (acc) return acc;
 		return groundListPerLine.reduce((acc2, currentGrounds) => {
@@ -202,7 +202,7 @@ function playPriorityAroundLoneGrounds(params: ActorActionParams, range: number,
  * @returns a random valid position for the play action, or undefined if no positions avaible
  */
 function playRandomValid(params: ActorActionParams): ReturnType<ActorActions["play"]> {
-	return getPositionNotInGivenPositions(
+	return getRandomPositionNotInGivenPositions(
 		params.world, 
 		filterByKinds(params.actorsAcc, arrayWithoutElementAtIndex([...kindKeys], [...kindKeys].indexOf("player"))).map((a) => a.position)
 	);

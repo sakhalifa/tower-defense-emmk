@@ -219,4 +219,4 @@ export type { Axis };
 
 export { stringReplaceAt, isDeepStrictEqual, isObject, almostEvenlySpacedIntegers,
 	evenlySpacedNumbers, randomUniqueIntegers, otherAxis, executeFunctionEveryNCall,
-	throwErrorIfUndefined };
+	throwErrorIfUndefined, randomUniqueMinIntegers };

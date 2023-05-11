@@ -183,5 +183,5 @@ function getEmptyCellInRange(world: World, actors: Array<Actor>, fromPosition: V
 export type { World };
 
 export { createWorld, worldToString, isPositionInWorld, vectorToIndexInWorldString, randomPositionsAlongAxis,
-	createPositionsAlongAxis, axisLength as AxisLength, getVectorsInRangeInWorld,
-	allPositionsInWorld, getRandomPositionNotInGivenPositions as getPositionNotInGivenPositions, getEmptyCellInRange};
+	createPositionsAlongAxis, axisLength, getVectorsInRangeInWorld,
+	allPositionsInWorld, getRandomPositionNotInGivenPositions, getEmptyCellInRange};
