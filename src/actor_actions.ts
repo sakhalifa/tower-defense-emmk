@@ -1,10 +1,11 @@
 import type { Actor, Kind } from "./actor";
 import type { Vector2D } from "./utils/geometry";
-import type { Axis } from "./utils/util";
+import type { Axis } from "./utils/other_utils";
 import type { World } from "./world";
 
 import { getRandomPositionNotInGivenPositions, getEmptyCellInRange } from "./world";
-import { isDeepStrictEqual, otherAxis, randomUniqueMinIntegers } from "./utils/util";
+import { isDeepStrictEqual, otherAxis } from "./utils/other_utils";
+import { randomUniqueMinIntegers } from "./utils/number_utils";
 import { arrayWithoutElementAtIndex } from "./utils/array_utils";
 import { createWalker } from "./actor_creators";
 import { euclideanDistance, createVector, movingVector } from "./utils/geometry";

@@ -1,4 +1,5 @@
-import { isObject, stringReplaceAt, isDeepStrictEqual, evenlySpacedNumbers, almostEvenlySpacedIntegers } from "../src/utils/util";
+import { isObject, stringReplaceAt, isDeepStrictEqual } from "../src/utils/other_utils";
+import { evenlySpacedNumbers, almostEvenlySpacedIntegers } from "../src/utils/number_utils";
 import { getRandomArrayElement, sum } from "../src/utils/array_utils";
 
 test("sum test", () => {

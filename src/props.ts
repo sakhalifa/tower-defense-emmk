@@ -1,7 +1,7 @@
 import type { Actor } from "./actor";
 import type { Vector2D } from "./utils/geometry";
 
-import { throwErrorIfUndefined } from "./utils/util";
+import { throwErrorIfUndefined } from "./utils/other_utils";
 
 ///
 /// 

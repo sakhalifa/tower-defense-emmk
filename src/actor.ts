@@ -3,7 +3,7 @@ import type { World } from "./world";
 import type { ActorActions, ActionGenerators } from "./actor_actions";
 
 import { vector2DToString, translatePoint, vectorHasCoords } from "./utils/geometry";
-import { isDeepStrictEqual, stringReplaceAt } from "./utils/util";
+import { isDeepStrictEqual, stringReplaceAt } from "./utils/other_utils";
 import { getRandomArrayElement } from "./utils/array_utils";
 import { vectorToIndexInWorldString, isPositionInWorld } from "./world";
 import { getWaypointTargetNumber, getWaypointTarget, setWaypointTargetNumber, setWaypointTarget, getWaypointNumber } from "./props";

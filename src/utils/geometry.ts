@@ -1,6 +1,6 @@
-import type { Axis } from "./util";
+import type { Axis } from "./other_utils";
 
-import { isDeepStrictEqual } from "./util";
+import { isDeepStrictEqual } from "./other_utils";
 
 /**
  * A 2D vector

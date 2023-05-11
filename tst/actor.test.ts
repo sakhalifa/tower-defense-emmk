@@ -1,5 +1,5 @@
 import type { Actor } from "../src/actor";
-import type { Axis } from "../src/utils/util";
+import type { Axis } from "../src/utils/other_utils";
 import type { World } from "../src/world";
 import type { ActorActionParams } from "../src/actor_actions";
 

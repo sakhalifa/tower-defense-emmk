@@ -1,4 +1,4 @@
-import { isDeepStrictEqual } from "./util";
+import { isDeepStrictEqual } from "./other_utils";
 
 /**
  * Computes the sum of all the elements of the array

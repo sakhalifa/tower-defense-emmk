@@ -1,8 +1,9 @@
 import type { Vector2D } from "./utils/geometry";
-import type { Axis } from "./utils/util";
+import type { Axis } from "./utils/other_utils";
 import type { Actor } from "./actor";
 
-import { randomUniqueIntegers, isDeepStrictEqual } from "./utils/util";
+import { isDeepStrictEqual } from "./utils/other_utils";
+import { randomUniqueIntegers } from "./utils/number_utils";
 import { getRandomArrayElementNotInOtherArray, getRandomArrayElement } from "./utils/array_utils";
 import { createVector, getMovementVectorsInRange, translatePoint } from "./utils/geometry";
 

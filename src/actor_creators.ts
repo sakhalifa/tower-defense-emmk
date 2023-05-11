@@ -4,7 +4,7 @@ import type { Actor, Walker, ActionGenerators } from "./actor";
 
 import { createVector } from "./utils/geometry";
 import { findNextWaypointTarget } from "./actor";
-import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./utils/util";
+import { throwErrorIfUndefined, executeFunctionEveryNCall } from "./utils/other_utils";
 import { defaultActions, spreadIgnorance, moveTowardWaypointTarget, temperatureRise, spawn, play, convertEnemies,
 	enemyFlee, createDefaultActionGenerator } from "./actor_actions";
 import { setConviction, setFaithPoints, setMaxFaith, setSpawnProba, setWaypointNumber, setWaypointTargetAndNumber,
