@@ -80,8 +80,8 @@ xtest("playPriorityAroundLoneGrounds test", () => {
     const player = createPlayer(1);
     const range = 2;
     const distanceFunction = euclideanDistance;
-    const xAxisSolutions = getVectorsInRangeInWorld(range, euclideanDistance, world, bottomGround.position);
-    const yAxisSolutions = getVectorsInRangeInWorld(range, euclideanDistance, world, rightGround.position);
+    const xAxisSolutions = getVectorsInRangeInWorld(range, distanceFunction, world, bottomGround.position);
+    const yAxisSolutions = getVectorsInRangeInWorld(range, distanceFunction, world, rightGround.position);
     expect(xAxisSolutions).toContainEqual(playPriorityAroundLoneGrounds({actorsAcc: grounds, actingActor: player, world, spawnersAxis: "x"}, range, distanceFunction));
     expect(yAxisSolutions).toContainEqual(playPriorityAroundLoneGrounds({actorsAcc: grounds, actingActor: player, world, spawnersAxis: "y"}, range, distanceFunction));
 });
