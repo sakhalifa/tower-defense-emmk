@@ -245,8 +245,8 @@ Les spawners sont donc répartis sur un axe (qu'on appellera "axe des spawners")
 \begin{figure}[H]
     \centering
     \includegraphics[width = 0.9\textwidth]{points_de_passage.png}
-    \caption{Exemple de génération aléatoire de chemin dans un monde de taille 5 x 5}%
-    \label{fig:points de passage}%
+    \caption{Exemple de génération aléatoire de chemin dans un monde de taille 5 x 5}
+    \label{fig:points de passage}
 \end{figure}
 
 Il reste maintenant à lier ces points de passage pour former un ou plusieurs chemins menant des spawners aux monstres en spaghetti.
@@ -256,7 +256,65 @@ Il reste maintenant à lier ces points de passage pour former un ou plusieurs ch
 Nous voyons dans la \hyperref[fig:points de passage]{Figure \ref{fig:points de passage}} que des chemins de lien ont été générés. Ces chemins sont générés d'une manière très simple qui consiste à relier chaque point de passage de numérotation $n$ aux points de passage de numérotation $n - 1$, en commençant par placer des cases de chemin le long d'un axe (ici des abscisses) puis le long de l'autre axe (ici des ordonnées). La fonction reliant deux points de passage est une fonction récursive terminale prenant en paramètres une position initiale et une position finale à relier. À chaque appel récursif, il suffit de modifier la position initiale en l'ayant déplacé de une case vers la case finale, et ce jusqu'à ce que la case initiale corresponde à la case finale.
 
 Il est facile de se convaincre que de cette manière, n'importe quel chemin peut être généré, pour peu qu'on place correctement les points de passage nécessaires à sa génération.
+Une fois le chemin généré, il faut que les attaquants puissent s'y déplacer.
 
+\subsection{Joueur automatique}
+
+Généralement, dans un jeu de Tower Defense, le placement des défenseurs et confié au joueur. Dans le cas du développement de notre jeu, ce placement est automatique et peu donc être vu comme faisant partie de la phase de spawn. Nous séparons tout de même ces deux phases dans un soucis de modularité.
+Le joueur automatique est implémenté comme étant un acteur de type "player", possédant une action "play".
+
+\subsubsection{Joueur intelligent}
+
+Le joueur que nous avons implémenté diversifie ses coups à l'aide de deux algorithmes.
+L'algorithme utilisé en priorité est un algorithme qui consiste à jouer des coups aléatoires proches des cases de chemin, en prenant en priorité celles qui sont le moins nombreuses dans leur rangée. Une rangée étant dans la même direction que l'axe des spawners.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.9\textwidth]{points_de_passage_play.png}
+    \caption{Exemple de cases de chemin par rangéee dans un monde de taille 5 x 5}
+    \label{fig:points de passage play}
+\end{figure}
+
+Dans l'exemple de la \hyperref[fig:points de passage play]{Figure \ref{fig:points de passage play}}, les coups seront d'abord joués dans la 4ème rangée, puis dans les deux premières, et enfin dans les rangées 3 et 5.
+Cet algorithme utilise un générateur de nombre aléatoires basé sur une implémentation pure récursive terminale du \hyperlink{https://fr.wikipedia.org/wiki/Mélange_de_Fisher-Yates}{mélange de Fisher-Yates}, qui termine.
+
+Lorsque ce premier algorithme a épuisé ses possibilités, dans la portée passée en paramètre et en utilisant la fonction de distance passée en paramètre (par exemple la distance euclidienne, pour avoir une portée circulaire), le joueur se met à jouer des coups valides aléatoires.
+
+\subsubsection{Joueur aléatoire}
+
+Ce deuxième algorithme énumère les positions libres, les mélange en utilisant la même implémentation du \hyperlink{https://fr.wikipedia.org/wiki/Mélange_de_Fisher-Yates}{mélange de Fisher-Yates}, et les parcourt jusqu'à trouver une position libre sur laquelle il peut jouer.
+
+Il est évidemment possible d'utiliser ces deux algorithmes indépendamment, pour créer des joueurs aux comportements diversifiés. L'implémentation du joueur intelligent pourrait alors être légèrement amméliorée afin d'augmenter progressivement sa portée et finir par atteindre toutes les cases du plateau.
+
+Une autre manière de créer des joueurs aux comportements diversifiés est d'utiliser le concept de décorateur fonctionnel.
+
+
+\subsection{Diversification dynamique des comportements}
+
+En exécutant le jeu, vous remarquerez que les attaquants ne se déplacent pas tous à la même vitesse. Et pourtant, ils utilisent tous la même fonction de déplacement! Le comportement de celle-ci est "simplement" augmenté en utilisant le principe de décorateur fonctionnel.  
+
+\subsubsection{Choix d'implémentation des décorateurs, ou générateurs d'action}
+
+Nos décorateurs fonctionnel \textbf{purs} permettent, de manière définitive comme dynamique, de modifier les comportements des entitées du jeu.
+Ils permettent de ne pas avoir à écrire une nouvelle fonction, ou à passer de nombreux paramètres supplémentaires à toutes les fonctions de comportement, à chaque fois que l'on souhaite modifier un comportement.
+
+En excluant les implémentations qui ne respectent pas le principe de pureté, au moins deux possibilités d'implémentation de ces décorateurs sont possibles :
+\begin{itemize}
+    \item Modifier le type de retour des actions (une action décrivant un comportement) afin qu'elles retournent, en plus de leur résultat, la prochaine fonction à utiliser pour cette même action. Cette implémentation complexifie la création des actions, et rend leur type de retour beaucoup moins évident. Ce n'est pas la solution retenue.
+    \item Séparer les actions des \textbf{générateurs d'action}, qui seront utilisés pour mettre à jour les actions après les avoir exécutées. Dans cette implémentation, les actions restent inchangées, mais une nouvelle variable s'ajoute au type Actor, qui est un objet contenant pour chaque action son générateur, qui est une fonction retournant la prochaine action à utiliser, ainsi que le nouveau générateur, à l'état potentiellement différent, qui sera utilisé une fois la prochaine action exécutée. C'est la solution retenue.
+\end{itemize}
+
+Afin de ralentir le déplacement d'un attaquant, il suffit de décorer son action de déplacement afin qu'elle ne soit éxecutée qu'une fois sur deux lorsqu'elle est appelée.
+
+\subsubsection{Exemple concret}
+
+En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un décorateur qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 cases, quit revient à ne pas se déplacer, pour définir la fonction par défaut.
+Ce décorateur retourne l'exécution d'une fonction interne, en suivant le principe de fermeture, qui est un générateur qui s'occupe de retourner l'appel avec les nouveaux paramètres du prochain générateur, qui est gelé pour éviter un appel récursif infini, et la nouvelle action, qui doit remplacer l'action qui a déjà donné un résultat concernant le comportement d'une entité. Le typage de cette fonction est un typage récursif, et un type ActionGenerators décrivant les générateurs de comportement qu'un acteur doit contenir est créé et basé sur le type ActorActions qui définissait déjà les types des actions des acteurs.
+
+\subsubsection{Mise à jour des actions et des générateurs}
+
+Pour que cette implémentation fonctionne, il faut que le générateur et l'action soient mis à jour à chaque exécution de l'action. Ceci n'est pas automatiquement réalisé par l'action, et c'est le système de \textbf{phases} qui nous permet de mettre en place et synchroniser cette mise à jour.
+Les phases permettent de mettre à jour les acteurs en fonction de leurs intentions. Cela suppose que l'action de l'acteur concernant la phase en question, de déplacement par exemple, a été exécutée et a donné son résultat. La fonction d'éxécution propre à la phase, et retournant le nouvel acteur en prenant en compte les intentions retournées par l'action de l'acteur, en profite donc pour retourner un acteur dont le générateur et l'action on tous les deux été mis à jour.
 
 \section{Boucle de jeu}
 - Un monde = plan 2d
