@@ -38,7 +38,7 @@
 \hrulefill \\[2em]
 \begin{center}
 \textbf{\Huge \mytitle}\\[0.8em]
-{\large equipe : projetss6-tower-19048}
+{\large équipe : projetss6-tower-19048}
 \\[0.8em]
 \end{center}
 \hrulefill
@@ -82,14 +82,14 @@ Ce genre peut se résumer en une seule phrase :
 
 La programmation fonctionnelle est le paradigme mis en avant.
 Nous évitons donc au maximum la programmation impérative ou encore la programmation orienté objet.
-L'exécutable est réalisé en Typescript, une surcouche de JavaScript que nous utilisons pour typer le contenu de notre programme.
+L'exécutable est réalisé en TypeScript, une surcouche de JavaScript que nous utilisons pour typer le contenu de notre programme.
 
 \subsection{Theme}
 Nous avons choisi de créer un jeu de tower defense autour du thème
 du Pastafarisme, en faisant attention à éviter toute forme de violence.
 Selon cette religion, la température de la Terre est inversement proportionnelle 
 au nombre de pirates qu'elle contient.
-Cette problématique est ajourd'hui d'une importance majeure, et nous voulons sensibiliser des joueurs aux causes climatiques.
+Cette problématique est ajourd'hui d'une importance majeure, et nous voulons sensibiliser les joueurs aux causes climatiques.
 L'objectif du jeu est donc de répandre le Pastafarisme, prêché par des pirates qui correspondent aux défenseurs de notre jeu, et de défendre le Monstre Spaghetti Volant, notre sauveur. 
 
 \section{Conception}\label{sec:conception}
@@ -108,8 +108,8 @@ Les acteurs forment un ensemble d'entités aux comportements et états variés,
 qui intéragissent entre elles.
 
 Le type acteur est très générique et peut représenter beaucoup de choses.
-Pour garder une consistence entre nos acteurs, on définit des archétypes.
-
+Pour garder une consistence entre nos acteurs, on définit des archétypes:
+\vspace{8px}
 \begin{itemize}
    \item Spaghetti Monster : Le gentil monstre spaghetti que les défenseurs doivent protéger.
    \item Good Guy : Les défenseurs.
@@ -118,7 +118,7 @@ Pour garder une consistence entre nos acteurs, on définit des archétypes.
    \item Spawner : Un point d'apparition pour les attaquants.
    \item Ground : Un bout de chemin sur lequel les attaquants se déplacent.
 \end{itemize}
-
+\vspace{8px}
 Les types Good Guy, Ignorant et Ignorance Spreader représentent 
 les défenseurs et les attaquants. Ils découlent directement de la description du jeu.
 Cependant, nos acteurs comportent aussi un type Spawner et Ground.
@@ -127,7 +127,7 @@ soient aussi considérés comme des acteurs.
 
 En effet, Spawner peut être vu comme un attaquant immortel, et Ground 
 un défenseur qui contraint le déplacement des attaquants.
-
+\vspace{8px}
 Passons aux interactions entre entités.
 
 Chaque acteur a besoin de disposer d'un ensemble de comportements qui puisse évoluer 
@@ -135,7 +135,7 @@ au cours de la partie, comme pour simuler des effets incapacitants
 ou stimulants.
 
 Pour que ces interactions prennent effet, nos entités ont 
-égalements besoin d'un état interne.
+également besoin d'un état interne.
 
 Les états internes des entités comportent toujours :
 
@@ -149,11 +149,13 @@ Avec la diversification des acteurs vient le problème de la spécialisation qui
 Par exemple, les acteurs béligérants ont besoins d'attributs spécifiques tels que des points de croyance et une limite que ces points peuvent atteindre.
 
 On pourrait rajouter tous les attributs nécessaires à tous les comportements 
-à tous les acteurs. Mais c'est une mauvaise idée pour deux raisons.
-Premièrement, cela entraînerait une modification sur le type acteur à chaque nouvel attribut ajouté, et entraînerai une modification de la signatures de certaines fonctions auxiliaires comme le constructeur.
-Secondement, le type acteur aurait toujours plus d'états possibles, 
+à tous les acteurs. C'est cependant une mauvaise idée pour deux raisons :
+\begin{itemize}
+    \item Premièrement, cela entraînerait une modification sur le type acteur à chaque nouvel attribut ajouté, et entraînerai une modification de la signatures de certaines fonctions auxiliaires comme le constructeur.
+    \item Secondement, le type acteur aurait toujours plus d'états possibles, 
 et deviendrait de plus en plus complexe et lourd à comprendre et gérer.
-
+\end{itemize}
+\vspace{8px}
 Pour éviter ces désagréments, nous avons séparé la responsabilité des attributs 
 dépendants de certains comportements dans un champs \textbf{externalProps}.
 Pour que ce champs puisse satisfaire toutes les possibilités d'attributs, il
@@ -161,7 +163,7 @@ est de type dictionnaire de quelconque. Toutefois, ce typage faible est compens�
 par la présence de fonctions getter et setter agissants comme une interface 
 avec \textbf{externalProps}.
 
-Nos acteurs sont donc parés à toute éventalité d'évolution.
+Nos acteurs sont donc parés à toute éventualité d'évolution.
 Cependant, bien qu'ils disposent de comportements pouvant évoluer, ils ne peuvent modifier leurs 
 états internes directement.
 Nous avons besoin de quelque chose d'ordre supérieur pour gérer leurs interactions.
@@ -187,7 +189,7 @@ Au cours d'un tour de jeu, les phases doivent permettre aux acteurs de réaliser
   \item Faire apparaitre des nouveaux acteurs
   \item Se retirer du jeu
 \end{itemize}  
-
+\vspace{8px}
 Dans un soucis de cohérence et d'équité entre les acteurs, 
 leurs intentions sont traitées de manière synchronisées au cours des phases.
 Si ce n'était pas le cas, l'ordre dans lequel les acteurs jouent pourrait influer 
@@ -195,10 +197,10 @@ sur le résultat du tour de jeu. Par exemple, si un acteur joue dans sa
 phase d'attaque, inflige des dégats à un ennemi, puis joue sa phase de déplacements,
 s'eloignant et privant l'ennemi d'une juste riposte.
 
-Le découpage d'un tour de jeu en une liste de phase permet d'être modulaire.
+Ceci ne constitue qu'un choix de jeu, et le découpage d'un tour de jeu en une liste de phase permet de moduler ce type de choix.
 Il en résulte qu'il est très simple de rajouter des phases de jeu, ou de 
 changer l'ordre dans lequel les acteurs agissent.
-
+\vspace{8px}
 Enfin, il peut arriver que les intentions des acteurs soient incompatibles.
 Par exemple, si deux acteurs ayant des collisions veulent aller au même endroit.
 Chaque phase doit pouvoir résoudre les conflits qu'elle génère.
@@ -329,16 +331,8 @@ Pour ralentir le déplacement d'un attaquant, il suffit de décorer son action d
 
 \subsubsection{Exemple concret}
 
-En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un décorateur \ref{fig:deco_every_n} qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 case, qui revient à ne pas se déplacer, pour définir la fonction par défaut.
+En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un décorateur qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 case, qui revient à ne pas se déplacer, pour définir la fonction par défaut.
 Ce décorateur retourne l'exécution d'une fonction interne, qui est un générateur d'action, en suivant le principe de fermeture. Ce générateur d'action retourne l'appel \textbf{gelé} d'un autre générateur, dont les paramètres auront été mis à jour, et l'action générée, qui définira le prochain comportement de l'entité concernée. Le gel du générateur retourné permet d'éviter un appel récursif infini. Cette fonction est typée de manière récursive, et un type ActionGenerators décrivant les générateurs d'action qu'un acteur doit contenir est créé, et basé sur le type ActorActions qui définissait déjà les types des actions des acteurs.
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width = 0.5\textwidth]{diag_deco_every_n.png}
-    \caption{Décomposition d'un décorateur retournant alternativement une des fonctions données.}
-    \label{fig:deco_every_n}
-\end{figure}
 
 \subsubsection{Mise à jour des actions et des générateurs}
 
