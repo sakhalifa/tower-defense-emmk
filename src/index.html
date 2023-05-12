@@ -13,7 +13,18 @@
 
 <body class="very-cold-bg">
 
-  <div class="home-screen"></div>
+  <div class="home-screen" id="home">
+  </div>
+
+  <div id="button" onclick="homeSlide()">
+    <a href="#" class="animated-button1" id="link">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      Play
+    </a>
+  </div>
 
   <img src="resources/sprites/new_ignorant.png" class="hide" id="ignorantSprite">
   <img src="resources/sprites/pirate.png" class="hide" id="goodGuySprite">
@@ -123,6 +134,16 @@
   //This is unfortunately dumb but I have to do it :(
   document.getElementById("speed-slider").value = 1;
   document.getElementById("speed-value").textContent = "1x"
+
+</script>
+
+<script>
+
+  function homeSlide() {
+    document.getElementById("home").classList.toggle("active");
+    document.getElementById("button").classList.toggle("active");
+    playMusic();
+  }
 
 </script>
 

@@ -146,7 +146,12 @@ async function main(): Promise<void> {
  * Calls the main function and creates a slider to modify the speed of the game
  */
 window.onload = (_) => {
-    main();
+
+    const button: HTMLDivElement = document.getElementById("button")! as HTMLDivElement;
+    button.addEventListener('click', () => {
+        main();
+    });
+
     const speedSlider = document.getElementById("speed-slider")! as HTMLInputElement;
     speedSlider.addEventListener("input", (e) => {
         if(speedSlider.value === "0")
