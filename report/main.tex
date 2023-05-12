@@ -89,14 +89,14 @@ Nous avons choisi de créer un jeu de tower defense autour du thème
 du Pastafarisme, en faisant attention à éviter toute forme de violence.
 Selon cette religion, la température de la Terre est inversement proportionnelle 
 au nombre de pirates qu'elle contient.
-Cette problématique est ajourd'hui d'une importance majeure, et nous voulons sensibiliser les joueurs aux causes climatiques.
+Cette problématique est aujourd'hui d'une importance majeure, et nous voulons sensibiliser les joueurs aux causes climatiques.
 L'objectif du jeu est donc de répandre le Pastafarisme, prêché par des pirates qui correspondent aux défenseurs de notre jeu, et de défendre le Monstre Spaghetti Volant, notre sauveur. 
 
 \section{Analyse du sujet}\label{sec:conception}
 
 Notre description du jeu, en \hyperref[sec:description jeu]{partie \ref{sec:description jeu}}, nous permet d'en tirer les éléments fondamentaux.
 
-Parmis ces éléments se trouvent les entités, comme les attaquants, mais aussi les défenseurs. Bien qu'elles soient antagonistes, ces entités ont des similarités, notamment dans le traitement de leurs actions. 
+Parmi ces éléments se trouvent les entités, comme les attaquants, mais aussi les défenseurs. Bien qu'elles soient antagonistes, ces entités ont des similarités, notamment dans le traitement de leurs actions. 
 
 Nous décidons donc de les regrouper sous un même nom, les \textbf{acteurs}.
 
@@ -152,8 +152,8 @@ On pourrait rajouter tous les attributs nécessaires à tous les comportements
 à tous les acteurs. Bien que cela permettrait un typage plus précis et moins d'erreurs de programmation, cette pratique n'a pas été retenue pour trois raisons :
 \begin{itemize}
     \item Premièrement, cela entraînerait une modification sur le type acteur à chaque nouvel attribut ajouté, et entraînerai une modification de la signatures de certaines fonctions auxiliaires comme le constructeur.
-    \item Secondement, le type acteur aurait toujours plus d'états possibles, 
-et deviendrait de plus en plus complexe et lourd à comprendre et gérer.
+    \item Deuxièmement, le type acteur aurait toujours plus d'états possibles, 
+et deviendrait de plus en plus complexe et difficile à comprendre et gérer.
     \item Troisièmement, les erreurs de programmation liées à l'utilisation de mauvais noms de variable dans les dictionnaires de type "any" (quelconque) peuvent être évitées en passant par l'utilisation de getters et setters.
 \end{itemize}
 \vspace{8px}
@@ -195,7 +195,7 @@ phase d'attaque, inflige des dégats à un ennemi, puis joue sa phase de déplac
 s'eloignant et privant l'ennemi d'une juste riposte.
 
 Ceci ne constitue qu'un choix de jeu, et le découpage d'un tour de jeu en une liste de phase permet de moduler le déroulement d'un tour.
-Il en résulte qu'il est très simple de rajouter des phases de jeu, ou de 
+Il en résulte qu'il est très simple d'ajouter des phases de jeu, ou de 
 changer l'ordre dans lequel les acteurs agissent.\\[8px]
 Enfin, il peut arriver que les intentions des acteurs soient incompatibles.
 Par exemple, si deux acteurs ayant des collisions veulent aller au même endroit.
@@ -221,7 +221,7 @@ Le monde est utilisé pour au moins deux besoins qui sont:
 \end{itemize}
 
 Avec ces trois élements que sont les acteurs, les phases et le monde, on va pouvoir 
-créer des acteurs de différents types, effectuant diverses actions, le tout dans une 
+créer des acteurs de différents types, effectuant diverses actions, et ce dans une 
 zone définie.
 
 La cohérence des positions dans le monde mène à un résultat similaire à celui de la \hyperref[fig:affichages]{figure \ref{fig:affichages}}.
@@ -300,7 +300,7 @@ Lorsque ce premier algorithme a épuisé ses possibilités, le joueur se met à 
 
 Ce deuxième algorithme énumère les positions libres, les mélange en utilisant la même implémentation du \hyperlink{https://fr.wikipedia.org/wiki/Mélange_de_Fisher-Yates}{mélange de Fisher-Yates}, et les parcourt jusqu'à trouver une position libre sur laquelle il peut jouer.
 
-Il est évidemment possible d'utiliser ces deux algorithmes indépendamment, pour créer des joueurs aux comportements diversifiés. L'implémentation du joueur intelligent pourrait alors être légèrement amméliorée afin d'augmenter progressivement sa portée et finir par atteindre toutes les cases du plateau.
+Il est évidemment possible d'utiliser ces deux algorithmes indépendamment, pour créer des joueurs aux comportements diversifiés. L'implémentation du joueur intelligent pourrait alors être légèrement améliorée afin d'augmenter progressivement sa portée et finir par atteindre toutes les cases du plateau.
 
 Une autre manière de créer des joueurs aux comportements diversifiés est d'utiliser le concept de décorateur fonctionnel.
 
@@ -363,7 +363,7 @@ Les efforts de pureté et modularité effectués dans ce projet nous permettent 
 
 Les inconvénients sont parfois la complexification d'écriture des fonctions, notamment des décorateurs fonctionnels purs.
 
-La pureté n'est pas compatible avec l'aléatoire. On pourrait argumenter sur le fait que l'aléatoire n'existe pas et qu'on est sur un système pseudo-aléatoire. Cependant, une vrai piste d'ammélioration vers plus de pureté serait plutôt que les fonctions se servant de l'aléatoire prennent en paramètre cette fonction aléatoire, ou bien même directement son résultat. On pourrait alors tester ces fonctions de manière précise et exhaustive.
+La pureté n'est pas compatible avec l'aléatoire. On pourrait argumenter sur le fait que l'aléatoire n'existe pas et qu'on est sur un système pseudo-aléatoire. Cependant, une vrai piste d'amélioration vers plus de pureté serait plutôt que les fonctions se servant de l'aléatoire prennent en paramètre cette fonction aléatoire, ou bien même directement son résultat. On pourrait alors tester ces fonctions de manière précise et exhaustive.
 
 Les inconvénients du paradigme de programmation utilisé comprennent également les réductions de performance, notre programme ne souffre cependant pas de ce problème. De plus, dans un jeu du type tower defense, le délais entre les tours de jeu combiné à de la programmation asynchrone peut permettre de rendre ce problème invisible.
 
