@@ -85,11 +85,11 @@ L'exécutable est réalisé en Typescript, une surcouche de JavaScript que nous 
 
 \subsection{Theme}
 Nous avons choisi de créer un jeu de tower defense autour du thème
-du Pastafarisme.
+du Pastafarisme, en faisant attention à éviter toute forme de violence.
 Selon cette religion, la température de la Terre est inversement proportionnelle 
 au nombre de pirates qu'elle contient.
-Il faut donc répandre cette idéologie en défendant le monstre spaghetti volant et 
-en augmentant le nombre de pirate sur Terre.
+Cette problématique est ajourd'hui d'une importance majeure, et nous voulons sensibiliser des joueurs aux causes climatiques.
+L'objectif du jeu est donc de répandre le Pastafarisme, prêché par des pirates qui correspondent aux défenseurs de notre jeu, et de défendre le Monstre Spaghetti Volant, notre sauveur. 
 
 \section{Conception}\label{sec:conception}
 
@@ -238,12 +238,14 @@ zone définie.
 
 \section{Réalisation}
 
-Cette partie concerne des implémentations particulièrement intéressantes répondant aux besoins énoncés dans la \hyperref[sec:conception]{section \ref{sec:conception}}.  
+Cette partie concerne des implémentations particulièrement intéressantes répondant aux besoins énoncés dans la \hyperref[sec:conception]{section \ref{sec:conception}}. Une première problématique à résoudre était la génération de chemin dans le jeu, que nous avons décidé 
 
 \subsection{Génération aléatoire de chemin}
-Nous résolvons le problème de génération aléatoire de chemin en deux étapes. D'abord, nous positionnons des points de passage que le chemin généré doit comprendre, ensuite nous lions ces points de passage.
+Nous résolvons le problème de génération aléatoire de chemin en deux étapes. D'abord, nous positionnons des points de passage, ensuite nous les connectons pour former le chemin final.
 
 \subsubsection{Génération des points de passage}
+Un point de passage est une position par laquelle le chemin généré doit passer.
+
 Les points de passage sont générés en considérant une direction à prendre le long d'un axe du monde. Par exemple, il peuvent être générés de manière à ce que chaque nouveau point de passage ait une coordonnée supérieure sur l'axe des abscisses au point de passage précédent.
 Les premiers points de passage se situent sur les acteurs de type Spawner, et les derniers points de passages sur les acteurs de type Spaghetti Monster.\\
 Pour que les chemins ne soient jamais trop courts, nous contraignons les spawners à être générés sur un bord du plateau de jeu opposé au bord sur lequel seront générés les monstres en spaghetti.
@@ -252,7 +254,7 @@ Les spawners sont donc répartis sur un axe (qu'on appellera "axe des spawners")
 \begin{figure}[H]
     \centering
     \includegraphics[width = 0.9\textwidth]{points_de_passage.png}
-    \caption{Exemple de génération aléatoire de chemin dans un monde de taille 5 x 5}
+    \caption{Exemple de génération aléatoire de chemin dans un monde de taille 5 x 5.}
     \label{fig:points de passage}
 \end{figure}
 
@@ -263,29 +265,32 @@ Il reste maintenant à lier ces points de passage pour former un ou plusieurs ch
 Nous voyons dans la \hyperref[fig:points de passage]{Figure \ref{fig:points de passage}} que des chemins de lien ont été générés. Ces chemins sont générés d'une manière très simple qui consiste à relier chaque point de passage de numérotation $n$ aux points de passage de numérotation $n - 1$, en commençant par placer des cases de chemin le long d'un axe (ici des abscisses) puis le long de l'autre axe (ici des ordonnées). La fonction reliant deux points de passage est une fonction récursive terminale prenant en paramètres une position initiale et une position finale à relier. À chaque appel récursif, il suffit de modifier la position initiale en l'ayant déplacé de une case vers la case finale, et ce jusqu'à ce que la case initiale corresponde à la case finale.
 
 Il est facile de se convaincre que de cette manière, n'importe quel chemin peut être généré, pour peu qu'on place correctement les points de passage nécessaires à sa génération.
-Une fois le chemin généré, il faut que les attaquants puissent s'y déplacer.
+Pour une défense optimale, le joueur a tout intérêt à placer ses défenseurs autour de ce chemin.
 
 \subsection{Joueur automatique}
 
-Généralement, dans un jeu de Tower Defense, le placement des défenseurs et confié au joueur. Dans le cas du développement de notre jeu, ce placement est automatique et peu donc être vu comme faisant partie de la phase de spawn. Nous séparons tout de même ces deux phases dans un soucis de modularité.
+Généralement, dans un jeu de Tower Defense, la répartition des défenseurs dans le monde est confiée au joueur. Jouer un coup consiste à placer un défenseur à une position donnée. Dans le cas du développement de notre jeu, ce placement est automatique et peu donc être vu comme faisant partie de la phase de spawn. Nous séparons tout de même ces deux phases dans un soucis de modularité.
 Le joueur automatique est implémenté comme étant un acteur de type "player", possédant une action "play".
 
 \subsubsection{Joueur intelligent}
 
 Le joueur que nous avons implémenté diversifie ses coups à l'aide de deux algorithmes.
-L'algorithme utilisé en priorité est un algorithme qui consiste à jouer des coups aléatoires proches des cases de chemin, en prenant en priorité celles qui sont le moins nombreuses dans leur rangée. Une rangée étant dans la même direction que l'axe des spawners.
+L'algorithme utilisé en priorité consiste à jouer des coups aléatoires proches des cases de chemin, en priorisant celles qui sont le moins nombreuses dans leur rangée. Une rangée étant dans la même direction que l'axe des spawners.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width = 0.9\textwidth]{points_de_passage_play.png}
-    \caption{Exemple de cases de chemin par rangéee dans un monde de taille 5 x 5}
+    \caption{Exemple de cases de chemin par rangéee dans un monde de taille 5 x 5.}
     \label{fig:points de passage play}
 \end{figure}
 
 Dans l'exemple de la \hyperref[fig:points de passage play]{Figure \ref{fig:points de passage play}}, les coups seront d'abord joués dans la 4ème rangée, puis dans les deux premières, et enfin dans les rangées 3 et 5.
 Cet algorithme utilise un générateur de nombre aléatoires basé sur une implémentation pure récursive terminale du \hyperlink{https://fr.wikipedia.org/wiki/Mélange_de_Fisher-Yates}{mélange de Fisher-Yates}, qui termine.
 
-Lorsque ce premier algorithme a épuisé ses possibilités, dans la portée passée en paramètre et en utilisant la fonction de distance passée en paramètre (par exemple la distance euclidienne, pour avoir une portée circulaire), le joueur se met à jouer des coups valides aléatoires.
+L'implémentation de cet algorithme nous permet de passer en paramètres une portée dans laquelle les coups peuvent être joués, autour des cases.
+Une fonction de distance, permettant de vérifier si la portée est respectée, doit également être précisée. Par exemple, la distance euclidienne peut être utilisée, et fournirait une portée circulaire.
+
+Lorsque ce premier algorithme a épuisé ses possibilités, le joueur se met à jouer des coups valides aléatoires.
 
 \subsubsection{Joueur aléatoire}
 
