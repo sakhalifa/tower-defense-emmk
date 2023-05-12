@@ -121,27 +121,6 @@ h1 {
 	margin: 2vh;
 }
 
-.btn {
-	color: #2d2930;
-	background-color: #dbdbdb;
-	padding: 5px;
-	height: 45px;
-	width: 45px;
-	margin-bottom: 30px;
-	border-radius: 50%;
-	border: none;
-	filter: drop-shadow(3px 3px 4px #333333);
-	box-shadow: inset 3px 3px 5px #fff;
-	position: relative;
-	display: block;
-	cursor: pointer;
-	transition: transform 0.2s linear;
-}
-
-.btn:hover {
-	transform: scale(1.15);
-}
-
 i {
 	pointer-events: none;
 }
@@ -389,6 +368,7 @@ i {
 	filter: hue-rotate(0);
 	animation: hue linear 500ms infinite;
 	animation-play-state: paused;
+	box-sizing: border-box;
 }
 
 #link:hover::after {
@@ -399,13 +379,4 @@ i {
 	to {
 		filter: hue-rotate(1turn);
 	}
-}
-
-/* to have things in good shape */
-*,
-*::before,
-*::after {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
 }

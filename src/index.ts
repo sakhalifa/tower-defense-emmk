@@ -124,7 +124,7 @@ async function main(): Promise<void> {
     const squareWorldSize = 20; // A square shape isn't a requirement
     const world: World = initWorld(squareWorldSize, squareWorldSize);
     const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
-    const playProba = 0.2;
+    const playProba = 0.05;
     const spawnProba = 1;
     const minSpawners = Math.min(1, Math.floor(world.width / 8));
     const maxSpawners = Math.max(1, Math.floor(world.width / 3));
@@ -136,7 +136,7 @@ async function main(): Promise<void> {
     grid.style.gridTemplate = `repeat(${world.height}, 1fr) / repeat(${world.width}, 1fr)`;
 
     let turnCounter = 0; // in a purely functional way, an actor containing the turns combined with an incrementTurn action and an updateTurn phase could be made
-	const maxTurn = world.width * 5;
+	const maxTurn = world.width * 7;
 	while (turnCounter < maxTurn && filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
         actors = nextTurn(phases, world, actors, spawnersAxis);
         await displayWorldToGrid(world, actors, grid, filterByKinds(actors, ["spaghettiMonster"])[0]);
