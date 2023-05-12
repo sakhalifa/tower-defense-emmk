@@ -147,11 +147,26 @@ async function main(): Promise<void> {
     }
 
     if (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
-		console.log("Some spaghetti monsters still have faith, you won the game! :)");
+        replay("Some spaghetti monsters still have faith, you won the game! :)", "green");
 	} else {
-		console.log("Not a single spaghetti monsters still has faith, you lost the game! :(");
+        replay("Not a single spaghetti monsters still has faith, you lost the game! :(", "red");
 	}
 }
+
+function replay(result: string, color: string) : void {
+    const home = document.getElementById("home") as HTMLDivElement;
+    home.classList.toggle("active");
+    const button = document.getElementById("button") as HTMLDivElement;
+    button.classList.toggle("active");
+    const link = document.getElementById("link") as HTMLDivElement;
+    link.textContent = "Replay";
+    const res = document.getElementById("res") as HTMLDivElement;
+    res.classList.remove("active");
+    res.style.backgroundColor = color;
+    const child = res.firstChild as HTMLElement;
+    child.textContent = result;
+}
+
 /**
  * Calls the main function and creates a slider to modify the speed of the game
  */
