@@ -121,7 +121,8 @@ let speedModifier = 1;
  * Inits the game and its display for the web client, and runs it
  */
 async function main(): Promise<void> {
-    const world: World = initWorld(20, 20);
+    const squareWorldSize = 20; // A square shape isn't a requirement
+    const world: World = initWorld(squareWorldSize, squareWorldSize);
     const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
     const playProba = 0.2;
     const spawnProba = 1;
