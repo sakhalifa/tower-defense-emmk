@@ -1,4 +1,4 @@
-# Sujet de programmation impérative
+# Sujet de programmation fonctionnelle
 
 La page du sujet :
 
@@ -30,3 +30,17 @@ Pour avoir accès au `npm run dev` qui permet de recompiler et exécuter le code
 
 # Gestion de projet
 [Trello Board](https://trello.com/invite/b/nqGVmB41/ATTIbc89312d138276cef06e301cb6769b3b2216B4C0/projet-towerdefense)
+
+# compilation et exécution
+
+## Pour compiler le projet, il faut exécuter, dans un terminal :
+
+npm run build
+
+## Pour exécuter le client terminal :
+
+npm run main
+
+## Pour exécuter le client web :
+
+npm run parcel
