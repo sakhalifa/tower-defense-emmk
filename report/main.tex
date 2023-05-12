@@ -76,8 +76,12 @@ Ce genre peut se résumer en une seule phrase :
 \begin{center}
     \emph{Des attaquants envahissent une zone défendue par des défenseurs.}\label{description_jeu}
 \end{center}
+
+\subsection{Contraintes}
+
 La programmation fonctionnelle est le paradigme mis en avant.
-L'exécutable est réalisé en Typescript.
+Nous évitons donc au maximum la programmation impérative ou encore la programmation orienté objet.
+L'exécutable est réalisé en Typescript, une surcouche de JavaScript que nous utilisons pour typer le contenu de notre programme.
 
 \subsection{Theme}
 Nous avons choisi de créer un jeu de tower defense autour du thème
@@ -332,8 +336,13 @@ On pourrait imaginer d'autres scénarios qui complexifient légèrement le progr
 Cette structuration permettrait plusieurs niveaux de décoration.
 
 \section{conclusion}
-limite pureté?
-- Dès qu'on fait du random, c'est plus pure
-- Probleme de perf ?
+
+Les efforts de pureté et modularité effectués dans ce projet nous permettent de facilement tester et maintenir chaque fonction, sans toujours devoir créer tout un environnement d'exécution pour celles-ci, et sans se préoccuper des changements de l'état de l'environnement.
+
+Les inconvénients sont parfois la complexification d'écriture des fonctions, notamment des décorateurs fonctionnels purs.
+
+La pureté n'est pas compatible avec l'aléatoire. On pourrait argumenter sur le fait que l'aléatoire n'existe pas et qu'on est sur un système pseudo-aléatoire. Cependant, une vrai piste d'ammélioration vers plus de pureté serait plutôt que les fonctions se servant de l'aléatoire prennent en paramètre cette fonction aléatoire, ou bien même directement son résultat. On pourrait alors tester ces fonctions de manière précise et exhaustive.
+
+Les inconvénients du paradigme de programmation utilisé comprennent également les réductions de performance, notre programme ne souffre cependant pas de ce problème. De plus, dans un jeu du type tower defense, le délais entre les tours de jeu combiné à de la programmation asynchrone peut permettre de rendre ce problème invisible.
 
 \end{document}
