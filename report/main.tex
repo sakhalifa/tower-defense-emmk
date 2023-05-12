@@ -331,8 +331,15 @@ Pour ralentir le déplacement d'un attaquant, il suffit de décorer son action d
 
 \subsubsection{Exemple concret}
 
-En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un décorateur qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 case, qui revient à ne pas se déplacer, pour définir la fonction par défaut.
+En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un \hyperref[fig:deco_every_n]{décorateur \ref{fig:deco_every_n}} qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 case, qui revient à ne pas se déplacer, pour définir la fonction par défaut.
 Ce décorateur retourne l'exécution d'une fonction interne, qui est un générateur d'action, en suivant le principe de fermeture. Ce générateur d'action retourne l'appel \textbf{gelé} d'un autre générateur, dont les paramètres auront été mis à jour, et l'action générée, qui définira le prochain comportement de l'entité concernée. Le gel du générateur retourné permet d'éviter un appel récursif infini. Cette fonction est typée de manière récursive, et un type ActionGenerators décrivant les générateurs d'action qu'un acteur doit contenir est créé, et basé sur le type ActorActions qui définissait déjà les types des actions des acteurs.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.5\textwidth]{diag_deco_every_n.png}
+    \caption{Décomposition d'un décorateur retournant alternativement une des fonctions données.}
+    \label{fig:deco_every_n}
+\end{figure}
 
 \subsubsection{Mise à jour des actions et des générateurs}
 
