@@ -12,6 +12,7 @@
     colorlinks = true,
     linkcolor = blue
 }
+\usepackage{subfig}
 \usepackage{float}
 \usepackage[french]{babel}
 
@@ -70,11 +71,11 @@
 \newpage
 
 \section{Sujet}
-L'objectif de ce projet est la réalisation d'un jeu de type tower défense.
+L'objectif de ce projet est la réalisation d'un jeu de type \hyperlink{https://fr.wikipedia.org/wiki/Tower_defense}{tower defense}.
 
 Ce genre peut se résumer en une seule phrase :
 \begin{center}
-    \emph{Des attaquants envahissent une zone défendue par des défenseurs.}\label{description_jeu}
+    \emph{Des attaquants envahissent une zone défendue par des défenseurs.}\label{sec:description jeu}
 \end{center}
 
 \subsection{Contraintes}
@@ -93,20 +94,17 @@ L'objectif du jeu est donc de répandre le Pastafarisme, prêché par des pirate
 
 \section{Conception}\label{sec:conception}
 
-Nous débutons la conception avec notre description du jeu \ref{description_jeu} 
-pour en tirer des élements fondamentaux.
+Notre description du jeu, en \hyperref[sec:description jeu]{partie \ref{sec:description jeu} }, nous permet d'en tirer les éléments fondamentaux.
 
-On remarque en premier lieu la présence d'entités, comme les attaquants, mais aussi les 
-défenseurs. Bien qu'elles soient antagonistes, ces entités ont des similarités, notamment 
-dans le traitement de leurs actions. 
+Parmis ces éléments se trouvent les entités, comme les attaquants, mais aussi les défenseurs. Bien qu'elles soient antagonistes, ces entités ont des similarités, notamment dans le traitement de leurs actions. 
 
-On décide donc de les regrouper sous le même nom, les acteurs.
+Nous décidons donc de les regrouper sous un même nom, les \textbf{acteurs}.
 
 
 \subsection{Entité Acteur}
 
 
-Les acteurs forment un ensemble d'entités aux comportements et états variés 
+Les acteurs forment un ensemble d'entités aux comportements et états variés, 
 qui intéragissent entre elles.
 
 Le type acteur est très générique et peut représenter beaucoup de choses.
@@ -122,9 +120,9 @@ Pour garder une consistence entre nos acteurs, on définit des archétypes.
 \end{itemize}
 
 Les types Good Guy, Ignorant et Ignorance Spreader représentent 
-les défenseurs et les attaquants, ils découlent directement de la description du jeu.
+les défenseurs et les attaquants. Ils découlent directement de la description du jeu.
 Cependant, nos acteurs comportent aussi un type Spawner et Ground.
-Ces types ne peuvent pas être attaqués ou attaquer, mais ils peuvent interagir avec le reste des entités, ce qui justifie qu'ils
+Ces types ne peuvent ni attaquer ni être attaqués, mais ils peuvent interagir avec le reste des entités, ce qui justifie qu'ils
 soient aussi considérés comme des acteurs.
 
 En effet, Spawner peut être vu comme un attaquant immortel, et Ground 
@@ -209,7 +207,7 @@ Nous disposons donc d'acteurs, qui peuvent désormais intéragir entre eux avec
 une grande modularité.
 
 Il ne nous manque plus qu'une seule notion issue de notre description du jeu 
-\ref{description_jeu} , celle de zone.
+\ref{sec:description jeu} , celle de zone.
 
 On aimerait contraindre nos acteurs à rester dans celle-ci. Cela 
 rejoint l'idée précédente de limiter certaines actions des acteurs, en l'occurence, 
@@ -235,6 +233,17 @@ Avec ces trois élements que sont les acteurs, les phases et le monde, on va pou
 créer des acteurs de différents types, effectuant diverses actions, le tout dans une 
 zone définie.
 
+On s'attend à un résultat de ce type \ref{fig:affichages}.
+
+\begin{figure}[H]
+    \centering
+    \subfloat[][\centering Monde de taille 10 x 10.\label{fig:subfig1}]{{\includegraphics[height=6cm]{pastafarist_10.png} }}
+    \qquad
+    \subfloat[][\centering Monde de taille 20 x 20.\label{fig:subfig2}]{{\includegraphics[height=6cm]{pastafarist_20.png} }}%   
+    \caption{Différents affichages du jeu réalisé.}%
+    \label{fig:affichages}%
+     \vspace*{-0.3cm}
+\end{figure}
 
 \section{Réalisation}
 
@@ -310,18 +319,18 @@ En exécutant le jeu, vous remarquerez que les attaquants ne se déplacent pas t
 Nos décorateurs fonctionnel \textbf{purs} permettent, de manière définitive comme dynamique, de modifier les comportements des entitées du jeu.
 Ils permettent de ne pas avoir à écrire une nouvelle fonction, ou à passer de nombreux paramètres supplémentaires à toutes les fonctions de comportement, à chaque fois que l'on souhaite modifier un comportement.
 
-En excluant les implémentations qui ne respectent pas le principe de pureté, au moins deux possibilités d'implémentation de ces décorateurs sont possibles :
+En excluant les implémentations qui ne respectent pas le principe de pureté, au moins deux possibilités d'implémentation de ces décorateurs demeurent :
 \begin{itemize}
     \item Modifier le type de retour des actions (une action décrivant un comportement) afin qu'elles retournent, en plus de leur résultat, la prochaine fonction à utiliser pour cette même action. Cette implémentation complexifie la création des actions, et rend leur type de retour beaucoup moins évident. Ce n'est pas la solution retenue. \label{text:decorateur1}
     \item Séparer les actions des \textbf{générateurs d'action}, qui seront utilisés pour mettre à jour les actions après les avoir exécutées. Dans cette implémentation, les actions restent inchangées, mais une nouvelle variable s'ajoute au type Actor, qui est un objet contenant pour chaque action son générateur, qui est une fonction retournant la prochaine action à utiliser, ainsi que le nouveau générateur, à l'état potentiellement différent, qui sera utilisé une fois la prochaine action exécutée. C'est la solution retenue.
 \end{itemize}
 
-Afin de ralentir le déplacement d'un attaquant, il suffit de décorer son action de déplacement afin qu'elle ne soit éxecutée qu'une fois sur deux lorsqu'elle est appelée.
+Pour ralentir le déplacement d'un attaquant, il suffit de décorer son action de déplacement afin qu'elle ne soit éxecutée qu'une fois sur deux lorsqu'elle est appelée.
 
 \subsubsection{Exemple concret}
 
-En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un décorateur qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 cases, quit revient à ne pas se déplacer, pour définir la fonction par défaut.
-Ce décorateur retourne l'exécution d'une fonction interne, en suivant le principe de fermeture, qui est un générateur qui s'occupe de retourner l'appel avec les nouveaux paramètres du prochain générateur, qui est gelé pour éviter un appel récursif infini, et la nouvelle action, qui doit remplacer l'action qui a déjà donné un résultat concernant le comportement d'une entité. Le typage de cette fonction est un typage récursif, et un type ActionGenerators décrivant les générateurs de comportement qu'un acteur doit contenir est créé et basé sur le type ActorActions qui définissait déjà les types des actions des acteurs.
+En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un décorateur qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 case, qui revient à ne pas se déplacer, pour définir la fonction par défaut.
+Ce décorateur retourne l'exécution d'une fonction interne, qui est un générateur d'action, en suivant le principe de fermeture. Ce générateur d'action retourne l'appel \textbf{gelé} d'un autre générateur, dont les paramètres auront été mis à jour, et l'action générée, qui définira le prochain comportement de l'entité concernée. Le gel du générateur retourné permet d'éviter un appel récursif infini. Cette fonction est typée de manière récursive, et un type ActionGenerators décrivant les générateurs d'action qu'un acteur doit contenir est créé, et basé sur le type ActorActions qui définissait déjà les types des actions des acteurs.
 
 \subsubsection{Mise à jour des actions et des générateurs}
 
