@@ -100,13 +100,13 @@ function initspaghettiMonsters(world: World, minSpaghettiMonsters: number, maxSp
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the created waypoints of the world
  */
-function initWayPointActors(world: World, intermediateWaypointsNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number): Array<Array<Actor>>{
+function initWayPointActors(world: World, intermediateWaypointsNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number, minSpawners: number = 1, maxSpawners: number = 3): Array<Array<Actor>>{
 	const maxLineNumber: number = spawnersAxis === "x" ? world.height - 1 : world.width - 1;
 	const spawnerLineNumber: number = Math.random() < 0.5 ? 0 : maxLineNumber;
 	const spaghettiMonsterLineNumber = maxLineNumber - spawnerLineNumber;
 	const intermediateWaypointsLineNumber: Array<number> =
 	almostEvenlySpacedIntegers(intermediateWaypointsNumber, spaghettiMonsterLineNumber ? 0 : maxLineNumber, spaghettiMonsterLineNumber);
-	return [initSpawners(world,1,  3, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
+	return [initSpawners(world, minSpawners,  maxSpawners, spawnersAxis, spawnerLineNumber, averageSpawnsPerPhase)]
 	.concat(initGroundWaypoints(world, 1, Math.random() < 0.7 ? 2 : 1, spawnersAxis, intermediateWaypointsLineNumber, intermediateWaypointsNumber))
 	.concat([initspaghettiMonsters(world, 1, 1, spawnersAxis, spaghettiMonsterLineNumber, intermediateWaypointsNumber + 1)]);
 }
@@ -119,8 +119,8 @@ function initWayPointActors(world: World, intermediateWaypointsNumber: number, s
  * Note that this number is inferior to the actual number of returned spawners.
  * @returns the first actors of the game.
  */
-function initActors(world: World, intermediateWaypointLinesNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number, playProba? : number): Array<Actor> {
-	const waypoints: Array<Array<Actor>> = initWayPointActors(world, intermediateWaypointLinesNumber, spawnersAxis, averageSpawnsPerPhase);
+function initActors(world: World, intermediateWaypointLinesNumber: number, spawnersAxis: Axis, averageSpawnsPerPhase?: number, playProba?: number, minSpawners?: number, maxSpawners?: number): Array<Actor> {
+	const waypoints: Array<Array<Actor>> = initWayPointActors(world, intermediateWaypointLinesNumber, spawnersAxis, averageSpawnsPerPhase, minSpawners, maxSpawners);
 	return waypoints.flat()
 	.concat(positionsLinking(waypoints.map((waypointsSameValue) => waypointsSameValue.map((waypoint) => waypoint.position)), otherAxis(spawnersAxis))
 	.map((position) => createGround(position))).concat(createPlayer(playProba));

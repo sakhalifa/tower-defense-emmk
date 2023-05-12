@@ -121,12 +121,14 @@ let speedModifier = 1;
  * Inits the game and its display for the web client, and runs it
  */
 async function main(): Promise<void> {
-    const world: World = initWorld(10, 10);
+    const world: World = initWorld(20, 20);
     const spawnersAxis: Axis = Math.random() < 0.5 ? "x" : "y";
     const playProba = 0.2;
     const spawnProba = 1;
-    const intermediateWaypointLinesNumber = 2;
-    let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);
+    const minSpawners = Math.min(1, Math.floor(world.width / 8));
+    const maxSpawners = Math.max(1, Math.floor(world.width / 3));
+    const intermediateWaypointLinesNumber = Math.floor(world.width / 4);
+    let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba, minSpawners, maxSpawners);
     const phases: Array<Phase> = initPhases();
 
     const grid = document.getElementById("display-grid") as HTMLDivElement;
