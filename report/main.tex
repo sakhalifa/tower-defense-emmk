@@ -94,7 +94,7 @@ L'objectif du jeu est donc de répandre le Pastafarisme, prêché par des pirate
 
 \section{Analyse du sujet}\label{sec:conception}
 
-Notre description du jeu, en \hyperref[sec:description jeu]{partie \ref{sec:description jeu} }, nous permet d'en tirer les éléments fondamentaux.
+Notre description du jeu, en \hyperref[sec:description jeu]{partie \ref{sec:description jeu}}, nous permet d'en tirer les éléments fondamentaux.
 
 Parmis ces éléments se trouvent les entités, comme les attaquants, mais aussi les défenseurs. Bien qu'elles soient antagonistes, ces entités ont des similarités, notamment dans le traitement de leurs actions. 
 
@@ -149,21 +149,18 @@ Avec la diversification des acteurs vient le problème de la spécialisation qui
 Par exemple, les acteurs béligérants ont besoins d'attributs spécifiques tels que des points de croyance et une limite que ces points peuvent atteindre.
 
 On pourrait rajouter tous les attributs nécessaires à tous les comportements 
-à tous les acteurs. C'est cependant une mauvaise idée pour deux raisons :
+à tous les acteurs. Bien que cela permettrait un typage plus précis et moins d'erreurs de programmation, cette pratique n'a pas été retenue pour trois raisons :
 \begin{itemize}
     \item Premièrement, cela entraînerait une modification sur le type acteur à chaque nouvel attribut ajouté, et entraînerai une modification de la signatures de certaines fonctions auxiliaires comme le constructeur.
     \item Secondement, le type acteur aurait toujours plus d'états possibles, 
 et deviendrait de plus en plus complexe et lourd à comprendre et gérer.
+    \item Troisièmement, les erreurs de programmation liées à l'utilisation de mauvais noms de variable dans les dictionnaires de type "any" (quelconque) peuvent être évitées en passant par l'utilisation de getters et setters.
 \end{itemize}
 \vspace{8px}
-Pour éviter ces désagréments, nous avons séparé la responsabilité des attributs 
-dépendants de certains comportements dans un champs \textbf{externalProps}.
-Pour que ce champs puisse satisfaire toutes les possibilités d'attributs, il
-est de type dictionnaire de quelconque. Toutefois, ce typage faible est compensé 
-par la présence de fonctions getter et setter agissants comme une interface 
-avec \textbf{externalProps}.
+Nous avons donc séparé la responsabilité des attributs 
+dépendants de certains comportements dans un champs \textbf{externalProps}, qui est un dictionnaire de type quelconque, muni de getters et setters. Ce typage lui permet de contenir tout type d'attribut.
 
-Nos acteurs sont donc parés à toute éventualité d'évolution.
+Nos acteurs sont ainsi parés à toute éventualité d'évolution.
 Cependant, bien qu'ils disposent de comportements pouvant évoluer, ils ne peuvent modifier leurs 
 états internes directement.
 Nous avons besoin de quelque chose d'ordre supérieur pour gérer leurs interactions.
@@ -173,12 +170,12 @@ Quelque chose comme un système de phase.
 
 Nos acteurs effectuent des actions qui ont des conséquences.
 Cela implique qu'il y a un avant et un après aux actions.
-Pour chaque type d'action, on créer une phase.
+Pour chaque type d'action, on crée une phase.
 Elle agit comme un ordonnanceur. Elle obtient les intentions de chaque 
 acteur pour l'action qu'elle traite, et applique les modifications, 
 créant une nouvelle liste d'acteur.
 
-Nommons un tour de jeu comme une execution de l'ensemble de nos phases.
+Nommons un tour de jeu comme une exécution de l'ensemble de nos phases.
 
 Au cours d'un tour de jeu, les phases doivent permettre aux acteurs de réaliser les actions suivantes :
 \vspace{-10px}
@@ -197,10 +194,9 @@ sur le résultat du tour de jeu. Par exemple, si un acteur joue dans sa
 phase d'attaque, inflige des dégats à un ennemi, puis joue sa phase de déplacements,
 s'eloignant et privant l'ennemi d'une juste riposte.
 
-Ceci ne constitue qu'un choix de jeu, et le découpage d'un tour de jeu en une liste de phase permet de moduler ce type de choix.
+Ceci ne constitue qu'un choix de jeu, et le découpage d'un tour de jeu en une liste de phase permet de moduler le déroulement d'un tour.
 Il en résulte qu'il est très simple de rajouter des phases de jeu, ou de 
-changer l'ordre dans lequel les acteurs agissent.
-\vspace{8px}
+changer l'ordre dans lequel les acteurs agissent.\\[8px]
 Enfin, il peut arriver que les intentions des acteurs soient incompatibles.
 Par exemple, si deux acteurs ayant des collisions veulent aller au même endroit.
 Chaque phase doit pouvoir résoudre les conflits qu'elle génère.
@@ -209,33 +205,26 @@ Nous disposons donc d'acteurs, qui peuvent désormais intéragir entre eux avec
 une grande modularité.
 
 Il ne nous manque plus qu'une seule notion issue de notre description du jeu 
-\ref{sec:description jeu} , celle de zone.
-
-On aimerait contraindre nos acteurs à rester dans celle-ci. Cela 
-rejoint l'idée précédente de limiter certaines actions des acteurs, en l'occurence, 
-on veut interdire les acteurs de quitter notre zone de jeu.
-
-Mais cela n'est pas possible avec nos phases, car elles n'ont justement pas 
-cette notion de zone.
-On va donc remédier au problème en créant un objet supérieur, un objet représentant 
-un monde.
+en \hyperref[sec:description jeu]{partie \ref{sec:description jeu}}, celle de zone, dans laquelle nos acteurs devraient rester.
+Cela 
+rejoint l'idée de limiter certaines actions des acteurs, en l'occurence, 
+on veut interdire les acteurs de quitter la zone de jeu, autrement appelée Monde.
 
 \subsection{Monde}
 
-Notre monde doit représenter une zone de jeu.
-C'est un ensemble de coordonnées sur lesquelles nos entités peuvent exister.
+Un monde est un ensemble de coordonnées sur lesquelles nos entités peuvent exister.
 
-Grâce à lui, on va réaliser deux opérations supérieur aux phases et aux acteurs que 
-l'on ne pourrait faire autrement.
-Tout d'abord, contraindre tous les acteurs à se trouver dans notre monde.
-Ensuite, au début de la partie, on va pouvoir définir le chemin que 
-les attaquants vont parcourir lors de leur invasion sur la zone de jeu.
+Le monde est utilisé pour au moins deux besoins qui sont:
+\begin{itemize}
+    \item Vérifier la cohérence des positions des acteurs.
+    \item Créer le chemin que les attanquants devront parcourir au cours de leur invasion sur la zone de jeu.
+\end{itemize}
 
 Avec ces trois élements que sont les acteurs, les phases et le monde, on va pouvoir 
 créer des acteurs de différents types, effectuant diverses actions, le tout dans une 
 zone définie.
 
-On s'attend à un résultat similaire à celui de la  \hyperref[fig:affichages]{figure \ref{fig:affichages}}.
+La cohérence des positions dans le monde mène à un résultat similaire à celui de la \hyperref[fig:affichages]{figure \ref{fig:affichages}}.
 
 \begin{figure}[H]
     \centering
@@ -246,6 +235,8 @@ On s'attend à un résultat similaire à celui de la  \hyperref[fig:affichages]{
     \label{fig:affichages}%
      \vspace*{-0.3cm}
 \end{figure}
+
+La \hyperref[fig:affichages]{figure \ref{fig:affichages}} contient deux mondes, générés aléatoirement : un monde de hauteur et de largeur de 10 cases (a), et un autre de hauteur et largeur de 20 cases (b).
 
 \section{Réalisation}
 
@@ -273,10 +264,12 @@ Il reste maintenant à lier ces points de passage pour former un ou plusieurs ch
 
 \subsubsection{Liaison des points de passage}
 
-Nous voyons dans la \hyperref[fig:points de passage]{Figure \ref{fig:points de passage}} que des chemins de lien ont été générés. Ces chemins sont générés d'une manière très simple qui consiste à relier chaque point de passage de numérotation $n$ aux points de passage de numérotation $n - 1$, en commençant par placer des cases de chemin le long d'un axe (ici des abscisses) puis le long de l'autre axe (ici des ordonnées). La fonction reliant deux points de passage est une fonction récursive terminale prenant en paramètres une position initiale et une position finale à relier. À chaque appel récursif, il suffit de modifier la position initiale en l'ayant déplacé de une case vers la case finale, et ce jusqu'à ce que la case initiale corresponde à la case finale.
+Nous voyons dans la \hyperref[fig:points de passage]{Figure \ref{fig:points de passage}} que des chemins de lien ont été générés. Ces chemins sont générés d'une manière très simple qui consiste à relier chaque point de passage de numérotation $n$ aux points de passage de numérotation $n - 1$, en commençant par placer des cases de chemin le long d'un axe (ici des abscisses) puis le long de l'autre axe (ici des ordonnées).\\
 
-Il est facile de se convaincre que de cette manière, n'importe quel chemin peut être généré, pour peu qu'on place correctement les points de passage nécessaires à sa génération.
-Pour une défense optimale, le joueur a tout intérêt à placer ses défenseurs autour de ce chemin.
+La fonction reliant deux points de passage est une fonction récursive terminale prenant en paramètres une position initiale et une position finale à relier. À chaque appel récursif, il suffit de modifier la position initiale en l'ayant déplacée de une case vers la case finale, et ce jusqu'à ce que la case initiale corresponde à la case finale.
+
+Il est facile de se convaincre que de cette manière, n'importe quel chemin peut être généré, pour peu qu'on place correctement les points de passage nécessaires à sa génération. Cette fonction de liaison de chemin, une fois les points de passage placés, étant déterministe, les attaquants peuvent utiliser cette même fonction pour se déplacer correctement sur le chemin.
+Pour une défense optimale, le joueur a tout intérêt à placer ses défenseurs près de ce chemin.
 
 \subsection{Joueur automatique}
 
@@ -331,8 +324,7 @@ Pour ralentir le déplacement d'un attaquant, il suffit de décorer son action d
 
 \subsubsection{Exemple concret}
 
-En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un \hyperref[fig:deco_every_n]{décorateur \ref{fig:deco_every_n}} qui prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 case, qui revient à ne pas se déplacer, pour définir la fonction par défaut.
-Ce décorateur retourne l'exécution d'une fonction interne, qui est un générateur d'action, en suivant le principe de fermeture. Ce générateur d'action retourne l'appel \textbf{gelé} d'un autre générateur, dont les paramètres auront été mis à jour, et l'action générée, qui définira le prochain comportement de l'entité concernée. Le gel du générateur retourné permet d'éviter un appel récursif infini. Cette fonction est typée de manière récursive, et un type ActionGenerators décrivant les générateurs d'action qu'un acteur doit contenir est créé, et basé sur le type ActorActions qui définissait déjà les types des actions des acteurs.
+En suivant le principe de généricité et de citoyenneté de première classe, nous avons programmé un décorateur, dont le fonctionnement est détaillé en \hyperref[fig:deco_every_n]{Figure \ref{fig:deco_every_n}}.
 
 \begin{figure}[H]
     \centering
@@ -341,6 +333,12 @@ Ce décorateur retourne l'exécution d'une fonction interne, qui est un généra
     \label{fig:deco_every_n}
 \end{figure}
 
+Ce décorateur prend en paramètres une fonction à décorer, la fonction à exécuter lorsque la fonction décorée ne doit pas être appelée, et une valeur définissant tous les combien de tours la fonction décorée doit être exécutée. On peut se servir des actions par défaut déjà programmées, telles que le déplacement de 0 case, qui revient à ne pas se déplacer, pour définir la fonction par défaut.\\
+
+Ce décorateur retourne l'exécution d'une fonction interne, qui est un générateur d'action, en suivant le principe de fermeture. Ce générateur d'action retourne l'appel \textbf{gelé} d'un autre générateur, dont les paramètres auront été mis à jour, et l'action générée, qui définira le prochain comportement de l'entité concernée. Le gel du générateur retourné permet d'éviter un appel récursif infini.\\
+
+Cette fonction est typée de manière récursive, et un type ActionGenerators décrivant les générateurs d'action qu'un acteur doit contenir est créé, et basé sur le type ActorActions qui définissait déjà les types des actions des acteurs.
+
 \subsubsection{Mise à jour des actions et des générateurs}
 
 Pour que cette implémentation fonctionne, il faut que le générateur et l'action soient mis à jour à chaque exécution de l'action. Ceci n'est pas automatiquement réalisé par l'action, et c'est le système de \textbf{phases} qui nous permet de mettre en place et synchroniser cette mise à jour.
@@ -348,7 +346,8 @@ Les phases permettent de mettre à jour les acteurs en fonction de leurs intenti
 
 \subsubsection{Pour aller plus loin}
 
-En suivant cette implémentation des phases et des générateurs d'action, un acteur n'est pas le seul à pouvoir modifier son propre comportement. N'importe quelle phase pourrait traîter les données qu'elle reçoit de manière à ce qu'un acteur modifie le comportement d'un autre acteur. Par exemple, les défenseurs pourraient ralentir les attaquants, en précisant dans le retour de leur action, le décorateur devant être utilisé sur les actions des attaquants affectés.
+En suivant cette implémentation des phases et des générateurs d'action, un acteur n'est pas le seul à pouvoir modifier son propre comportement. N'importe quelle phase pourrait traîter les données qu'elle reçoit de manière à ce qu'un acteur modifie le comportement d'un autre acteur. Par exemple, les défenseurs pourraient ralentir les attaquants, en précisant dans le retour de leur action, le décorateur devant être utilisé sur les actions des attaquants affectés.\\
+
 On pourrait imaginer d'autres scénarios qui complexifient légèrement le programme : la décoration des décorateurs. En effet, un attaquant pourrait grâce à un décorateur ne se déplacer qu'une fois tous les deux tours. Un défenseur paralyse cet attaquand pendant 3 tours, qui ne peut alors pas se déplacer. L'action décorée doit donc être encore décorée. On doit donc pouvoir créer plusieurs niveaux de décoration, et dans notre implémentation, il faudrait alors pouvoir décorer non pas l'action, mais le générateur d'actions. Cela n'a pas été implémenté, mais nous immaginons qu'il faudrait alors que les générateurs d'action retournent :
 \begin{itemize}
     \item Le prochain générateur d'actions 'parent' à appeler.
