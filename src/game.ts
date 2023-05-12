@@ -180,11 +180,20 @@ function playGame(display: (world: World, actors: Array<Actor>) => void): void {
 	let actors: Array<Actor> = initActors(world, intermediateWaypointLinesNumber, spawnersAxis, spawnProba, playProba);
 	const phases: Array<Phase> = initPhases();
 	console.log(`\n\x1b[32m PASTAFARIST \x1b[0m\n`);
-	while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
+	let turnCounter = 0; // in a purely functional way, an actor containing the turns combined with an incrementTurn action and an updateTurn phase could be made
+	const maxTurn = 20;
+	while (turnCounter < maxTurn && filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
 		display(world, actors);
 		actors = nextTurn(phases, world, actors, spawnersAxis);
+		++turnCounter;
 	}
 	display(world, actors);
+
+	if (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
+		console.log("Some spaghetti monsters still have faith, you won the game! :)");
+	} else {
+		console.log("Not a single spaghetti monsters still has faith, you lost the game! :(");
+	}
 }
 
 
