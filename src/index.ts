@@ -135,13 +135,22 @@ async function main(): Promise<void> {
     const grid = document.getElementById("display-grid") as HTMLDivElement;
     grid.style.gridTemplate = `repeat(${world.height}, 1fr) / repeat(${world.width}, 1fr)`;
 
-    while (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
+    let turnCounter = 0; // in a purely functional way, an actor containing the turns combined with an incrementTurn action and an updateTurn phase could be made
+	const maxTurn = world.width * 5;
+	while (turnCounter < maxTurn && filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
         actors = nextTurn(phases, world, actors, spawnersAxis);
         await displayWorldToGrid(world, actors, grid, filterByKinds(actors, ["spaghettiMonster"])[0]);
         // wait
         while (speedModifier === 0) await delay(100);
         await delay(defaultDelay * speedModifier);
+        ++turnCounter;
     }
+
+    if (filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
+		console.log("Some spaghetti monsters still have faith, you won the game! :)");
+	} else {
+		console.log("Not a single spaghetti monsters still has faith, you lost the game! :(");
+	}
 }
 /**
  * Calls the main function and creates a slider to modify the speed of the game
