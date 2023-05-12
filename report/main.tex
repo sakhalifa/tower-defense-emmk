@@ -13,7 +13,7 @@
     linkcolor = blue
 }
 \usepackage{float}
-\usepackage[english]{babel}
+\usepackage[french]{babel}
 
 \title{Rapport de Projet : Tower Defense}
 \author{Youri CHANCRIN, Théo DESCOMPS, Samuel KHALIFA, Jean-Baptiste MARTINEZ}
@@ -177,6 +177,7 @@ créant une nouvelle liste d'acteur.
 Nommons un tour de jeu comme une execution de l'ensemble de nos phases.
 
 Au cours d'un tour de jeu, les phases doivent permettre aux acteurs de réaliser les actions suivantes :
+\vspace{-10px}
 \begin{itemize}
   \item Se déplacer
   \item Attaquer un autre acteur
@@ -300,7 +301,7 @@ Ils permettent de ne pas avoir à écrire une nouvelle fonction, ou à passer de
 
 En excluant les implémentations qui ne respectent pas le principe de pureté, au moins deux possibilités d'implémentation de ces décorateurs sont possibles :
 \begin{itemize}
-    \item Modifier le type de retour des actions (une action décrivant un comportement) afin qu'elles retournent, en plus de leur résultat, la prochaine fonction à utiliser pour cette même action. Cette implémentation complexifie la création des actions, et rend leur type de retour beaucoup moins évident. Ce n'est pas la solution retenue.
+    \item Modifier le type de retour des actions (une action décrivant un comportement) afin qu'elles retournent, en plus de leur résultat, la prochaine fonction à utiliser pour cette même action. Cette implémentation complexifie la création des actions, et rend leur type de retour beaucoup moins évident. Ce n'est pas la solution retenue. \label{text:decorateur1}
     \item Séparer les actions des \textbf{générateurs d'action}, qui seront utilisés pour mettre à jour les actions après les avoir exécutées. Dans cette implémentation, les actions restent inchangées, mais une nouvelle variable s'ajoute au type Actor, qui est un objet contenant pour chaque action son générateur, qui est une fonction retournant la prochaine action à utiliser, ainsi que le nouveau générateur, à l'état potentiellement différent, qui sera utilisé une fois la prochaine action exécutée. C'est la solution retenue.
 \end{itemize}
 
@@ -316,42 +317,17 @@ Ce décorateur retourne l'exécution d'une fonction interne, en suivant le princ
 Pour que cette implémentation fonctionne, il faut que le générateur et l'action soient mis à jour à chaque exécution de l'action. Ceci n'est pas automatiquement réalisé par l'action, et c'est le système de \textbf{phases} qui nous permet de mettre en place et synchroniser cette mise à jour.
 Les phases permettent de mettre à jour les acteurs en fonction de leurs intentions. Cela suppose que l'action de l'acteur concernant la phase en question, de déplacement par exemple, a été exécutée et a donné son résultat. La fonction d'éxécution propre à la phase, et retournant le nouvel acteur en prenant en compte les intentions retournées par l'action de l'acteur, en profite donc pour retourner un acteur dont le générateur et l'action on tous les deux été mis à jour.
 
-\section{Boucle de jeu}
-- Un monde = plan 2d
-- acteurs = séparé du monde.
-Phases:
- - Acteur propose une action
- - Phase transforme les acteurs en fonction de leurs propositions.
- - Puis, le monde impose ses limites, corrigeant les acteurs invalides (en dehors du monde)
+\subsubsection{Pour aller plus loin}
 
+En suivant cette implémentation des phases et des générateurs d'action, un acteur n'est pas le seul à pouvoir modifier son propre comportement. N'importe quelle phase pourrait traîter les données qu'elle reçoit de manière à ce qu'un acteur modifie le comportement d'un autre acteur. Par exemple, les défenseurs pourraient ralentir les attaquants, en précisant dans le retour de leur action, le décorateur devant être utilisé sur les actions des attaquants affectés.
+On pourrait imaginer d'autres scénarios qui complexifient légèrement le programme : la décoration des décorateurs. En effet, un attaquant pourrait grâce à un décorateur ne se déplacer qu'une fois tous les deux tours. Un défenseur paralyse cet attaquand pendant 3 tours, qui ne peut alors pas se déplacer. L'action décorée doit donc être encore décorée. On doit donc pouvoir créer plusieurs niveaux de décoration, et dans notre implémentation, il faudrait alors pouvoir décorer non pas l'action, mais le générateur d'actions. Cela n'a pas été implémenté, mais nous immaginons qu'il faudrait alors que les générateurs d'action retournent :
+\begin{itemize}
+    \item Le prochain générateur d'actions 'parent' à appeler.
+    \item L'état du générateur d'action imbriqué (qui peut aussi être retourné comme générateur d'action 'parent' lorsque le générateur d'action 'parent' effectue sa dernière exécution).
+    \item L'action générée (sur plusieurs niveaux de décoration, cette action correspondrait à la fonction par défaut du générateur 'parent' ou le résultat du générateur imbriquée, dont l'état devra alors être mis à jour).
+\end{itemize}
 
-\section{réalisation}
-\subsection{Phases, typage fort ou typage faible}
-Choix : Typage fort
-Parce que : Impose rigourosité et cohérence entre les types des propositions des 
-acteurs et la fonction transformant les acteurs et permet d'expérimenter avec 
-le riche système de type de Typescript, notamment les mapped types
-
-Inconvénient : pas dynamique, mais pas un besoin pour nous donc pas important
-
-- Actions par défaut.
-
-Les petites sections comme c'est juste si le contenu vous inspire, sinon il faut supprimer
-\subsubsection{Structure du monde et des acteurs}
-Choix : Les acteurs sont séparés du monde
-A cause de l'habitude de la programmation object, on aurait envie d'établir le plus de liens possible entre nos structures
-Parce qu'on est dans la programmation fonctionnelle, on ne peut modifier l'attribut d'un 'object' dans le recréer, 
-donc avoir les acteurs dans le monde est très impratique, car les acteurs sont sans cesse recréé, ceux qui forcerait de 
-recréer le monde pour rien.
-
-\subsubsection{Position des acteurs}
-Chaque acteur contient sa position.
-Si un acteur ne bouge pas, il n'est pas modifié.
-
-Inconvénient : complexité n carré, n le nombre d'acteur, pour avoir tous les acteurs à une certaine distance d'un acteur.
-
-Alternative : Faire un tableau 2D avec chaque acteur dans une case. Cependant, ce n'est pas une structure fonctionnelle, 
-le projet portant sur cette dernière, on évite donc l'utilisation d'une matrice des positions.
+Cette structuration permettrait plusieurs niveaux de décoration.
 
 \section{conclusion}
 limite pureté?
