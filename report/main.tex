@@ -12,6 +12,7 @@
     colorlinks = true,
     linkcolor = blue
 }
+\usepackage{subfig}
 \usepackage{float}
 \usepackage[french]{babel}
 
@@ -235,6 +236,17 @@ Avec ces trois élements que sont les acteurs, les phases et le monde, on va pou
 créer des acteurs de différents types, effectuant diverses actions, le tout dans une 
 zone définie.
 
+On s'attend à un résultat de ce type \ref{fig:affichages}.
+
+\begin{figure}[H]
+    \centering
+    \subfloat[][\centering Monde de taille 10 x 10.\label{fig:subfig1}]{{\includegraphics[height=6cm]{pastafarist_10.png} }}
+    \qquad
+    \subfloat[][\centering Monde de taille 20 x 20.\label{fig:subfig2}]{{\includegraphics[height=6cm]{pastafarist_20.png} }}%   
+    \caption{Différents affichages du jeu réalisé.}%
+    \label{fig:affichages}%
+     \vspace*{-0.3cm}
+\end{figure}
 
 \section{Réalisation}
 
