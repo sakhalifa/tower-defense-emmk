@@ -136,7 +136,7 @@ async function main(): Promise<void> {
     grid.style.gridTemplate = `repeat(${world.height}, 1fr) / repeat(${world.width}, 1fr)`;
 
     let turnCounter = 0; // in a purely functional way, an actor containing the turns combined with an incrementTurn action and an updateTurn phase could be made
-	const maxTurn = world.width * 7;
+	const maxTurn = world.width * 8;
 	while (turnCounter < maxTurn && filterByKinds(actors, ["spaghettiMonster"]).some((spaghettiMonster) => getFaithPoints(spaghettiMonster) > 0)) {
         actors = nextTurn(phases, world, actors, spawnersAxis);
         await displayWorldToGrid(world, actors, grid, filterByKinds(actors, ["spaghettiMonster"])[0]);
@@ -172,7 +172,7 @@ function replay(result: string, color: string) : void {
  */
 window.onload = (_) => {
 
-    const button: HTMLDivElement = document.getElementById("button")! as HTMLDivElement;
+    const button: HTMLDivElement = document.getElementById("link")! as HTMLDivElement;
     button.addEventListener('click', () => {
         main();
     });
